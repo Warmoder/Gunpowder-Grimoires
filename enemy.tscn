@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://ccdklbr2ishf5"]
+
+[ext_resource type="Script" uid="uid://cbcysk0gnctfv" path="res://enemy.gd" id="1_4gyqm"]
+[ext_resource type="Texture2D" uid="uid://bqyvoupcimlce" path="res://icon.svg" id="1_7k104"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4gyqm"]
+radius = 64.28063
+
+[node name="Enemy" type="CharacterBody2D" groups=["enemies"]]
+collision_mask = 2
+script = ExtResource("1_4gyqm")
+
+[node name="Sprite2D" type="Sprite2D" parent="." groups=["enemies"]]
+modulate = Color(1, 0, 0, 1)
+texture = ExtResource("1_7k104")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_4gyqm")

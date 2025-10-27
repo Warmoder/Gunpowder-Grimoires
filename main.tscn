@@ -1,8 +1,32 @@
-[gd_scene load_steps=2 format=3 uid="uid://clsbe0wmnd3pk"]
+[gd_scene load_steps=7 format=3 uid="uid://clsbe0wmnd3pk"]
 
 [ext_resource type="PackedScene" uid="uid://bw486lcwnfc1v" path="res://player.tscn" id="1_ig7tw"]
+[ext_resource type="PackedScene" uid="uid://c8evd5r7rx47t" path="res://bullet.tscn" id="2_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://ccdklbr2ishf5" path="res://enemy.tscn" id="3_h2yge"]
+[ext_resource type="Texture2D" uid="uid://drwa7gw1wrent" path="res://tileset.png" id="4_1bvp3"]
 
-[node name="Node2D" type="Node2D"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lquwl"]
+texture = ExtResource("4_1bvp3")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_7mycd"]
+sources/0 = SubResource("TileSetAtlasSource_lquwl")
+
+[node name="Map" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1_ig7tw")]
-position = Vector2(120, 107)
+position = Vector2(167, 88)
+bullet_scene = ExtResource("2_0xm2m")
+
+[node name="Enemy" parent="." instance=ExtResource("3_h2yge")]
+position = Vector2(962, 474)
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_7mycd")

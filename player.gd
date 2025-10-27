@@ -2,6 +2,8 @@ extends CharacterBody2D
 
 # Швидкість руху гравця. @export робить її видимою в редакторі.
 @export var speed = 400.0
+# Сюди ми в редакторі перетягнемо нашу сцену кулі
+@export var bullet_scene: PackedScene
 
 func _physics_process(delta):
 	# --- Рух ---
@@ -20,7 +22,31 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("fire"):
 		fire()
 
+# Ця функція буде викликатись, коли гравець має померти
+func die():
+	# Проста команда, яка перезавантажує поточну сцену
+	get_tree().reload_current_scene()
+
 func fire():
-	# Ця функція буде викликатись при пострілі.
-	# Поки що вона просто виводить повідомлення в консоль внизу.
-	print("Bang!")
+	# Перевіряємо, чи ми взагалі вказали сцену кулі
+	if not bullet_scene:
+		return
+
+	# Створюємо екземпляр (копію) сцени кулі
+	var bullet_instance = bullet_scene.instantiate()
+	
+	# Додаємо кулю до головної сцени (щоб вона з'явилась у світі)
+	get_tree().root.add_child(bullet_instance)
+	
+	# Встановлюємо початкову позицію та напрямок кулі
+	# transform.x - це напрямок "вперед" для нашого гравця
+	bullet_instance.transform = transform
+	# Даємо кулі напрямок, куди вона має летіти
+	bullet_instance.direction = transform.x
+
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	# Перевіряємо, чи тіло, з яким ми зіткнулись, належить до групи "enemies"
+	if body.is_in_group("enemies"):
+		# Викликаємо нашу власну функцію смерті
+		die()
