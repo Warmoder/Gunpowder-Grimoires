@@ -3,26 +3,29 @@
 [ext_resource type="Texture2D" uid="uid://bqyvoupcimlce" path="res://icon.svg" id="1_4flbx"]
 [ext_resource type="Script" uid="uid://bcqgtgqjheye4" path="res://player.gd" id="1_onrkg"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_i3pqv"]
-radius = 63.63961
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_onrkg"]
+radius = 63.0
+height = 126.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_onrkg"]
-radius = 64.04881
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_i3pqv"]
+radius = 63.0
+height = 126.0
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_layer = 2
+collision_mask = 4
 script = ExtResource("1_onrkg")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_4flbx")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_i3pqv")
+shape = SubResource("CapsuleShape2D_onrkg")
 
 [node name="Area2D" type="Area2D" parent="."]
+collision_mask = 6
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(0, 0.5)
-shape = SubResource("CircleShape2D_onrkg")
+shape = SubResource("CapsuleShape2D_i3pqv")
 
 [connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
