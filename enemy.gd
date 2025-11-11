@@ -1,5 +1,9 @@
 extends CharacterBody2D
 
+signal died
+
+@export var explosion_scene: PackedScene
+
 # Швидкість ворога. Зробимо його повільнішим за гравця.
 var speed = 150.0
 
@@ -20,3 +24,15 @@ func _physics_process(delta):
 	velocity = direction * speed
 	
 	move_and_slide()
+	
+	# Цю функцію буде викликати куля
+func kill():
+	emit_signal("died")
+	
+	# Створюємо вибух
+	if explosion_scene:
+		var explosion = explosion_scene.instantiate()
+		get_parent().add_child(explosion) # Додаємо на сцену
+		explosion.global_position = global_position # Встановлюємо позицію
+	
+	queue_free()

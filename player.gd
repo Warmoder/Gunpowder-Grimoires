@@ -5,6 +5,8 @@ extends CharacterBody2D
 # Сюди ми в редакторі перетягнемо нашу сцену кулі
 @export var bullet_scene: PackedScene
 
+@onready var shoot_timer = $ShootTimer
+
 func _physics_process(delta):
 	# --- Рух ---
 	# Отримуємо напрямок з клавіш WASD або стрілок. Godot сам все розуміє.
@@ -19,17 +21,20 @@ func _physics_process(delta):
 	look_at(get_global_mouse_position())
 	
 	# --- Стрільба (поки що це просто перевірка) ---
-	if Input.is_action_just_pressed("fire"):
+	if Input.is_action_just_pressed("fire") and shoot_timer.is_stopped():
 		fire()
 
 # Ця функція буде викликатись, коли гравець має померти
 func die():
-	# Проста команда, яка перезавантажує поточну сцену
-	get_tree().reload_current_scene()
+	# Замість перезапуску, повідомляємо головну сцену
+	get_tree().root.get_node("Map").game_over()
+	queue_free() # Видаляємо гравця
 
 func fire():
 	# Перевіряємо, чи ми взагалі вказали сцену кулі
 	if not bullet_scene:
+		$ShootSound.play() # Програємо звук
+		shoot_timer.start() # Запускаємо таймер перезарядки
 		return
 
 	# Створюємо екземпляр (копію) сцени кулі

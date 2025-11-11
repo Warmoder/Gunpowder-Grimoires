@@ -1,7 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://bw486lcwnfc1v"]
+[gd_scene load_steps=7 format=3 uid="uid://bw486lcwnfc1v"]
 
 [ext_resource type="Texture2D" uid="uid://bqyvoupcimlce" path="res://icon.svg" id="1_4flbx"]
 [ext_resource type="Script" uid="uid://bcqgtgqjheye4" path="res://player.gd" id="1_onrkg"]
+[ext_resource type="PackedScene" uid="uid://c8evd5r7rx47t" path="res://bullet.tscn" id="2_i3pqv"]
+[ext_resource type="AudioStream" uid="uid://wirkhll1bes8" path="res://shoot.wav" id="4_hqtel"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_onrkg"]
 radius = 63.0
@@ -12,9 +14,9 @@ radius = 63.0
 height = 126.0
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
-collision_layer = 2
 collision_mask = 4
 script = ExtResource("1_onrkg")
+bullet_scene = ExtResource("2_i3pqv")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_4flbx")
@@ -22,10 +24,20 @@ texture = ExtResource("1_4flbx")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_onrkg")
 
-[node name="Area2D" type="Area2D" parent="."]
-collision_mask = 6
+[node name="Camera2D" type="Camera2D" parent="CollisionShape2D"]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="HitBox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
 shape = SubResource("CapsuleShape2D_i3pqv")
 
-[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[node name="ShootSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_hqtel")
+
+[node name="ShootTimer" type="Timer" parent="."]
+wait_time = 0.4
+one_shot = true
+
+[connection signal="body_entered" from="HitBox" to="." method="_on_area_2d_body_entered"]
