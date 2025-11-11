@@ -1,36 +1,55 @@
-[gd_scene format=3 uid="uid://wi3x3ocdbs1p"]
+[gd_scene load_steps=2 format=3 uid="uid://wi3x3ocdbs1p"]
 
-[node name="Control" type="Control"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[ext_resource type="Script" uid="uid://d2ox5dr3wng2u" path="res://game_over_ui.gd" id="1_ji7mg"]
+
+[node name="CanvasLayer" type="CanvasLayer"]
+script = ExtResource("1_ji7mg")
 
 [node name="ColorRect" type="ColorRect" parent="."]
-layout_mode = 1
+z_index = 150
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.019607844, 0.019607844, 0.019607844, 0.3647059)
+color = Color(0.101960786, 0.101960786, 0.101960786, 0.7176471)
 
-[node name="Label" type="Label" parent="."]
-layout_mode = 1
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -87.0
-offset_top = -22.5
+offset_top = -47.0
 offset_right = 87.0
-offset_bottom = 22.5
+offset_bottom = 47.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 32
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="GameOverLabel" type="Label" parent="VBoxContainer"]
+z_index = 200
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 56
 text = "Game Over"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="FinalScoreLabel" type="Label" parent="VBoxContainer"]
+z_index = 150
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 32
+text = "Score: 0"
+
+[node name="Button" type="Button" parent="VBoxContainer"]
+process_mode = 3
+z_index = 150
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Restart Game"
+
+[connection signal="pressed" from="VBoxContainer/Button" to="." method="_on_button_pressed"]

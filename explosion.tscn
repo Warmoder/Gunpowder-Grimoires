@@ -1,17 +1,34 @@
-[gd_scene load_steps=2 format=3 uid="uid://ckwob8wkpdi28"]
+[gd_scene load_steps=6 format=3 uid="uid://ckwob8wkpdi28"]
+
+[ext_resource type="Texture2D" uid="uid://bqyvoupcimlce" path="res://icon.svg" id="1_q7epf"]
+[ext_resource type="Script" uid="uid://ceq4l3nxopfql" path="res://explosion.gd" id="2_vxas0"]
+
+[sub_resource type="Curve" id="Curve_q7epf"]
+_limits = [0.0, 1.5, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.22950822, 0.9606742), -7.441414, -7.441414, 0, 0, Vector2(0.64754105, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_vxas0"]
+curve = SubResource("Curve_q7epf")
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_7rj46"]
 particle_flag_disable_z = true
 emission_shape = 1
-emission_sphere_radius = 20.0
+emission_sphere_radius = 10.0
 spread = 180.0
 initial_velocity_min = 100.0
-initial_velocity_max = 150.0
-gravity = Vector3(0, 300, 0)
+initial_velocity_max = 500.0
+scale_min = 0.5
+scale_curve = SubResource("CurveTexture_vxas0")
 
 [node name="GPUParticles2D" type="GPUParticles2D"]
 z_index = 100
 emitting = false
 amount = 30
+texture = ExtResource("1_q7epf")
 one_shot = true
+explosiveness = 1.0
 process_material = SubResource("ParticleProcessMaterial_7rj46")
+script = ExtResource("2_vxas0")
+
+[connection signal="finished" from="." to="." method="_on_finished"]

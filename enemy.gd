@@ -10,7 +10,7 @@ var speed = 150.0
 # Змінна для зберігання посилання на гравця
 var player
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	# Шукаємо гравця, тільки якщо ми його ще не знайшли
 	if not player:
 		player = get_tree().get_first_node_in_group("player")
@@ -34,5 +34,6 @@ func kill():
 		var explosion = explosion_scene.instantiate()
 		get_parent().add_child(explosion) # Додаємо на сцену
 		explosion.global_position = global_position # Встановлюємо позицію
+		explosion.emitting = true
 	
 	queue_free()

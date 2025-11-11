@@ -5,12 +5,14 @@ extends CharacterBody2D
 # Сюди ми в редакторі перетягнемо нашу сцену кулі
 @export var bullet_scene: PackedScene
 
+@onready var shoot_sound: AudioStreamPlayer2D = $ShootSound
+
 @onready var shoot_timer = $ShootTimer
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	# --- Рух ---
 	# Отримуємо напрямок з клавіш WASD або стрілок. Godot сам все розуміє.
-	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = direction * speed
 	
 	# Спеціальна функція CharacterBody2D, яка рухає тіло і обробляє зіткнення зі стінами
@@ -31,22 +33,24 @@ func die():
 	queue_free() # Видаляємо гравця
 
 func fire():
-	# Перевіряємо, чи ми взагалі вказали сцену кулі
+	# 1. Перевіряємо, чи можемо ми взагалі стріляти (чи підключена сцена кулі)
 	if not bullet_scene:
-		$ShootSound.play() # Програємо звук
-		shoot_timer.start() # Запускаємо таймер перезарядки
-		return
-
-	# Створюємо екземпляр (копію) сцени кулі
+		return # Якщо сцени кулі немає, нічого не робимо
+	
+	# 2. Програємо звук пострілу
+	shoot_sound.play()
+	
+	# 3. Запускаємо таймер перезарядки
+	shoot_timer.start()
+	
+	# 4. Створюємо екземпляр кулі
 	var bullet_instance = bullet_scene.instantiate()
 	
-	# Додаємо кулю до головної сцени (щоб вона з'явилась у світі)
+	# 5. Додаємо кулю на головну сцену
 	get_tree().root.add_child(bullet_instance)
 	
-	# Встановлюємо початкову позицію та напрямок кулі
-	# transform.x - це напрямок "вперед" для нашого гравця
+	# 6. Встановлюємо її початкову позицію та напрямок
 	bullet_instance.transform = transform
-	# Даємо кулі напрямок, куди вона має летіти
 	bullet_instance.direction = transform.x
 
 
