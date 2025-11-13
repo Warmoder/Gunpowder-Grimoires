@@ -1,61 +1,81 @@
 extends CharacterBody2D
 
-# Швидкість руху гравця. @export робить її видимою в редакторі.
+# --- ЗМІННІ ---
+
+# Експортовані змінні (налаштовуються в редакторі)
 @export var speed = 400.0
-# Сюди ми в редакторі перетягнемо нашу сцену кулі
 @export var bullet_scene: PackedScene
 
-@onready var shoot_sound: AudioStreamPlayer2D = $ShootSound
-
+# Посилання на дочірні вузли (ініціалізуються при старті)
 @onready var shoot_timer = $ShootTimer
+@onready var shoot_sound = $ShootSound # Переконайся, що вузол називається ShootSound
+@onready var hitbox = $Hitbox # Додамо для ясності
+
+# Ігрові змінні
+var current_health: int
+
+
+# --- ВБУДОВАНІ ФУНКЦІЇ GODOT ---
+
+func _ready():
+	# Встановлюємо здоров'я на старті гри, беручи значення з GameManager
+	current_health = GameManager.max_health
+	print("Player spawned with health: ", current_health) # Для перевірки
+
+func _process(_delta):
+# Отримуємо напрямок від гравця до миші
+	var direction_to_mouse = get_global_mouse_position() - global_position
+# Встановлюємо кут обертання гравця на основі цього напрямку
+	rotation = direction_to_mouse.angle()
 
 func _physics_process(_delta):
 	# --- Рух ---
-	# Отримуємо напрямок з клавіш WASD або стрілок. Godot сам все розуміє.
 	var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = direction * speed
-	
-	# Спеціальна функція CharacterBody2D, яка рухає тіло і обробляє зіткнення зі стінами
 	move_and_slide()
-
-	# --- Прицілювання ---
-	# Повертаємо гравця в бік курсора миші
-	look_at(get_global_mouse_position())
 	
-	# --- Стрільба (поки що це просто перевірка) ---
+	# --- Стрільба ---
+	# Стріляємо, якщо натиснута кнопка "fire" і таймер перезарядки зупинений
 	if Input.is_action_just_pressed("fire") and shoot_timer.is_stopped():
 		fire()
 
-# Ця функція буде викликатись, коли гравець має померти
-func die():
-	# Замість перезапуску, повідомляємо головну сцену
-	get_tree().root.get_node("Map").game_over()
-	queue_free() # Видаляємо гравця
+
+# --- ВЛАСНІ ФУНКЦІЇ ---
 
 func fire():
-	# 1. Перевіряємо, чи можемо ми взагалі стріляти (чи підключена сцена кулі)
+	# Перевірка, чи підключена сцена кулі
 	if not bullet_scene:
-		return # Якщо сцени кулі немає, нічого не робимо
+		return
 	
-	# 2. Програємо звук пострілу
-	shoot_sound.play()
-	
-	# 3. Запускаємо таймер перезарядки
-	shoot_timer.start()
-	
-	# 4. Створюємо екземпляр кулі
+	# Створюємо екземпляр кулі
 	var bullet_instance = bullet_scene.instantiate()
 	
-	# 5. Додаємо кулю на головну сцену
+	# Додаємо кулю на сцену
 	get_tree().root.add_child(bullet_instance)
 	
-	# 6. Встановлюємо її початкову позицію та напрямок
+	# Встановлюємо її позицію та напрямок
 	bullet_instance.transform = transform
 	bullet_instance.direction = transform.x
+	
+	# Програємо звук і запускаємо таймер перезарядки
+	shoot_sound.play()
+	shoot_timer.start()
+
+# Ця функція викликається ворожою кулею або при зіткненні з ворогом
+func die():
+	current_health -= 1
+	print("Player hit! Health remaining: ", current_health) # Для перевірки
+	
+	# Перевіряємо, чи здоров'я закінчилось
+	if current_health <= 0:
+		get_tree().root.get_node("Map").game_over()
+		hide() # Ховаємо гравця
 
 
-func _on_area_2d_body_entered(body: Node2D) -> void:
-	# Перевіряємо, чи тіло, з яким ми зіткнулись, належить до групи "enemies"
+# --- ОБРОБКА СИГНАЛІВ ---
+
+# Ця функція викликається сигналом "body_entered" від нашого Hitbox
+func _on_hitbox_body_entered(body):
+	# Перевіряємо, чи зіткнулись ми з ворогом
 	if body.is_in_group("enemies"):
-		# Викликаємо нашу власну функцію смерті
-		die()
+		die() # Отримуємо шкоду при прямому зіткненні з ворогом

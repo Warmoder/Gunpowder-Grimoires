@@ -1,7 +1,7 @@
 extends Node2D
 
 # Сюди ми перетягнемо сцену ворога
-@export var enemy_scene: PackedScene
+@export var enemy_scenes: Array[PackedScene]
 # Посилання на наші точки спавну
 @onready var spawn_positions = $SpawnPositions.get_children()
 # Таймер для спавну
@@ -17,7 +17,10 @@ func _ready():
 	spawn_timer.start()
 
 func _on_spawn_timer_timeout():
-	var enemy_instance = enemy_scene.instantiate()
+# 1. Вибираємо випадкову сцену з нашого масиву
+	var random_enemy_scene = enemy_scenes.pick_random()
+# 2. Створюємо екземпляр саме цієї випадкової сцени
+	var enemy_instance = random_enemy_scene.instantiate()
 	var random_spawn_point = spawn_positions.pick_random()
 	enemy_instance.global_position = random_spawn_point.global_position
 	

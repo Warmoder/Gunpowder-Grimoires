@@ -1,0 +1,40 @@
+[gd_scene load_steps=7 format=3 uid="uid://1g8offdq1llv"]
+
+[ext_resource type="Script" uid="uid://cl341agw33g23" path="res://enemy_shooter.gd" id="1_3vy8j"]
+[ext_resource type="PackedScene" uid="uid://ckwob8wkpdi28" path="res://explosion.tscn" id="2_2ko04"]
+[ext_resource type="PackedScene" uid="uid://cevcytdnelc48" path="res://enemy_bullet.tscn" id="2_q8g1e"]
+[ext_resource type="Texture2D" uid="uid://bqyvoupcimlce" path="res://icon.svg" id="3_q8g1e"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4gyqm"]
+radius = 64.0
+height = 128.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_2ko04"]
+radius = 64.0
+height = 128.0
+
+[node name="Enemy" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 2
+collision_mask = 4
+script = ExtResource("1_3vy8j")
+bullet_scene = ExtResource("2_q8g1e")
+explosion_scene = ExtResource("2_2ko04")
+
+[node name="Sprite2D" type="Sprite2D" parent="." groups=["enemies"]]
+modulate = Color(1, 1, 0, 1)
+texture = ExtResource("3_q8g1e")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_4gyqm")
+
+[node name="ShootTimer" type="Timer" parent="."]
+wait_time = 1.5
+autostart = true
+
+[node name="AttackArea" type="Area2D" parent="."]
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+shape = SubResource("CapsuleShape2D_2ko04")
+
+[connection signal="body_entered" from="AttackArea" to="." method="_on_attack_area_body_entered"]

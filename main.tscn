@@ -1,7 +1,8 @@
-[gd_scene load_steps=12 format=4 uid="uid://clsbe0wmnd3pk"]
+[gd_scene load_steps=13 format=4 uid="uid://clsbe0wmnd3pk"]
 
 [ext_resource type="PackedScene" uid="uid://bw486lcwnfc1v" path="res://player.tscn" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://widsceml1k7w" path="res://main.gd" id="1_lquwl"]
+[ext_resource type="PackedScene" uid="uid://1g8offdq1llv" path="res://enemy_shooter.tscn" id="3_5vw27"]
 [ext_resource type="PackedScene" uid="uid://wi3x3ocdbs1p" path="res://game_over_ui.tscn" id="3_7mycd"]
 [ext_resource type="PackedScene" uid="uid://ccdklbr2ishf5" path="res://enemy.tscn" id="3_h2yge"]
 [ext_resource type="Texture2D" uid="uid://ch4lywf3lvhgc" path="res://tileset2.png" id="4_lquwl"]
@@ -39,7 +40,7 @@ sources/0 = SubResource("TileSetAtlasSource_kek77")
 [node name="Map" type="Node2D"]
 process_mode = 1
 script = ExtResource("1_lquwl")
-enemy_scene = ExtResource("3_h2yge")
+enemy_scenes = Array[PackedScene]([ExtResource("3_h2yge"), ExtResource("3_5vw27")])
 game_over_scene = ExtResource("3_7mycd")
 
 [node name="Walls" type="TileMapLayer" parent="."]

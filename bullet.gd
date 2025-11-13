@@ -1,5 +1,6 @@
 extends Area2D
 
+var damage = 1
 # Швидкість кулі в пікселях за секунду
 var speed = 1000.0
 # Напрямок, в якому летить куля. Його задасть гравець при пострілі.
@@ -11,10 +12,7 @@ func _process(delta):
 
 
 func _on_body_entered(body: Node2D) -> void:
-	if body.has_method("is_in_group") and body.is_in_group("enemies"):
-		body.queue_free()
-		# Випускаємо сигнал, щоб повідомити всіх, що ми вбили ворога
-	if body.has_method("kill"): # Перевіряємо, чи є у тіла метод "kill"
-		body.kill() # Кажемо ворогу "помри!"
+	if body.has_method("take_damage"):
+		body.take_damage(damage) # Передаємо шкоду ворогу
 	
 	queue_free()
