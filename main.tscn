@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=4 uid="uid://clsbe0wmnd3pk"]
+[gd_scene load_steps=14 format=4 uid="uid://clsbe0wmnd3pk"]
 
 [ext_resource type="PackedScene" uid="uid://bw486lcwnfc1v" path="res://player.tscn" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://widsceml1k7w" path="res://main.gd" id="1_lquwl"]
@@ -9,18 +9,26 @@
 [ext_resource type="Texture2D" uid="uid://swur15bmrdc2" path="res://tileset1.png" id="5_7mycd"]
 [ext_resource type="PackedScene" uid="uid://hoxqhlxrpdkh" path="res://pause_menu.tscn" id="7_272bh"]
 
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_5vw27"]
+polygon = PackedVector2Array(-8, -8, -8, 8, 8, 8, 8, -8)
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_272bh"]
 texture = ExtResource("4_lquwl")
 0:0/0 = 0
+0:0/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_5vw27")
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:0/0 = 0
+1:0/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_5vw27")
 1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 0:1/0 = 0
+0:1/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_5vw27")
 0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:1/0 = 0
+1:1/0/occlusion_layer_0/polygon_0/polygon = SubResource("OccluderPolygon2D_5vw27")
 1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 
 [sub_resource type="TileSet" id="TileSet_5vw27"]
+occlusion_layer_0/light_mask = 1
 physics_layer_0/collision_layer = 4
 physics_layer_0/collision_mask = 0
 sources/0 = SubResource("TileSetAtlasSource_272bh")
@@ -86,5 +94,8 @@ text = "Score: 0"
 
 [node name="PauseMenu" parent="." instance=ExtResource("7_272bh")]
 visible = false
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.08023044, 0.08021953, 0.14792585, 1)
 
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]

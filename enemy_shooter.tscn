@@ -37,4 +37,7 @@ collision_layer = 0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
 shape = SubResource("CapsuleShape2D_2ko04")
 
+[node name="RayCast" type="RayCast2D" parent="."]
+collision_mask = 5
+
 [connection signal="body_entered" from="AttackArea" to="." method="_on_attack_area_body_entered"]

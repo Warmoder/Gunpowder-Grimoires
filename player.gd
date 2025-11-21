@@ -13,7 +13,8 @@ extends CharacterBody2D
 
 # Ігрові змінні
 var current_health: int
-
+var base_damage = 1
+var damage_multiplier = 1
 
 # --- ВБУДОВАНІ ФУНКЦІЇ GODOT ---
 
@@ -46,17 +47,16 @@ func fire():
 	# Перевірка, чи підключена сцена кулі
 	if not bullet_scene:
 		return
-	
 	# Створюємо екземпляр кулі
 	var bullet_instance = bullet_scene.instantiate()
-	
+	# Передаємо кулі нашу поточну шкоду
+	if "damage" in bullet_instance:
+		bullet_instance.damage = base_damage * damage_multiplier
 	# Додаємо кулю на сцену
 	get_tree().root.add_child(bullet_instance)
-	
 	# Встановлюємо її позицію та напрямок
 	bullet_instance.transform = transform
 	bullet_instance.direction = transform.x
-	
 	# Програємо звук і запускаємо таймер перезарядки
 	shoot_sound.play()
 	shoot_timer.start()
@@ -71,6 +71,26 @@ func die():
 		get_tree().root.get_node("Map").game_over()
 		hide() # Ховаємо гравця
 
+func heal(amount):
+	# Додаємо здоров'я
+	current_health += amount
+	
+	# Не дозволяємо здоров'ю перевищити максимум
+	if current_health > GameManager.max_health:
+		current_health = GameManager.max_health
+		
+	print("Player healed! HP: ", current_health)
+
+func boost_damage(duration):
+	damage_multiplier = 2 # Подвійна шкода
+	print("Double Damage Activated!")
+	
+	# Створюємо тимчасовий таймер, щоб вимкнути бонус
+	var timer = get_tree().create_timer(duration)
+	await timer.timeout # Чекаємо, поки час вийде
+	
+	damage_multiplier = 1 # Повертаємо як було
+	print("Double Damage Ended.")
 
 # --- ОБРОБКА СИГНАЛІВ ---
 
