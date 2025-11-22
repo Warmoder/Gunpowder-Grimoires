@@ -12,12 +12,27 @@ extends Node
 @export var floor_layer: TileMapLayer
 @export var walls_layer: TileMapLayer
 
-var source_id = 0 
-var tile_coords = Vector2i(0, 0) # Твій великий тайл
+# --- НАЛАШТУВАННЯ ТАЙЛІВ (ВАРІАЦІЇ) ---
+
+# Джерело для СТІН
+@export var wall_source_id: int = 3
+# Список координат для різних видів стін
+@export var wall_coords: Array[Vector2i] = [Vector2i(0, 0)]
+
+# Джерело для ПІДЛОГИ
+@export var floor_source_id: int = 1
+# Список координат для різних видів підлоги
+@export var floor_coords: Array[Vector2i] = [Vector2i(0, 0)]
+
 
 var floor_cells: Array[Vector2i] = []
 
 func generate_map():
+	# Перевірка безпеки: якщо ви забули додати тайли в інспекторі
+	if wall_coords.is_empty() or floor_coords.is_empty():
+		print("ПОМИЛКА: Не додано координати тайлів в Інспекторі!")
+		return []
+
 	print("Починаємо генерацію...")
 	floor_layer.clear()
 	walls_layer.clear()
@@ -30,44 +45,41 @@ func generate_map():
 	dig_waypoint_tunnels()
 	
 	print("Генерація завершена.")
-	# Ми НЕ викликаємо тут create_boss_room, бо ми хочемо контролювати це з main.gd
-	# Але ми повертаємо список підлоги, щоб main.gd знав, де можна ходити.
 	return floor_cells
 
-# --- ФУНКЦІЯ ДЛЯ КІМНАТИ БОСА (НОВА) ---
+# --- ФУНКЦІЯ ДЛЯ КІМНАТИ БОСА ---
 func create_boss_room() -> Vector2i:
-	# 1. Знаходимо найдальшу плитку від центру (0,0)
 	var farthest_tile = Vector2i(0, 0)
 	var max_dist = 0.0
 	
-	# Проходимось по всіх клітинках підлоги і шукаємо найдальшу
 	for tile in floor_cells:
-		var dist = tile.distance_to(Vector2i(0, 0)) # Відстань до центру
+		var dist = tile.distance_to(Vector2i(0, 0))
 		if dist > max_dist:
 			max_dist = dist
 			farthest_tile = tile
 			
-	# 2. Розчищаємо великий майданчик навколо цієї точки (Арена Боса)
-	var room_radius = 8 # Радіус кімнати боса
+	var room_radius = 8
 	
 	for x in range(-room_radius, room_radius + 1):
 		for y in range(-room_radius, room_radius + 1):
-			# Робимо кімнату трохи круглою
 			if Vector2i(x, y).length() > room_radius: continue
 			
 			var pos = farthest_tile + Vector2i(x, y)
 			
-			# Прибираємо стіни, ставимо підлогу
+			# Прибираємо стіни
 			walls_layer.set_cell(pos, -1)
-			floor_layer.set_cell(pos, source_id, tile_coords)
+			
+			# Вибираємо випадкову підлогу
+			var random_floor = floor_coords.pick_random()
+			floor_layer.set_cell(pos, floor_source_id, random_floor)
 			
 			if not pos in floor_cells:
 				floor_cells.append(pos)
 				
 	print("Кімната боса створена в точці: ", farthest_tile)
-	return farthest_tile # Повертаємо центр кімнати, щоб ми знали, куди ставити боса
+	return farthest_tile
 
-# --- ДОПОМІЖНІ ФУНКЦІЇ (Ті ж самі, що були) ---
+# --- ДОПОМІЖНІ ФУНКЦІЇ ---
 
 func fill_map_with_walls():
 	var start_x = -map_width / 2
@@ -78,7 +90,10 @@ func fill_map_with_walls():
 	for x in range(start_x, end_x):
 		for y in range(start_y, end_y):
 			var pos = Vector2i(x, y)
-			walls_layer.set_cell(pos, source_id, tile_coords)
+			
+			# Вибираємо випадкову стіну зі списку
+			var random_wall = wall_coords.pick_random()
+			walls_layer.set_cell(pos, wall_source_id, random_wall)
 
 func dig_waypoint_tunnels():
 	var current_pos = Vector2i(0, 0)
@@ -109,7 +124,11 @@ func carve_brush(center_pos: Vector2i):
 		for y in range(-brush_radius, brush_radius + 1):
 			if Vector2i(x, y).length() > brush_radius: continue
 			var draw_pos = center_pos + Vector2i(x, y)
+			
 			walls_layer.set_cell(draw_pos, -1)
+			
 			if not draw_pos in floor_cells:
-				floor_layer.set_cell(draw_pos, source_id, tile_coords)
+				# Вибираємо випадкову підлогу зі списку
+				var random_floor = floor_coords.pick_random()
+				floor_layer.set_cell(draw_pos, floor_source_id, random_floor)
 				floor_cells.append(draw_pos)
