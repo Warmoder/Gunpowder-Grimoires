@@ -42,6 +42,7 @@ func _physics_process(_delta):
 		# --- БАЧУ ГРАВЦЯ ---
 		# Запам'ятовуємо, де він зараз
 		last_known_position = player.global_position
+		look_at(player.global_position)
 		# І біжимо прямо на нього
 		var direction = global_position.direction_to(player.global_position)
 		velocity = direction * speed
@@ -50,6 +51,7 @@ func _physics_process(_delta):
 		# Перевіряємо, чи ми вже дійшли до того місця, де бачили його востаннє?
 		# distance_to перевіряє відстань. Якщо вона менше 10 пікселів - ми прийшли.
 		if global_position.distance_to(last_known_position) > 10:
+			look_at(last_known_position)
 			# Ще не прийшли -> біжимо до точки пам'яті
 			var direction = global_position.direction_to(last_known_position)
 			velocity = direction * speed

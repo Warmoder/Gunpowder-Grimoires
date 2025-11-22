@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://ckwob8wkpdi28"]
 
-[ext_resource type="Texture2D" uid="uid://bqyvoupcimlce" path="res://icon.svg" id="1_q7epf"]
+[ext_resource type="Texture2D" uid="uid://be2em58cujgvi" path="res://explosive_sprite.png" id="1_vxas0"]
 [ext_resource type="Script" uid="uid://ceq4l3nxopfql" path="res://explosion.gd" id="2_vxas0"]
 
 [sub_resource type="Curve" id="Curve_q7epf"]
@@ -24,8 +24,9 @@ scale_curve = SubResource("CurveTexture_vxas0")
 [node name="GPUParticles2D" type="GPUParticles2D"]
 z_index = 100
 emitting = false
-amount = 30
-texture = ExtResource("1_q7epf")
+amount = 60
+texture = ExtResource("1_vxas0")
+lifetime = 0.75
 one_shot = true
 explosiveness = 1.0
 process_material = SubResource("ParticleProcessMaterial_7rj46")

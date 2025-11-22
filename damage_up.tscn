@@ -1,19 +1,19 @@
 [gd_scene load_steps=4 format=3 uid="uid://d2ppdnanj68py"]
 
 [ext_resource type="Script" uid="uid://dw6ebmadabdqv" path="res://damage_up.gd" id="1_oaxxu"]
-[ext_resource type="Texture2D" uid="uid://bqyvoupcimlce" path="res://icon.svg" id="2_3qnk8"]
+[ext_resource type="Texture2D" uid="uid://jbfirh8o8iyt" path="res://dmg_sprite.png" id="2_oaxxu"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sctm6"]
-radius = 19.0
-height = 38.0
+radius = 60.0
+height = 173.33333
 
 [node name="Area2D" type="Area2D"]
+scale = Vector2(0.3, 0.3)
 script = ExtResource("1_oaxxu")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-modulate = Color(1, 0, 1, 1)
 scale = Vector2(0.3, 0.3)
-texture = ExtResource("2_3qnk8")
+texture = ExtResource("2_oaxxu")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_sctm6")

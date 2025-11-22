@@ -1,0 +1,12 @@
+[gd_scene load_steps=4 format=3 uid="uid://chaii1m1cua8o"]
+
+[ext_resource type="Script" uid="uid://c5t3p8jj3ivwt" path="res://music_manager.gd" id="1_bhb8d"]
+[ext_resource type="AudioStream" uid="uid://dd16numrs4gu2" path="res://main_menu_bgm.wav" id="2_vnq4w"]
+[ext_resource type="AudioStream" uid="uid://ctn6j828hydpy" path="res://game_bgm.wav" id="3_0rsql"]
+
+[node name="MusicManager" type="Node"]
+script = ExtResource("1_bhb8d")
+menu_music = ExtResource("2_vnq4w")
+battle_music = ExtResource("3_0rsql")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]

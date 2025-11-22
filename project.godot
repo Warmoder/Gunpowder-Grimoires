@@ -19,11 +19,20 @@ config/version="Alpha 6"
 run/main_scene="uid://g3umpwren1yd"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
+boot_splash/subwindows/embed_subwindows=true
 
 [autoload]
 
 InputManager="*res://InputManager.gd"
 GameManager="*res://GameManager.gd"
+AchievementPopup="*res://achievement_popup.gd"
+MusicManager="*res://music_manager.tscn"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/subwindows/embed_subwindows=false
 
 [input]
 

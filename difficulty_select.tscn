@@ -1,9 +1,27 @@
-[gd_scene load_steps=2 format=3 uid="uid://cy0icpup1spey"]
+[gd_scene load_steps=3 format=3 uid="uid://cy0icpup1spey"]
 
 [ext_resource type="Script" uid="uid://5brue1pho3e2" path="res://difficulty_select.gd" id="1_q7n00"]
+[ext_resource type="Texture2D" uid="uid://b5cul835dkn8n" path="res://difficulty_menu_bg.jpg" id="2_a2icw"]
 
 [node name="CanvasLayer" type="CanvasLayer"]
 script = ExtResource("1_q7n00")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_a2icw")
+expand_mode = 1
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.047058824, 0.047058824, 0.047058824, 0.1764706)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 anchors_preset = 8
@@ -21,8 +39,12 @@ theme_override_constants/separation = 40
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 56
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 72
 text = "Choose Difficulty"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
 
 [node name="Easy Button" type="Button" parent="VBoxContainer"]
 layout_mode = 2

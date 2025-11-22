@@ -53,4 +53,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Restart Game"
 
+[node name="HighScoresLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+
 [connection signal="pressed" from="VBoxContainer/Button" to="." method="_on_button_pressed"]

@@ -1,0 +1,115 @@
+extends Node
+
+# --- РОЗМІРИ КАРТИ ---
+@export var map_width: int = 160
+@export var map_height: int = 120
+
+# --- НАЛАШТУВАННЯ ГЕНЕРАЦІЇ ---
+@export var tunnel_count: int = 30 
+@export var brush_radius: int = 3
+
+# --- ШАРИ ---
+@export var floor_layer: TileMapLayer
+@export var walls_layer: TileMapLayer
+
+var source_id = 0 
+var tile_coords = Vector2i(0, 0) # Твій великий тайл
+
+var floor_cells: Array[Vector2i] = []
+
+func generate_map():
+	print("Починаємо генерацію...")
+	floor_layer.clear()
+	walls_layer.clear()
+	floor_cells.clear()
+	
+	# 1. Заливаємо стінами
+	fill_map_with_walls()
+	
+	# 2. Копаємо тунелі
+	dig_waypoint_tunnels()
+	
+	print("Генерація завершена.")
+	# Ми НЕ викликаємо тут create_boss_room, бо ми хочемо контролювати це з main.gd
+	# Але ми повертаємо список підлоги, щоб main.gd знав, де можна ходити.
+	return floor_cells
+
+# --- ФУНКЦІЯ ДЛЯ КІМНАТИ БОСА (НОВА) ---
+func create_boss_room() -> Vector2i:
+	# 1. Знаходимо найдальшу плитку від центру (0,0)
+	var farthest_tile = Vector2i(0, 0)
+	var max_dist = 0.0
+	
+	# Проходимось по всіх клітинках підлоги і шукаємо найдальшу
+	for tile in floor_cells:
+		var dist = tile.distance_to(Vector2i(0, 0)) # Відстань до центру
+		if dist > max_dist:
+			max_dist = dist
+			farthest_tile = tile
+			
+	# 2. Розчищаємо великий майданчик навколо цієї точки (Арена Боса)
+	var room_radius = 8 # Радіус кімнати боса
+	
+	for x in range(-room_radius, room_radius + 1):
+		for y in range(-room_radius, room_radius + 1):
+			# Робимо кімнату трохи круглою
+			if Vector2i(x, y).length() > room_radius: continue
+			
+			var pos = farthest_tile + Vector2i(x, y)
+			
+			# Прибираємо стіни, ставимо підлогу
+			walls_layer.set_cell(pos, -1)
+			floor_layer.set_cell(pos, source_id, tile_coords)
+			
+			if not pos in floor_cells:
+				floor_cells.append(pos)
+				
+	print("Кімната боса створена в точці: ", farthest_tile)
+	return farthest_tile # Повертаємо центр кімнати, щоб ми знали, куди ставити боса
+
+# --- ДОПОМІЖНІ ФУНКЦІЇ (Ті ж самі, що були) ---
+
+func fill_map_with_walls():
+	var start_x = -map_width / 2
+	var end_x = map_width / 2
+	var start_y = -map_height / 2
+	var end_y = map_height / 2
+	
+	for x in range(start_x, end_x):
+		for y in range(start_y, end_y):
+			var pos = Vector2i(x, y)
+			walls_layer.set_cell(pos, source_id, tile_coords)
+
+func dig_waypoint_tunnels():
+	var current_pos = Vector2i(0, 0)
+	var padding = brush_radius + 2
+	var min_x = -map_width / 2 + padding
+	var max_x = map_width / 2 - padding
+	var min_y = -map_height / 2 + padding
+	var max_y = map_height / 2 - padding
+	
+	for i in range(tunnel_count):
+		var target_x = randi_range(min_x, max_x)
+		var target_y = randi_range(min_y, max_y)
+		var target_pos = Vector2i(target_x, target_y)
+		
+		while current_pos.distance_to(target_pos) > 1:
+			carve_brush(current_pos)
+			var direction = Vector2(target_pos - current_pos).normalized()
+			direction += Vector2(randf_range(-0.5, 0.5), randf_range(-0.5, 0.5))
+			var move_step = Vector2i(round(direction.x), round(direction.y))
+			if move_step == Vector2i.ZERO:
+				move_step = Vector2i(randi() % 3 - 1, randi() % 3 - 1)
+			current_pos += move_step
+			current_pos.x = clamp(current_pos.x, min_x, max_x)
+			current_pos.y = clamp(current_pos.y, min_y, max_y)
+
+func carve_brush(center_pos: Vector2i):
+	for x in range(-brush_radius, brush_radius + 1):
+		for y in range(-brush_radius, brush_radius + 1):
+			if Vector2i(x, y).length() > brush_radius: continue
+			var draw_pos = center_pos + Vector2i(x, y)
+			walls_layer.set_cell(draw_pos, -1)
+			if not draw_pos in floor_cells:
+				floor_layer.set_cell(draw_pos, source_id, tile_coords)
+				floor_cells.append(draw_pos)
