@@ -20,6 +20,7 @@ size_flags_horizontal = 4
 
 [node name="Label" type="Label" parent="PanelContainer"]
 unique_name_in_owner = true
+visibility_layer = 3
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)

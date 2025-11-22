@@ -15,18 +15,21 @@ func _ready():
 	var vsync = DisplayServer.window_get_vsync_mode()
 	vsync_check.button_pressed = (vsync == DisplayServer.VSYNC_ENABLED)
 	
-	# Перевіряємо гучність (беремо з шини "Master")
-	var bus_index = AudioServer.get_bus_index("Master")
-	var db = AudioServer.get_bus_volume_db(bus_index)
-	# Конвертуємо децибели назад у лінійну шкалу (0.0 - 1.0)
-	volume_slider.value = db_to_linear(db)
+	# --- ВИПРАВЛЕНО: Беремо гучність зі збережених даних GameManager ---
+	if GameManager.save_data.has("music_volume"):
+		volume_slider.value = GameManager.save_data["music_volume"]
+	else:
+		# Якщо збереження немає, беремо поточну (зазвичай 1.0)
+		var bus_index = AudioServer.get_bus_index("Master")
+		var db = AudioServer.get_bus_volume_db(bus_index)
+		volume_slider.value = db_to_linear(db)
 
 # --- СИГНАЛИ ---
 
 func _on_fullscreen_check_toggled(button_pressed):
 	if button_pressed:
-		# Використовуємо звичайний FULLSCREEN (безрамкове вікно), він найнадійніший
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		# Цей режим набагато надійніший для ігор
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
@@ -37,14 +40,12 @@ func _on_vsync_check_toggled(button_pressed):
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 
 func _on_volume_slider_value_changed(value):
-	# Змінюємо гучність шини Master
-	var bus_index = AudioServer.get_bus_index("Master")
-	# Конвертуємо 0.0-1.0 у децибели
-	# Якщо значення 0, ставимо повну тишу (-80dB), щоб уникнути помилок логарифма
-	if value <= 0:
-		AudioServer.set_bus_volume_db(bus_index, -80)
-	else:
-		AudioServer.set_bus_volume_db(bus_index, linear_to_db(value))
+	# --- ВИПРАВЛЕНО: Викликаємо функцію GameManager ---
+	# Ця функція зробить 3 речі:
+	# 1. Змінить звук у грі.
+	# 2. Оновить змінну.
+	# 3. Збереже це у файл savegame.json.
+	GameManager.set_volume(value)
 
 func _on_back_button_pressed():
 	# Повертаємось в головне меню
