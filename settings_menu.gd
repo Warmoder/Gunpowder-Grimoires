@@ -3,6 +3,7 @@ extends Control
 @onready var fullscreen_check = $VBoxContainer/FullscreenCheck
 @onready var vsync_check = $VBoxContainer/VsyncCheck
 @onready var volume_slider = $VBoxContainer/VolumeSlider
+var is_opened_from_pause = false
 
 func _ready():
 	# --- СИНХРОНІЗАЦІЯ UI З РЕАЛЬНИМИ НАЛАШТУВАННЯМИ ---
@@ -47,5 +48,9 @@ func _on_volume_slider_value_changed(value):
 		AudioServer.set_bus_volume_db(bus_index, linear_to_db(value))
 
 func _on_back_button_pressed():
-	# Повертаємось в головне меню
-	get_tree().change_scene_to_file("res://main_menu.tscn")
+	if is_opened_from_pause:
+		# Якщо відкрили з паузи - просто знищуємо це вікно налаштувань
+		queue_free()
+	else:
+		# Якщо відкрили з головного меню - міняємо сцену
+		get_tree().change_scene_to_file("res://main_menu.tscn")

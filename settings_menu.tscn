@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bnvmw8uiv1cxu"]
+[gd_scene load_steps=4 format=3 uid="uid://bnvmw8uiv1cxu"]
 
 [ext_resource type="Script" uid="uid://duevi47u3y3sn" path="res://settings_menu.gd" id="1_0cmel"]
 [ext_resource type="Texture2D" uid="uid://cx0drbj0um27v" path="res://settings_menu_bg.jpg" id="1_ufg0w"]
+[ext_resource type="Theme" uid="uid://8c4hyhwlbged" path="res://new_theme.tres" id="3_mlw3h"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -44,6 +45,7 @@ offset_right = 139.5
 offset_bottom = 49.5
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("3_mlw3h")
 theme_override_constants/separation = 15
 
 [node name="Label" type="Label" parent="VBoxContainer"]

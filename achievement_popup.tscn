@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dwllbj2m1a520"]
+[gd_scene load_steps=3 format=3 uid="uid://dwllbj2m1a520"]
 
 [ext_resource type="Script" uid="uid://djvqc6ftm3rov" path="res://achievement_popup.gd" id="1_ah4h2"]
+[ext_resource type="Theme" uid="uid://8c4hyhwlbged" path="res://new_theme.tres" id="2_nbrip"]
 
 [node name="CanvasLayer" type="CanvasLayer"]
 layer = 100
@@ -17,6 +18,7 @@ offset_right = 76.0
 offset_bottom = 40.0
 grow_horizontal = 2
 size_flags_horizontal = 4
+theme = ExtResource("2_nbrip")
 
 [node name="Label" type="Label" parent="PanelContainer"]
 unique_name_in_owner = true

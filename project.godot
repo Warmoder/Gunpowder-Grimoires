@@ -25,8 +25,9 @@ boot_splash/subwindows/embed_subwindows=true
 
 InputManager="*res://InputManager.gd"
 GameManager="*res://GameManager.gd"
-AchievementPopup="*res://achievement_popup.gd"
+AchievementPopup="*res://achievement_popup.tscn"
 MusicManager="*res://music_manager.tscn"
+CrosshairUi="*res://crosshair_ui.tscn"
 
 [display]
 

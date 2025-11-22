@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://g3umpwren1yd"]
+[gd_scene load_steps=5 format=3 uid="uid://g3umpwren1yd"]
 
 [ext_resource type="Script" uid="uid://d11jobfbnhtc6" path="res://main_menu.gd" id="1_06t4h"]
+[ext_resource type="Theme" uid="uid://8c4hyhwlbged" path="res://new_theme.tres" id="1_glbon"]
 [ext_resource type="Texture2D" uid="uid://djf1v6xbf5qo1" path="res://main_menu_bg.jpg" id="2_7vrkn"]
+[ext_resource type="FontFile" uid="uid://cbmej8lux8mx0" path="res://text_style.ttf" id="3_nlkkf"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -10,6 +12,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_glbon")
 script = ExtResource("1_06t4h")
 
 [node name="TextureRect" type="TextureRect" parent="."]
@@ -44,12 +47,13 @@ offset_right = 20.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 15
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_nlkkf")
 theme_override_font_sizes/font_size = 72
 text = "Gunpowder & Grimoires"
 
@@ -60,18 +64,22 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+theme = ExtResource("1_glbon")
+theme_override_fonts/font = ExtResource("3_nlkkf")
 theme_override_font_sizes/font_size = 42
 text = "Start Game"
 
 [node name="AchievementsButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("3_nlkkf")
 theme_override_font_sizes/font_size = 42
 text = "Achievements"
 
 [node name="SettingsButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("3_nlkkf")
 theme_override_font_sizes/font_size = 42
 text = "Settings
 "
@@ -80,6 +88,7 @@ text = "Settings
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+theme_override_fonts/font = ExtResource("3_nlkkf")
 theme_override_font_sizes/font_size = 42
 text = "Quit"
 

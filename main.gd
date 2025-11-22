@@ -8,12 +8,13 @@ extends Node2D
 var score = 0
 @onready var dungeon_generator = $DungeonGenerator
 var valid_spawn_points: Array[Vector2i] = []
-@onready var score_label = $CanvasLayer/Label
+@onready var score_label = $UI/ScoreLabel
 @onready var pause_menu = $PauseMenu
 @export var game_over_scene: PackedScene
 @export var boss_scene: PackedScene
 @export var teleporter_scene: PackedScene
 @onready var player = $Player
+@onready var health_bar = $UI/HealthBar
 
 func _ready():
 	# 1. Генерація карти
@@ -52,8 +53,12 @@ func _ready():
 	# 5. Запуск
 	spawn_timer.start()
 	
-	# Коли починається гра, кажемо: "Грай музику бою"
 	MusicManager.play_battle_music()
+	
+	player.health_changed.connect(health_bar.update_health)
+	health_bar.update_health(player.current_health, GameManager.max_health)
+	
+	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
 
 func _on_spawn_timer_timeout():
 	if valid_spawn_points.is_empty(): return

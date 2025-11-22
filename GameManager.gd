@@ -3,7 +3,8 @@ extends Node
 # --- НАЛАШТУВАННЯ ---
 enum Difficulty { EASY, HARD }
 var current_difficulty = Difficulty.HARD
-var max_health = 1
+var base_health = 1 # Скільки життів на старті
+var max_health = 1  # Абсолютний максимум
 
 # --- ЛУТ (Те, що ми випадково видалили) ---
 var health_potion = preload("res://health_potion.tscn")
@@ -77,9 +78,11 @@ func load_game():
 func set_difficulty(difficulty_level):
 	current_difficulty = difficulty_level
 	if current_difficulty == Difficulty.EASY:
-		max_health = 3
-	else:
-		max_health = 1
+		base_health = 3
+		max_health = 4 # На легкому режимі можна мати до 4 ХП
+	else: # HARD
+		base_health = 1
+		max_health = 1 # На складному - ніяких бонусів
 
 func reset_progress():
 	save_data = {

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://wi3x3ocdbs1p"]
+[gd_scene load_steps=3 format=3 uid="uid://wi3x3ocdbs1p"]
 
 [ext_resource type="Script" uid="uid://d2ox5dr3wng2u" path="res://game_over_ui.gd" id="1_ji7mg"]
+[ext_resource type="Theme" uid="uid://8c4hyhwlbged" path="res://new_theme.tres" id="2_xu1am"]
 
 [node name="CanvasLayer" type="CanvasLayer"]
 script = ExtResource("1_ji7mg")
@@ -28,13 +29,14 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+theme = ExtResource("2_xu1am")
 theme_override_constants/separation = 20
 
 [node name="GameOverLabel" type="Label" parent="VBoxContainer"]
 z_index = 200
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 56
+theme_override_font_sizes/font_size = 72
 text = "Game Over"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -43,17 +45,19 @@ vertical_alignment = 1
 z_index = 150
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 42
 text = "Score: 0"
 
 [node name="Button" type="Button" parent="VBoxContainer"]
 process_mode = 3
 z_index = 150
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 42
 text = "Restart Game"
 
 [node name="HighScoresLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 32
 
 [connection signal="pressed" from="VBoxContainer/Button" to="." method="_on_button_pressed"]

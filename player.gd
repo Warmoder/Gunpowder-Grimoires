@@ -16,12 +16,14 @@ var current_health: int
 var base_damage = 1
 var damage_multiplier = 1
 
+signal health_changed(current_health, max_health)
+
 # --- ВБУДОВАНІ ФУНКЦІЇ GODOT ---
 
 func _ready():
-	# Встановлюємо здоров'я на старті гри, беручи значення з GameManager
-	current_health = GameManager.max_health
-	print("Player spawned with health: ", current_health) # Для перевірки
+	# Встановлюємо здоров'я на старті гри, беручи БАЗОВЕ значення
+	current_health = GameManager.base_health
+	health_changed.emit(current_health, GameManager.max_health) # Повідомляємо UI про максимум
 
 func _process(_delta):
 # Отримуємо напрямок від гравця до миші
@@ -64,22 +66,22 @@ func fire():
 # Ця функція викликається ворожою кулею або при зіткненні з ворогом
 func die():
 	current_health -= 1
-	print("Player hit! Health remaining: ", current_health) # Для перевірки
+	health_changed.emit(current_health, GameManager.max_health) # Передаємо і сюди максимум
+	print("Player hit! Health remaining: ", current_health)
 	
-	# Перевіряємо, чи здоров'я закінчилось
 	if current_health <= 0:
 		get_tree().root.get_node("Map").game_over()
-		hide() # Ховаємо гравця
+		hide()
 
 func heal(amount):
-	# Додаємо здоров'я
 	current_health += amount
 	
-	# Не дозволяємо здоров'ю перевищити максимум
+	# Не дозволяємо здоров'ю перевищити АБСОЛЮТНИЙ максимум
 	if current_health > GameManager.max_health:
 		current_health = GameManager.max_health
 		
 	print("Player healed! HP: ", current_health)
+	health_changed.emit(current_health, GameManager.max_health)
 
 func boost_damage(duration):
 	damage_multiplier = 2 # Подвійна шкода

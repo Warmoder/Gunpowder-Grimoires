@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cy0icpup1spey"]
+[gd_scene load_steps=4 format=3 uid="uid://cy0icpup1spey"]
 
 [ext_resource type="Script" uid="uid://5brue1pho3e2" path="res://difficulty_select.gd" id="1_q7n00"]
 [ext_resource type="Texture2D" uid="uid://b5cul835dkn8n" path="res://difficulty_menu_bg.jpg" id="2_a2icw"]
+[ext_resource type="Theme" uid="uid://8c4hyhwlbged" path="res://new_theme.tres" id="3_v4r3i"]
 
 [node name="CanvasLayer" type="CanvasLayer"]
 script = ExtResource("1_q7n00")
@@ -35,7 +36,8 @@ offset_right = 20.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 40
+theme = ExtResource("3_v4r3i")
+theme_override_constants/separation = 30
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
