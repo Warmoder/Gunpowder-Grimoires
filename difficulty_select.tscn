@@ -25,40 +25,58 @@ grow_vertical = 2
 color = Color(0.047058824, 0.047058824, 0.047058824, 0.1764706)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
-anchors_preset = 8
-anchor_left = 0.5
+anchors_preset = 14
 anchor_top = 0.5
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+offset_top = -238.0
+offset_bottom = 238.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 4
 theme = ExtResource("3_v4r3i")
-theme_override_constants/separation = 30
+theme_override_constants/separation = 25
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 72
 text = "Choose Difficulty"
 
 [node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
 layout_mode = 2
+size_flags_horizontal = 4
 
-[node name="Easy Button" type="Button" parent="VBoxContainer"]
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="HSeparator3" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="EasyButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 42
 text = "Easy (3 HP)"
 
-[node name="Hard Button" type="Button" parent="VBoxContainer"]
+[node name="HardButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 42
 text = "Hard (1 HP)"
 
-[connection signal="pressed" from="VBoxContainer/Easy Button" to="." method="_on_easy_button_pressed"]
-[connection signal="pressed" from="VBoxContainer/Hard Button" to="." method="_on_hard_button_pressed"]
+[node name="BackButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 42
+text = "Back"
+
+[connection signal="pressed" from="VBoxContainer/EasyButton" to="." method="_on_easy_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HardButton" to="." method="_on_hard_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]

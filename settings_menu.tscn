@@ -39,14 +39,14 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -139.5
-offset_top = -49.5
-offset_right = 139.5
-offset_bottom = 49.5
+offset_left = -191.0
+offset_top = -304.0
+offset_right = 191.0
+offset_bottom = 304.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("3_mlw3h")
-theme_override_constants/separation = 15
+theme_override_constants/separation = 7
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
@@ -58,13 +58,13 @@ text = "Settings"
 [node name="FullscreenCheck" type="CheckButton" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 32
 text = "Fullscreen"
 
 [node name="VsyncCheck" type="CheckButton" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 32
 text = "V-Sync"
 
 [node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
@@ -72,23 +72,55 @@ layout_mode = 2
 
 [node name="Label2" type="Label" parent="VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 72
+theme_override_font_sizes/font_size = 38
 text = "Master Volume"
 
-[node name="VolumeSlider" type="HSlider" parent="VBoxContainer"]
+[node name="MasterSlider" type="HSlider" parent="VBoxContainer"]
 layout_mode = 2
 max_value = 1.0
-step = 0.05
+step = 0.01
 value = 1.0
+
+[node name="Label3" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 38
+text = "Music Volume"
+
+[node name="MusicSlider" type="HSlider" parent="VBoxContainer"]
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="Label4" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 38
+text = "SFX Volume"
+
+[node name="SFXSlider" type="HSlider" parent="VBoxContainer"]
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
 
 [node name="BackButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 38
 text = "Back"
 
 [connection signal="toggled" from="VBoxContainer/FullscreenCheck" to="." method="_on_fullscreen_check_toggled"]
 [connection signal="toggled" from="VBoxContainer/VsyncCheck" to="." method="_on_vsync_check_toggled"]
-[connection signal="value_changed" from="VBoxContainer/VolumeSlider" to="." method="_on_volume_slider_value_changed"]
+[connection signal="value_changed" from="VBoxContainer/MasterSlider" to="." method="_on_master_slider_value_changed"]
+[connection signal="value_changed" from="VBoxContainer/MusicSlider" to="." method="_on_music_slider_value_changed"]
+[connection signal="value_changed" from="VBoxContainer/SFXSlider" to="." method="_on_sfx_slider_value_changed"]
 [connection signal="pressed" from="VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]

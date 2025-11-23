@@ -1,10 +1,11 @@
 extends Area2D
 
-var speed = 800.0 # Можна зробити їх трохи повільнішими за кулі гравця
-var direction = Vector2.UP
+var speed = 700.0
+var direction = Vector2.ZERO
 var damage = 1
 
 func _process(delta):
+	# Ми рухаємо кулю вздовж цього напрямку
 	position += direction * speed * delta
 
 # Ця функція спрацює при зіткненні і з гравцем, і зі стіною

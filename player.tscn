@@ -34,6 +34,9 @@ rotation = 1.5707964
 scale = Vector2(0.23, 0.23)
 texture = ExtResource("3_hqtel")
 
+[node name="Muzzle" type="Marker2D" parent="Sprite2D"]
+position = Vector2(0, -415)
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_onrkg")
@@ -50,6 +53,7 @@ shape = SubResource("CapsuleShape2D_i3pqv")
 
 [node name="ShootSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("4_hqtel")
+bus = &"SFX"
 
 [node name="ShootTimer" type="Timer" parent="."]
 wait_time = 0.4

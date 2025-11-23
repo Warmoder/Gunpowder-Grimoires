@@ -13,11 +13,7 @@ func activate():
 
 func _on_body_entered(body):
 	if is_active and body.is_in_group("player"):
-		# Викликаємо перехід на наступний рівень
-		# Звертаємось до глобального GameManager або перезавантажуємо сцену
 		call_deferred("next_level")
 
 func next_level():
-	# Простий варіант: перезавантаження сцени (нова генерація)
-	# Тут можна додати екран "Level Completed" або підвищити складність
-	get_tree().reload_current_scene()
+	GameManager.go_to_next_level()

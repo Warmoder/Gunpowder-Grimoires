@@ -3,7 +3,7 @@ extends CharacterBody2D
 @export var health = 2
 @export var speed = 80.0 # Швидкість руху (повільніше за мілішника)
 @export var stop_distance = 250.0 # Дистанція, на якій він зупиниться
-
+@onready var shoot_sound = $ShootSound
 @export var bullet_scene: PackedScene
 @export var explosion_scene: PackedScene
 
@@ -77,14 +77,29 @@ func _physics_process(_delta):
 	move_and_slide()
 
 func fire():
-	# Перевірка валідності сцени та гравця
-	if not bullet_scene: return
+	if not bullet_scene:
+		return
 	
+	# 1. Створюємо екземпляр кулі
 	var bullet_instance = bullet_scene.instantiate()
+	
+	# 2. Додаємо на сцену
 	get_tree().root.add_child(bullet_instance)
 	
-	bullet_instance.transform = transform
+	# 3. Встановлюємо позицію
+	bullet_instance.global_position = $Sprite2D/Muzzle.global_position
+	
+	# 4. Встановлюємо кут повороту (щоб куля дивилась куди треба)
+	bullet_instance.rotation = global_rotation
+	
+	# 5. НАЙВАЖЛИВІШЕ: Встановлюємо напрямок руху
+	# `transform.x` - це вектор, який завжди вказує "вперед" для поточного об'єкта
+	# Ми передаємо цей напрямок у змінну `direction` в скрипті кулі
 	bullet_instance.direction = transform.x
+	
+	# 6. Звук і таймер
+	shoot_sound.play()
+	shoot_timer.start()
 
 func take_damage(amount):
 	health -= amount

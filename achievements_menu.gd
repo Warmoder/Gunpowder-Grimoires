@@ -9,8 +9,8 @@ func _ready():
 	update_view()
 
 func update_view():
-	# Отримуємо дані з GameManager
-	var data = GameManager.save_data["achievements"]
+	# Отримуємо дані через нашу нову, безпечну функцію
+	var data = GameManager.get_achievements_data()
 	
 	# Оновлюємо вигляд кожного лейбла
 	# Якщо true (відкрито) - зелений колір, якщо false - сірий

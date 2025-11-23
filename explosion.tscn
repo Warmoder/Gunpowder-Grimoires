@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://ckwob8wkpdi28"]
+[gd_scene load_steps=7 format=3 uid="uid://ckwob8wkpdi28"]
 
 [ext_resource type="Texture2D" uid="uid://be2em58cujgvi" path="res://explosive_sprite.png" id="1_vxas0"]
 [ext_resource type="Script" uid="uid://ceq4l3nxopfql" path="res://explosion.gd" id="2_vxas0"]
+[ext_resource type="AudioStream" uid="uid://ca0jxf2q8chyx" path="res://death.mp3" id="3_j4sxf"]
 
 [sub_resource type="Curve" id="Curve_q7epf"]
 _limits = [0.0, 1.5, 0.0, 1.0]
@@ -31,5 +32,9 @@ one_shot = true
 explosiveness = 1.0
 process_material = SubResource("ParticleProcessMaterial_7rj46")
 script = ExtResource("2_vxas0")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_j4sxf")
+bus = &"SFX"
 
 [connection signal="finished" from="." to="." method="_on_finished"]

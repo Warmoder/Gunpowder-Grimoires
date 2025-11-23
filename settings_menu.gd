@@ -2,56 +2,61 @@ extends Control
 
 @onready var fullscreen_check = $VBoxContainer/FullscreenCheck
 @onready var vsync_check = $VBoxContainer/VsyncCheck
-@onready var volume_slider = $VBoxContainer/VolumeSlider
+@onready var master_slider = $VBoxContainer/MasterSlider
+@onready var sfx_slider = $VBoxContainer/SFXSlider
+@onready var music_slider = $VBoxContainer/MusicSlider
+
 var is_opened_from_pause = false
 
 func _ready():
-	# --- СИНХРОНІЗАЦІЯ UI З РЕАЛЬНИМИ НАЛАШТУВАННЯМИ ---
-	
-	# Перевіряємо, чи зараз повний екран
-	var mode = DisplayServer.window_get_mode()
-	fullscreen_check.button_pressed = (mode == DisplayServer.WINDOW_MODE_FULLSCREEN)
-	
-	# Перевіряємо V-Sync
-	var vsync = DisplayServer.window_get_vsync_mode()
-	vsync_check.button_pressed = (vsync == DisplayServer.VSYNC_ENABLED)
-	
-	# --- ВИПРАВЛЕНО: Беремо гучність зі збережених даних GameManager ---
-	if GameManager.save_data.has("music_volume"):
-		volume_slider.value = GameManager.save_data["music_volume"]
-	else:
-		# Якщо збереження немає, беремо поточну (зазвичай 1.0)
-		var bus_index = AudioServer.get_bus_index("Master")
-		var db = AudioServer.get_bus_volume_db(bus_index)
-		volume_slider.value = db_to_linear(db)
+	# Завантажуємо налаштування з GameManager і виставляємо UI
+	# Fullscreen
+	fullscreen_check.button_pressed = GameManager.settings_data.fullscreen
+	# V-Sync
+	vsync_check.button_pressed = GameManager.settings_data.vsync
+	# Гучність
+	master_slider.value = GameManager.settings_data.master_volume
+	sfx_slider.value = GameManager.settings_data.sfx_volume
+	music_slider.value = GameManager.settings_data.music_volume
 
 # --- СИГНАЛИ ---
+# (Функції для Fullscreen і V-Sync залишаються без змін)
 
 func _on_fullscreen_check_toggled(button_pressed):
-	if button_pressed:
-		# Цей режим набагато надійніший для ігор
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
-	else:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	GameManager.settings_data.fullscreen = button_pressed
+	GameManager.apply_settings() # Просимо GameManager застосувати все
+	GameManager.save_settings()
 
 func _on_vsync_check_toggled(button_pressed):
-	if button_pressed:
-		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED)
-	else:
-		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
+	GameManager.settings_data.vsync = button_pressed
+	GameManager.apply_settings()
+	GameManager.save_settings()
 
-func _on_volume_slider_value_changed(value):
-	# --- ВИПРАВЛЕНО: Викликаємо функцію GameManager ---
-	# Ця функція зробить 3 речі:
-	# 1. Змінить звук у грі.
-	# 2. Оновить змінну.
-	# 3. Збереже це у файл savegame.json.
-	GameManager.set_volume(value)
+# --- ПОВЗУНКИ ГУЧНОСТІ ---
+
+func _on_master_slider_value_changed(value):
+	GameManager.settings_data.master_volume = value
+	_update_bus_volume("Master", value)
+
+func _on_sfx_slider_value_changed(value):
+	GameManager.settings_data.sfx_volume = value
+	_update_bus_volume("SFX", value)
+
+func _on_music_slider_value_changed(value):
+	GameManager.settings_data.music_volume = value
+	_update_bus_volume("Music", value)
+	
+# Допоміжна функція для зміни гучності
+func _update_bus_volume(bus_name: String, linear_value: float):
+	var bus_index = AudioServer.get_bus_index(bus_name)
+	if bus_index != -1:
+		AudioServer.set_bus_volume_db(bus_index, linear_to_db(linear_value))
 
 func _on_back_button_pressed():
+	# Важливо: зберігаємо налаштування перед виходом!
+	GameManager.save_settings()
+	
 	if is_opened_from_pause:
-		# Якщо відкрили з паузи - просто знищуємо це вікно налаштувань
 		queue_free()
 	else:
-		# Якщо відкрили з головного меню - міняємо сцену
 		get_tree().change_scene_to_file("res://main_menu.tscn")

@@ -10,3 +10,4 @@ menu_music = ExtResource("2_vnq4w")
 battle_music = ExtResource("3_0rsql")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+bus = &"Music"

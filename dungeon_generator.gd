@@ -66,6 +66,10 @@ func create_boss_room() -> Vector2i:
 			
 			var pos = farthest_tile + Vector2i(x, y)
 			
+			var padding = room_radius + 2
+			farthest_tile.x = clamp(farthest_tile.x, -map_width/2 + padding, map_width/2 - padding)
+			farthest_tile.y = clamp(farthest_tile.y, -map_height/2 + padding, map_height/2 - padding)
+			
 			# Прибираємо стіни
 			walls_layer.set_cell(pos, -1)
 			

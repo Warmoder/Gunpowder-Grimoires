@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://1g8offdq1llv"]
+[gd_scene load_steps=8 format=3 uid="uid://1g8offdq1llv"]
 
 [ext_resource type="Script" uid="uid://cl341agw33g23" path="res://enemy_shooter.gd" id="1_3vy8j"]
 [ext_resource type="PackedScene" uid="uid://ckwob8wkpdi28" path="res://explosion.tscn" id="2_2ko04"]
 [ext_resource type="PackedScene" uid="uid://cevcytdnelc48" path="res://enemy_bullet.tscn" id="2_q8g1e"]
 [ext_resource type="Texture2D" uid="uid://ty8u5y4vl6tx" path="res://enemy_shooter_sprite.png" id="4_2ko04"]
+[ext_resource type="AudioStream" uid="uid://cun5q3leedpe6" path="res://shoot_sound2.wav" id="5_q8g1e"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4gyqm"]
 radius = 48.0
@@ -26,6 +27,9 @@ rotation = -1.5707964
 scale = Vector2(0.15, 0.15)
 texture = ExtResource("4_2ko04")
 
+[node name="Muzzle" type="Marker2D" parent="Sprite2D"]
+position = Vector2(0, 430)
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_4gyqm")
 
@@ -41,5 +45,9 @@ shape = SubResource("CapsuleShape2D_2ko04")
 
 [node name="RayCast" type="RayCast2D" parent="."]
 collision_mask = 5
+
+[node name="ShootSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_q8g1e")
+bus = &"SFX"
 
 [connection signal="body_entered" from="AttackArea" to="." method="_on_attack_area_body_entered"]

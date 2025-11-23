@@ -46,20 +46,23 @@ func _physics_process(_delta):
 # --- ВЛАСНІ ФУНКЦІЇ ---
 
 func fire():
-	# Перевірка, чи підключена сцена кулі
 	if not bullet_scene:
 		return
-	# Створюємо екземпляр кулі
+	
+	# 1. Створюємо екземпляр кулі
 	var bullet_instance = bullet_scene.instantiate()
-	# Передаємо кулі нашу поточну шкоду
-	if "damage" in bullet_instance:
-		bullet_instance.damage = base_damage * damage_multiplier
-	# Додаємо кулю на сцену
+	
+	# 2. Додаємо на сцену
 	get_tree().root.add_child(bullet_instance)
-	# Встановлюємо її позицію та напрямок
-	bullet_instance.transform = transform
+ 
+	# Встановлюємо позицію
+	bullet_instance.global_position = $Sprite2D/Muzzle.global_position
+	# Встановлюємо кут повороту (щоб куля дивилась куди треба)
+	bullet_instance.rotation = global_rotation
+	# Встановлюємо напрямок руху
 	bullet_instance.direction = transform.x
-	# Програємо звук і запускаємо таймер перезарядки
+	
+	# 6. Звук і таймер
 	shoot_sound.play()
 	shoot_timer.start()
 
