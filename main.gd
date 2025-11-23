@@ -13,8 +13,10 @@ var valid_spawn_points: Array[Vector2i] = []
 @export var game_over_scene: PackedScene
 @export var boss_scene: PackedScene
 @export var teleporter_scene: PackedScene
+@export var chest_scene: PackedScene
 @onready var player = $Player
 @onready var health_bar = $UI/HealthBar
+@onready var stats_panel = $UI/StatsPanel
 
 func _ready():
 	# 1. Генерація карти
@@ -34,12 +36,10 @@ func _ready():
 	boss.died.connect(teleporter.activate)
 	add_child(boss)
 	
-	# 4. СПАВН ГРАВЦЯ (НОВА ЛОГІКА)
+	# 4. СПАВН ГРАВЦЯ (Пошук найдальшої точки)
 	var player_start_tile = Vector2i(0, 0)
 	var max_dist = 0.0
 	
-	# Шукаємо точку, яка НАЙДАЛІ від кімнати боса
-	# Перевіряємо 100 випадкових точок (щоб не перебирати весь масив, це швидше)
 	for i in range(100):
 		var test_tile = valid_spawn_points.pick_random()
 		var dist = test_tile.distance_to(boss_room_center)
@@ -50,15 +50,24 @@ func _ready():
 	
 	player.position = dungeon_generator.floor_layer.map_to_local(player_start_tile)
 	
-	# 5. Запуск
-	spawn_timer.start()
+	# 5. СПАВН СУНДУКІВ (Нове!)
+	for i in range(5):
+		spawn_chest()
 	
+	# 6. Налаштування гри
+	spawn_timer.start()
 	MusicManager.play_battle_music()
+	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
+	
+	# 7. Оновлення UI (Score + HP)
+	score = GameManager.current_score
+	score_label.text = "Score: " + str(score)
+	# Підключаємо сигнал статистики
+	player.stats_updated.connect(stats_panel.update_stats)
 	
 	player.health_changed.connect(health_bar.update_health)
-	health_bar.update_health(player.current_health, GameManager.max_health)
-	
-	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
+	# Оновлюємо ХП-бар значенням з GameManager, яке ми перенесли з минулого рівня
+	health_bar.update_health(GameManager.current_health, GameManager.max_health)
 
 func _on_spawn_timer_timeout():
 	if valid_spawn_points.is_empty(): return
@@ -83,6 +92,9 @@ func _on_enemy_died():
 	score += 1
 	score_label.text = "Score: " + str(score)
 	
+	# Оновлюємо глобальний рахунок одразу
+	GameManager.current_score = score
+	
 	# Ачівка: Перше вбивство
 	if score == 1:
 		GameManager.unlock_achievement("first_blood", "First Blood!")
@@ -95,6 +107,22 @@ func game_over():
 	# Тепер, коли ми впевнені, що UI готовий, викликаємо функцію
 	game_over_instance.show_final_score(score)
 	get_tree().paused = true
+
+func spawn_chest():
+	if valid_spawn_points.is_empty(): return
+	
+	var chest = chest_scene.instantiate()
+	
+	# Вибираємо випадкову точку
+	var random_tile = valid_spawn_points.pick_random()
+	var spawn_pos = dungeon_generator.floor_layer.map_to_local(random_tile)
+	
+	# Перевірка: не спавнити поруч з гравцем (щоб не підібрав випадково)
+	if spawn_pos.distance_to(player.position) < 100:
+		return
+		
+	chest.position = spawn_pos
+	add_child(chest)
 
 # Цю функцію буде викликати наш глобальний InputManager
 func toggle_pause():

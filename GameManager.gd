@@ -18,6 +18,8 @@ var current_level = 1
 # --- ЛУТ ---
 var health_potion = preload("res://health_potion.tscn")
 var damage_up = preload("res://damage_up.tscn")
+var speed_up = preload("res://speed_up.tscn")
+var shield = preload("res://shield.tscn")
 
 # --- ЗБЕРІГАННЯ ДАНИХ ---
 var progress_data = {
@@ -96,10 +98,25 @@ func go_to_next_level():
 
 # --- ЛОГІКА ЛУТУ ---
 func get_random_loot():
-	var roll = randf()
-	if roll < 0.05: return damage_up
-	elif roll < 0.20: return health_potion
-	return null
+	var roll = randf() # Випадкове число від 0.0 до 1.0
+	
+	# Шанси (можеш налаштувати як хочеш):
+	# 5% - Damage Up
+	# 5% - Speed Up
+	# 10% - Shield
+	# 15% - Health Potion
+	# 65% - Нічого
+	
+	if roll < 0.05:
+		return damage_up
+	elif roll < 0.10: # (0.05 + 0.05)
+		return speed_up
+	elif roll < 0.20: # (0.10 + 0.10)
+		return shield
+	elif roll < 0.35: # (0.20 + 0.15)
+		return health_potion
+	
+	return null # Нічого не випало
 
 # --- ЛОГІКА АЧІВОК ---
 func unlock_achievement(key, title_text):

@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://clsbe0wmnd3pk"]
+[gd_scene load_steps=21 format=3 uid="uid://clsbe0wmnd3pk"]
 
 [ext_resource type="PackedScene" uid="uid://bw486lcwnfc1v" path="res://player.tscn" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://widsceml1k7w" path="res://main.gd" id="1_lquwl"]
@@ -8,11 +8,13 @@
 [ext_resource type="PackedScene" uid="uid://c7t78jgnvl2un" path="res://boss.tscn" id="5_efxa6"]
 [ext_resource type="PackedScene" uid="uid://b6if0fkv6w301" path="res://teleporter.tscn" id="6_dg77c"]
 [ext_resource type="PackedScene" uid="uid://hoxqhlxrpdkh" path="res://pause_menu.tscn" id="7_272bh"]
+[ext_resource type="PackedScene" uid="uid://dqicymq0tqynp" path="res://chest.tscn" id="7_w48qg"]
 [ext_resource type="Texture2D" uid="uid://cefbgbc1dasxc" path="res://full_tilemap.png" id="8_ycdy4"]
 [ext_resource type="PackedScene" uid="uid://d25emud0qbn48" path="res://health_bar.tscn" id="9_dg77c"]
 [ext_resource type="Script" uid="uid://y8b17ufupc5r" path="res://dungeon_generator.gd" id="9_kek77"]
 [ext_resource type="Theme" uid="uid://8c4hyhwlbged" path="res://new_theme.tres" id="9_ycdy4"]
 [ext_resource type="Texture2D" uid="uid://co54yi75oj7t7" path="res://game_bg.png" id="12_dg77c"]
+[ext_resource type="PackedScene" uid="uid://be3pq4e45iam7" path="res://stats_panel.tscn" id="12_vivmo"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_ycdy4"]
 polygon = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
@@ -315,6 +317,7 @@ enemy_scenes = Array[PackedScene]([ExtResource("3_h2yge"), ExtResource("3_5vw27"
 game_over_scene = ExtResource("3_7mycd")
 boss_scene = ExtResource("5_efxa6")
 teleporter_scene = ExtResource("6_dg77c")
+chest_scene = ExtResource("7_w48qg")
 
 [node name="Walls" type="TileMapLayer" parent="."]
 z_index = 10
@@ -346,6 +349,8 @@ theme_override_font_sizes/font_size = 32
 text = "Score: 0"
 
 [node name="HealthBar" parent="UI" instance=ExtResource("9_dg77c")]
+
+[node name="StatsPanel" parent="UI" instance=ExtResource("12_vivmo")]
 
 [node name="PauseMenu" parent="." instance=ExtResource("7_272bh")]
 visible = false
