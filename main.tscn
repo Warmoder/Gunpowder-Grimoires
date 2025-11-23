@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://clsbe0wmnd3pk"]
+[gd_scene load_steps=19 format=3 uid="uid://clsbe0wmnd3pk"]
 
 [ext_resource type="PackedScene" uid="uid://bw486lcwnfc1v" path="res://player.tscn" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://widsceml1k7w" path="res://main.gd" id="1_lquwl"]
@@ -9,7 +9,9 @@
 [ext_resource type="PackedScene" uid="uid://b6if0fkv6w301" path="res://teleporter.tscn" id="6_dg77c"]
 [ext_resource type="PackedScene" uid="uid://hoxqhlxrpdkh" path="res://pause_menu.tscn" id="7_272bh"]
 [ext_resource type="Texture2D" uid="uid://cefbgbc1dasxc" path="res://full_tilemap.png" id="8_ycdy4"]
+[ext_resource type="PackedScene" uid="uid://d25emud0qbn48" path="res://health_bar.tscn" id="9_dg77c"]
 [ext_resource type="Script" uid="uid://y8b17ufupc5r" path="res://dungeon_generator.gd" id="9_kek77"]
+[ext_resource type="Theme" uid="uid://8c4hyhwlbged" path="res://new_theme.tres" id="9_ycdy4"]
 [ext_resource type="Texture2D" uid="uid://co54yi75oj7t7" path="res://game_bg.png" id="12_dg77c"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_ycdy4"]
@@ -332,15 +334,18 @@ position = Vector2(144, 139)
 wait_time = 2.0
 autostart = true
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="."]
 
-[node name="Label" type="Label" parent="CanvasLayer"]
-offset_left = 50.0
-offset_top = 50.0
-offset_right = 111.0
-offset_bottom = 73.0
+[node name="ScoreLabel" type="Label" parent="UI"]
+offset_left = 35.0
+offset_top = 90.0
+offset_right = 156.0
+offset_bottom = 135.0
+theme = ExtResource("9_ycdy4")
 theme_override_font_sizes/font_size = 32
 text = "Score: 0"
+
+[node name="HealthBar" parent="UI" instance=ExtResource("9_dg77c")]
 
 [node name="PauseMenu" parent="." instance=ExtResource("7_272bh")]
 visible = false
