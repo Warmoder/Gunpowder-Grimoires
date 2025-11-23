@@ -6,9 +6,12 @@ extends CharacterBody2D
 @onready var shoot_sound = $ShootSound
 @export var bullet_scene: PackedScene
 @export var explosion_scene: PackedScene
+@export var muzzle_flash_scene: PackedScene
 
 @onready var ray_cast = $RayCast
 @onready var shoot_timer = $ShootTimer
+@onready var base_max_health = health
+@onready var base_speed = speed
 
 # Змінна для зберігання посилання на гравця
 var player
@@ -18,6 +21,12 @@ var last_known_position: Vector2
 signal died
 
 func _ready():
+		# Отримуємо множник (наприклад, 1.2 на 3-му рівні)
+	var multiplier = GameManager.get_difficulty_multiplier()
+	
+	# Посилюємо ворога
+	health = base_max_health * multiplier
+	speed = base_speed * multiplier # Або трохи менше, наприклад * (1 + (multiplier-1)*0.5), щоб вони не стали Флешами
 	# Підключаємо сигнал таймера до функції пострілу
 	shoot_timer.timeout.connect(fire)
 	# На старті запам'ятовуємо своє місце, щоб нікуди не бігти одразу
@@ -96,7 +105,13 @@ func fire():
 	# `transform.x` - це вектор, який завжди вказує "вперед" для поточного об'єкта
 	# Ми передаємо цей напрямок у змінну `direction` в скрипті кулі
 	bullet_instance.direction = transform.x
-	
+
+	# Спавн спалаху
+	if muzzle_flash_scene:
+		var flash = muzzle_flash_scene.instantiate()
+		# Додаємо як дочірній до Muzzle, щоб він рухався разом зі зброєю
+		$Sprite2D/Muzzle.add_child(flash)
+
 	# 6. Звук і таймер
 	shoot_sound.play()
 	shoot_timer.start()
@@ -117,11 +132,15 @@ func take_damage(amount):
 		queue_free()
 
 # Функція для удару при дотику (твоя стара логіка)
-func _on_attack_area_body_entered(body: Node2D) -> void:
-	# Перевіряємо, чи це точно гравець і чи є у нього функція die()
+func _on_attack_area_body_entered(body):
 	if body.has_method("die"):
-		body.die() # Кажемо гравцю "отримай шкоду"
-		queue_free() # Стрілець теж зникає, якщо торкнувся гравця
+		# Викликаємо die() і дивимось, що вона повернула
+		var damage_success = body.die()
+		
+		# Якщо шкода пройшла (або щит розбився) -> помираємо
+		if damage_success:
+			queue_free()
+		# Якщо шкода не пройшла (i-frame) -> нічого не робимо, живемо далі
 
 func drop_loot():
 	# Питаємо у GameManager, чи випало щось

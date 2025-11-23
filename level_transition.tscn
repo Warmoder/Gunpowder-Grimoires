@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://doy2aaw01qntb"]
+
+[ext_resource type="Script" uid="uid://d0ujttoy6sv5a" path="res://level_transition.gd" id="1_oukt6"]
+[ext_resource type="Theme" uid="uid://8c4hyhwlbged" path="res://new_theme.tres" id="2_bwmlx"]
+
+[node name="CanvasLayer" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_oukt6")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_bwmlx")
+theme_override_font_sizes/font_size = 92

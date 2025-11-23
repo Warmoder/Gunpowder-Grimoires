@@ -96,6 +96,10 @@ func go_to_next_level():
 	# Тут можна додати логіку підвищення складності
 	get_tree().reload_current_scene()
 
+func get_difficulty_multiplier() -> float:
+	# Кожен рівень додає +10% до статів ворогів
+	return 1.0 + (current_level - 1) * 0.1
+
 # --- ЛОГІКА ЛУТУ ---
 func get_random_loot():
 	var roll = randf() # Випадкове число від 0.0 до 1.0

@@ -22,7 +22,7 @@ metadata/_edit_vertical_guides_ = [-50.0]
 
 [node name="Sprite2D" type="Sprite2D" parent="." groups=["enemies"]]
 rotation = 1.5707964
-scale = Vector2(0.17, 0.17)
+scale = Vector2(0.16, 0.16)
 texture = ExtResource("3_qi2p4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

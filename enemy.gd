@@ -10,10 +10,18 @@ var player
 var last_known_position: Vector2
 
 @onready var ray_cast = $RayCast
+@onready var base_max_health = health
+@onready var base_speed = speed
 
 signal died
 
 func _ready():
+		# Отримуємо множник (наприклад, 1.2 на 3-му рівні)
+	var multiplier = GameManager.get_difficulty_multiplier()
+	
+	# Посилюємо ворога
+	health = base_max_health * multiplier
+	speed = base_speed * multiplier # Або трохи менше, наприклад * (1 + (multiplier-1)*0.5), щоб вони не стали Флешами
 	# На старті "остання позиція" - це місце, де стоїть сам ворог (щоб він нікуди не біг)
 	last_known_position = global_position
 
@@ -78,11 +86,15 @@ func take_damage(amount):
 		drop_loot()
 		queue_free()
 
-func _on_attack_area_body_entered(body: Node2D) -> void:
-	# Перевіряємо, чи це точно гравець і чи є у нього функція die()
+func _on_attack_area_body_entered(body):
 	if body.has_method("die"):
-		body.die() # Кажемо гравцю "отримай шкоду"
-		queue_free() # Ворог-камікадзе знищує себе після атаки
+		# Викликаємо die() і дивимось, що вона повернула
+		var damage_success = body.die()
+		
+		# Якщо шкода пройшла (або щит розбився) -> помираємо
+		if damage_success:
+			queue_free()
+		# Якщо шкода не пройшла (i-frame) -> нічого не робимо, живемо далі
 
 func drop_loot():
 	# Питаємо у GameManager, чи випало щось

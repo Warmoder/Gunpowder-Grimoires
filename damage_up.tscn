@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://d2ppdnanj68py"]
+[gd_scene load_steps=6 format=3 uid="uid://d2ppdnanj68py"]
 
 [ext_resource type="Script" uid="uid://dw6ebmadabdqv" path="res://damage_up.gd" id="1_oaxxu"]
 [ext_resource type="Texture2D" uid="uid://jbfirh8o8iyt" path="res://dmg_sprite.png" id="2_oaxxu"]
 [ext_resource type="AudioStream" uid="uid://50i3lib5o1ux" path="res://power_up_constant_reminder.wav" id="3_3qnk8"]
+[ext_resource type="AudioStream" uid="uid://dw5t5f4ggiv3" path="res://bottle_drinked.wav" id="4_jg0lv"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sctm6"]
 radius = 60.0
@@ -21,9 +22,14 @@ shape = SubResource("CapsuleShape2D_sctm6")
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("3_3qnk8")
-volume_db = -25.0
+volume_db = -38.0
 autoplay = true
-max_distance = 600.0
+max_distance = 700.0
+bus = &"SFX"
+
+[node name="PickupSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_jg0lv")
+volume_db = 10.0
 bus = &"SFX"
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

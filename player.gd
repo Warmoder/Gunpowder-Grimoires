@@ -7,14 +7,16 @@ extends CharacterBody2D
 @export var bullet_scene: PackedScene
 @export var explosion_scene: PackedScene
 @export var pixels_per_step = 120.0
+@export var muzzle_flash_scene: PackedScene
 
 # Посилання на дочірні вузли (ініціалізуються при старті)
 @onready var shoot_timer = $ShootTimer
-@onready var shoot_sound = $ShootSound # Переконайся, що вузол називається ShootSound
-@onready var hitbox = $Hitbox # Додамо для ясності
+@onready var shoot_sound = $ShootSound
+@onready var hitbox = $Hitbox
 @onready var shield_sprite = $ShieldSprite
 @onready var footstep_sound = $FootstepSound
 @onready var step_timer = $StepTimer
+@onready var sprite = $Sprite2D # Посилання на спрайт для блимання
 
 # Ігрові змінні
 var current_health: int
@@ -23,13 +25,15 @@ var has_shield = false
 var base_speed: float
 var speed_boost_count = 0
 var damage_boost_count = 0
+var is_invincible = false
 # Час, що залишився для візуалізації
 var speed_time_left: float = 0.0
 var damage_time_left: float = 0.0
 
 signal health_changed(current_health, max_health)
-# Сигнал для UI
+signal player_healed
 signal stats_updated(damage_mult, damage_time, current_speed, speed_time)
+signal player_damaged
 
 # --- ВБУДОВАНІ ФУНКЦІЇ GODOT ---
 
@@ -125,37 +129,66 @@ func fire():
 	# 6. Встановлюємо напрямок руху
 	bullet_instance.direction = transform.x
 
+	# Спавн спалаху
+	if muzzle_flash_scene:
+		var flash = muzzle_flash_scene.instantiate()
+		# Додаємо як дочірній до Muzzle, щоб він рухався разом зі зброєю
+		$Sprite2D/Muzzle.add_child(flash)
+
 	# 7. Звук і таймер
 	shoot_sound.play()
 	shoot_timer.start()
 
-# Ця функція викликається ворожою кулею або при зіткненні з ворогом
-func die():
-	# ПЕРЕВІРКА ЩИТА (на самому початку!)
+# Функція повертає true, якщо шкода була отримана (або щит прийняв удар).
+# Повертає false, якщо гравець в i-frame і проігнорував удар.
+func die() -> bool:
+	# 1. ПЕРЕВІРКА НЕВРАЗЛИВОСТІ
+	if is_invincible:
+		return false # Ігноруємо удар, ворог не повинен зникати
+		
+	# 2. ПЕРЕВІРКА ЩИТА
 	if has_shield:
 		has_shield = false
-		shield_sprite.hide() # Ховаємо спрайт щита
+		shield_sprite.hide()
 		print("Shield broke!")
-		# Тут можна додати звук/ефект поломки щита
-		return
+		
+		# Даємо коротку невразливість після поломки щита
+		start_invincibility(1.0)
+		
+		# Повертаємо true, щоб ворог-камікадзе зник (він розбився об щит)
+		return true
 	
+	# 3. ОТРИМАННЯ ШКОДИ
 	current_health -= 1
-	health_changed.emit(current_health, GameManager.max_health) # Передаємо і сюди максимум
-	print("Player hit! Health remaining: ", current_health)
+	GameManager.current_health = current_health
 	
+	# Оновлюємо UI та викликаємо ефекти
+	health_changed.emit(current_health, GameManager.max_health)
+	player_damaged.emit()
+	
+	print("Player hit! Health: ", current_health)
+	
+	# 4. ПЕРЕВІРКА СМЕРТІ
 	if current_health <= 0:
-		# Створюємо вибух перед тим, як зникнути
+		# Створюємо вибух
 		if explosion_scene:
 			var explosion = explosion_scene.instantiate()
 			get_tree().root.add_child(explosion)
 			explosion.global_position = global_position
 			explosion.emitting = true
 		
+		# Кінець гри
 		get_tree().root.get_node("Map").game_over()
 		hide()
+	else:
+		# 5. ЯКЩО ВИЖИЛИ - ВМИКАЄМО I-FRAMES
+		start_invincibility(2.0) # 2 секунди невразливості
+		
+	return true # Шкода пройшла успішно
 
 func heal(amount):
 	current_health += amount
+	GameManager.current_health = current_health
 	
 	# Не дозволяємо здоров'ю перевищити АБСОЛЮТНИЙ максимум
 	if current_health > GameManager.max_health:
@@ -163,6 +196,8 @@ func heal(amount):
 		
 	print("Player healed! HP: ", current_health)
 	health_changed.emit(current_health, GameManager.max_health)
+	
+	player_healed.emit()
 
 func boost_speed(duration):
 	speed_boost_count += 1
@@ -183,6 +218,25 @@ func boost_damage(duration):
 	await timer.timeout
 	
 	damage_boost_count -= 1
+
+func start_invincibility(duration):
+	is_invincible = true
+	
+	# --- АНІМАЦІЯ БЛИМАННЯ ---
+	var tween = create_tween()
+	# Блимаємо 5 разів
+	for i in range(8):
+		tween.tween_property(sprite, "modulate:a", 0.5, 0.1) # Прозорий
+		tween.tween_property(sprite, "modulate:a", 1.0, 0.1) # Нормальний
+		
+	# --- ЧЕКАЄМО І ВИМИКАЄМО ---
+	# Створюємо таймер на тривалість ефекту
+	var timer = get_tree().create_timer(duration)
+	await timer.timeout
+	
+	is_invincible = false
+	sprite.modulate.a = 1.0 # Переконуємось, що спрайт видимий
+	print("Invincibility ended")
 
 func update_speed():
 	# Якщо є хоча б один активний бонус швидкості

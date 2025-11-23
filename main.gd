@@ -14,11 +14,16 @@ var valid_spawn_points: Array[Vector2i] = []
 @export var boss_scene: PackedScene
 @export var teleporter_scene: PackedScene
 @export var chest_scene: PackedScene
+@export var transition_scene: PackedScene
 @onready var player = $Player
 @onready var health_bar = $UI/HealthBar
 @onready var stats_panel = $UI/StatsPanel
+@onready var damage_overlay = $UI/DamageOverlay
 
 func _ready():
+	var transition = transition_scene.instantiate()
+	add_child(transition)
+	
 	# 1. Генерація карти
 	valid_spawn_points = dungeon_generator.generate_map()
 	
@@ -35,6 +40,18 @@ func _ready():
 	boss.position = boss_pos_pixel
 	boss.died.connect(teleporter.activate)
 	add_child(boss)
+	
+	# 3.5. СКЕЙЛЫНГ СКЛАДНОСТЫ ВОРОГІВ
+	# Зменшуємо час між спавном ворогів
+	# Рівень 1: 2.0 сек
+	# Рівень 5: 1.6 сек
+	# Рівень 10: 1.1 сек
+	var spawn_rate = 2.0 / GameManager.get_difficulty_multiplier()
+	# Обмежуємо, щоб не було менше 0.5 сек (бо буде пекло)
+	spawn_rate = max(0.5, spawn_rate)
+	
+	spawn_timer.wait_time = spawn_rate
+	spawn_timer.start()
 	
 	# 4. СПАВН ГРАВЦЯ (Пошук найдальшої точки)
 	var player_start_tile = Vector2i(0, 0)
@@ -64,7 +81,8 @@ func _ready():
 	score_label.text = "Score: " + str(score)
 	# Підключаємо сигнал статистики
 	player.stats_updated.connect(stats_panel.update_stats)
-	
+	player.player_damaged.connect(damage_overlay.flash)
+	player.player_healed.connect(damage_overlay.flash_heal)
 	player.health_changed.connect(health_bar.update_health)
 	# Оновлюємо ХП-бар значенням з GameManager, яке ми перенесли з минулого рівня
 	health_bar.update_health(GameManager.current_health, GameManager.max_health)
@@ -81,7 +99,7 @@ func _on_spawn_timer_timeout():
 	var spawn_pos = dungeon_generator.floor_layer.map_to_local(random_tile)
 	
 	# Перевірка дистанції (щоб не спавнились на голові)
-	if spawn_pos.distance_to($Player.position) < 250:
+	if spawn_pos.distance_to($Player.position) < 350:
 		return
 		
 	enemy_instance.global_position = spawn_pos
@@ -91,13 +109,16 @@ func _on_spawn_timer_timeout():
 func _on_enemy_died():
 	score += 1
 	score_label.text = "Score: " + str(score)
-	
-	# Оновлюємо глобальний рахунок одразу
 	GameManager.current_score = score
 	
-	# Ачівка: Перше вбивство
+	# --- АЧІВКИ ---
+	# 1. Перша кров
 	if score == 1:
 		GameManager.unlock_achievement("first_blood", "First Blood!")
+		
+	# 2. Виживший (Ось це ми додали)
+	if score == 10:
+		GameManager.unlock_achievement("survivor", "Survivor (10+ Score)")
 
 func game_over():
 	var game_over_instance = game_over_scene.instantiate()
