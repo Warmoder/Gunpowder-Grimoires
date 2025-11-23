@@ -1,7 +1,6 @@
 extends Area2D
 
-# Можна додати звук відкриття, якщо хочеш
-# @onready var open_sound = $AudioStreamPlayer2D
+@onready var open_sound: AudioStreamPlayer2D = $OpenSound
 @export var open_sprite_texture: Texture2D
 
 var is_opened = false
@@ -13,6 +12,7 @@ func _on_body_entered(body):
 	# Перевіряємо, чи це гравець
 	if body.is_in_group("player"):
 		open_chest()
+		open_sound.play()
 
 func open_chest():
 	is_opened = true

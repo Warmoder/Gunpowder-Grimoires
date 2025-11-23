@@ -6,12 +6,15 @@ extends CharacterBody2D
 @export var speed = 400.0
 @export var bullet_scene: PackedScene
 @export var explosion_scene: PackedScene
+@export var pixels_per_step = 120.0
 
 # Посилання на дочірні вузли (ініціалізуються при старті)
 @onready var shoot_timer = $ShootTimer
 @onready var shoot_sound = $ShootSound # Переконайся, що вузол називається ShootSound
 @onready var hitbox = $Hitbox # Додамо для ясності
 @onready var shield_sprite = $ShieldSprite
+@onready var footstep_sound = $FootstepSound
+@onready var step_timer = $StepTimer
 
 # Ігрові змінні
 var current_health: int
@@ -69,6 +72,26 @@ func _physics_process(_delta):
 	var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = direction * speed
 	move_and_slide()
+	
+	# --- ЗВУК КРОКІВ (ДИНАМІЧНИЙ) ---
+	
+	if velocity.length() > 0:
+		if step_timer.is_stopped():
+			# Граємо звук з варіацією
+			footstep_sound.pitch_scale = randf_range(0.9, 1.1)
+			footstep_sound.play()
+			
+			# --- ФОРМУЛА ДИНАМІЧНОЇ ШВИДКОСТІ ---
+			# Час = Відстань / Швидкість
+			# Наприклад: 120 пікселів / 400 швидкості = 0.3 секунди
+			# На спід-апі: 120 / 600 = 0.2 секунди (частіше)
+			var step_time = pixels_per_step / velocity.length()
+			
+			# Запускаємо таймер з вирахованим часом
+			step_timer.start(step_time)
+			
+	else:
+		step_timer.stop()
 	
 	# --- Стрільба ---
 	# Стріляємо, якщо натиснута кнопка "fire" і таймер перезарядки зупинений

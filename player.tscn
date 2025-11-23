@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://bw486lcwnfc1v"]
+[gd_scene load_steps=12 format=3 uid="uid://bw486lcwnfc1v"]
 
 [ext_resource type="Script" uid="uid://bcqgtgqjheye4" path="res://player.gd" id="1_onrkg"]
 [ext_resource type="PackedScene" uid="uid://c8evd5r7rx47t" path="res://bullet.tscn" id="2_i3pqv"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://dvd7g0dw8stjx" path="res://sprite.png" id="3_hqtel"]
 [ext_resource type="AudioStream" uid="uid://wirkhll1bes8" path="res://shoot.wav" id="4_hqtel"]
 [ext_resource type="Texture2D" uid="uid://ccqwu041uovoq" path="res://shield_active_sprite.png" id="5_sweqy"]
+[ext_resource type="AudioStream" uid="uid://eretvg1hk1pu" path="res://footsteps.wav" id="7_1jxqw"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_onrkg"]
 radius = 41.0
@@ -72,5 +73,15 @@ visible = false
 show_behind_parent = true
 scale = Vector2(0.3, 0.3)
 texture = ExtResource("5_sweqy")
+
+[node name="FootstepSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("7_1jxqw")
+volume_db = -10.0
+autoplay = true
+bus = &"SFX"
+
+[node name="StepTimer" type="Timer" parent="."]
+wait_time = 0.3
+one_shot = true
 
 [connection signal="body_entered" from="Hitbox" to="." method="_on_area_2d_body_entered"]

@@ -35,6 +35,7 @@ script = ExtResource("2_vxas0")
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("3_j4sxf")
+volume_db = -15.0
 autoplay = true
 bus = &"SFX"
 

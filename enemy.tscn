@@ -39,9 +39,8 @@ collision_mask = 5
 
 [node name="SpawnSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("4_iifgy")
-volume_db = 5.0
+volume_db = -5.0
 autoplay = true
-max_distance = 1000.0
 bus = &"SFX"
 
 [connection signal="body_entered" from="AttackArea" to="." method="_on_attack_area_body_entered"]
