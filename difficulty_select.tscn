@@ -1,0 +1,82 @@
+[gd_scene load_steps=4 format=3 uid="uid://cy0icpup1spey"]
+
+[ext_resource type="Script" uid="uid://5brue1pho3e2" path="res://difficulty_select.gd" id="1_q7n00"]
+[ext_resource type="Texture2D" uid="uid://b5cul835dkn8n" path="res://difficulty_menu_bg.jpg" id="2_a2icw"]
+[ext_resource type="Theme" uid="uid://8c4hyhwlbged" path="res://new_theme.tres" id="3_v4r3i"]
+
+[node name="CanvasLayer" type="CanvasLayer"]
+script = ExtResource("1_q7n00")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_a2icw")
+expand_mode = 1
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.047058824, 0.047058824, 0.047058824, 0.1764706)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -238.0
+offset_bottom = 238.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+theme = ExtResource("3_v4r3i")
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 72
+text = "Choose Difficulty"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="HSeparator3" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="EasyButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 36
+text = "Easy (3 HP)"
+
+[node name="HardButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 36
+text = "Hard (1 HP)"
+
+[node name="BackButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 36
+text = "Back"
+
+[connection signal="pressed" from="VBoxContainer/EasyButton" to="." method="_on_easy_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HardButton" to="." method="_on_hard_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]

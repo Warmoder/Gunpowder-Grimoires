@@ -1,0 +1,28 @@
+[gd_scene load_steps=6 format=3 uid="uid://dqicymq0tqynp"]
+
+[ext_resource type="Script" uid="uid://wkxirl085qts" path="res://chest.gd" id="1_8uwsg"]
+[ext_resource type="Texture2D" uid="uid://b2h2xogupylqo" path="res://chest_sprite.png" id="1_twpm2"]
+[ext_resource type="Texture2D" uid="uid://dqen1om5s3man" path="res://chest_open_sprite.png" id="2_bp1or"]
+[ext_resource type="AudioStream" uid="uid://dgpbx2fssya0x" path="res://chest_open.wav" id="4_trlyu"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8uwsg"]
+radius = 24.0
+height = 70.0
+
+[node name="Chest" type="Area2D"]
+script = ExtResource("1_8uwsg")
+open_sprite_texture = ExtResource("2_bp1or")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.13, 0.13)
+texture = ExtResource("1_twpm2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_8uwsg")
+
+[node name="OpenSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_trlyu")
+bus = &"SFX"
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

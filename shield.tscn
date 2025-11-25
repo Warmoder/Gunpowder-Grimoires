@@ -1,0 +1,35 @@
+[gd_scene load_steps=6 format=3 uid="uid://c4r15a84octeq"]
+
+[ext_resource type="Script" uid="uid://cn1te50rwugp0" path="res://shield.gd" id="1_ffst0"]
+[ext_resource type="Texture2D" uid="uid://ch7ypbwcn5v0o" path="res://shield_sprite.png" id="2_dmnlx"]
+[ext_resource type="AudioStream" uid="uid://50i3lib5o1ux" path="res://power_up_constant_reminder.wav" id="3_dmnlx"]
+[ext_resource type="AudioStream" uid="uid://dw5t5f4ggiv3" path="res://bottle_drinked.wav" id="4_0vxx4"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sctm6"]
+radius = 60.0
+height = 173.33333
+
+[node name="Area2D" type="Area2D"]
+scale = Vector2(0.3, 0.3)
+script = ExtResource("1_ffst0")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("2_dmnlx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_sctm6")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_dmnlx")
+volume_db = -38.0
+autoplay = true
+max_distance = 700.0
+bus = &"SFX"
+
+[node name="PickupSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_0vxx4")
+volume_db = 10.0
+bus = &"SFX"
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

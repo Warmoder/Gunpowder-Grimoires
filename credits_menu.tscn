@@ -1,0 +1,155 @@
+[gd_scene load_steps=4 format=3 uid="uid://dkvn0wmy2tty5"]
+
+[ext_resource type="Script" uid="uid://bvoijd4sk1xgk" path="res://credits_menu.gd" id="1_8n0c7"]
+[ext_resource type="Texture2D" uid="uid://v0qcc1cdpap8" path="res://credits_menu_bg.jpg" id="1_tgbea"]
+[ext_resource type="Theme" uid="uid://8c4hyhwlbged" path="res://new_theme.tres" id="2_8n0c7"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8n0c7")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_tgbea")
+expand_mode = 1
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.019607844, 0.019607844, 0.019607844, 0.14901961)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_8n0c7")
+theme_override_constants/separation = 5
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+
+[node name="HSeparator3" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+
+[node name="HSeparator4" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+
+[node name="HSeparator5" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+
+[node name="HSeparator6" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 72
+text = "CREDITS"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 440)
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("2_8n0c7")
+bbcode_enabled = true
+text = "[center]
+[b][font_size=42]GUNPOWDER & GRIMOIRES[/font_size][/b]
+
+[font_size=24][b]THE TEAM[/b][/font_size]
+
+[b]Anton Beglov[/b]
+Project Lead / Lead Programmer / Game Design
+
+[b]Nazar Khomenko[/b]
+Programmer / Technical Artist / AI Generation
+
+[b]Vitaliy Kotyhorokh[/b]
+Audio Director / Sound Selection
+
+[b]Yevheniy Hulyi[/b]
+QA Testing / Game Balance
+
+[font_size=24][b]AI ASSISTANTS[/b][/font_size]
+Code & Text Support: [url=https://gemini.google.com/]Gemini 2.5 / 3[/url]
+[b]Sprite Generation (Nano Banana):[/b]
+Player, Enemies, Boss, Power-ups, Chest,
+Portal, Shield FX, Projectiles, Game Icon
+
+[font_size=24][b]ASSETS & ATTRIBUTION[/b][/font_size]
+
+[b]VISUALS (Human Made)[/b]
+Tileset, UI Buttons & Crosshair: [url=https://o-lobster.itch.io/simple-dungeon-crawler-16x16-pixel-pack]O Lobster[/url]
+Menu Backgrounds: [url=https://obsydianx.itch.io/ai-generated-fantasy-landscapes]ObsydianX[/url]
+Game Background: [url=https://virusystem.itch.io/background-space]Virusystem[/url]
+Font \"Antiquity\": [url=https://ninjikin.itch.io/font-antiquity-script]Ninjikin[/url]
+
+[b]MUSIC[/b]
+Fantasy Boss Battle & Piano Pack by [url=https://alkakrab.itch.io/]AlkaKrab[/url]
+
+[b]SOUND EFFECTS (Freesound.org)[/b]
+Player Shot: [url=https://freesound.org/people/fabianofa/sounds/98189/]fabianofa[/url] | Enemy Shot: [url=https://freesound.org/people/JakeAMT/sounds/681969/]JakeAMT[/url]
+Boss Shot: [url=https://freesound.org/people/JakeAMT/sounds/681962/]JakeAMT[/url] | Death: [url=https://freesound.org/people/Mateusz_Chenc/sounds/512217/]Mateusz_Chenc[/url]
+Spawn: [url=https://freesound.org/people/Halgrimm/sounds/195463/]Halgrimm[/url] | Powerup Loop: [url=https://freesound.org/people/LilMati/sounds/462093/]LilMati[/url]
+Portal Loop: [url=https://freesound.org/people/kevp888/sounds/707900/]kevp888[/url] | Portal Open: [url=https://freesound.org/people/Mrthenoronha/sounds/399904/]Mrthenoronha[/url]
+Footsteps: [url=https://freesound.org/people/marb7e/sounds/620339/]marb7e[/url] | Potion Drink: [url=https://freesound.org/people/getwecked/sounds/764683/]getwecked[/url]
+Chest Open: [url=https://freesound.org/people/The_Frisbee_of_Peace/sounds/573654/]The_Frisbee_of_Peace[/url]
+Achievement: [url=https://freesound.org/people/LittleRobotSoundFactory/sounds/270404/]LittleRobotSoundFactory[/url]
+
+[b]SPECIAL THANKS[/b]
+Godot Engine Contributors
+NULES (NUBiP)
+
+[i]Created in 2025[/i]
+[/center]"
+
+[node name="HSeparator8" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+
+[node name="BackButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 32
+text = "Back"
+
+[node name="HSeparator7" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+
+[node name="HSeparator9" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+
+[node name="HSeparator10" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+
+[connection signal="meta_clicked" from="VBoxContainer/RichTextLabel" to="." method="_on_rich_text_label_meta_clicked"]
+[connection signal="pressed" from="VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]

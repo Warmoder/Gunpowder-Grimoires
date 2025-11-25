@@ -1,0 +1,46 @@
+[gd_scene load_steps=7 format=3 uid="uid://ccdklbr2ishf5"]
+
+[ext_resource type="Script" uid="uid://cbcysk0gnctfv" path="res://enemy.gd" id="1_4gyqm"]
+[ext_resource type="PackedScene" uid="uid://ckwob8wkpdi28" path="res://explosion.tscn" id="2_qi2p4"]
+[ext_resource type="Texture2D" uid="uid://dy0ofv8t8c0cj" path="res://enemy_sprite.png" id="3_qi2p4"]
+[ext_resource type="AudioStream" uid="uid://cedln7fns1bbx" path="res://spawn_sound.wav" id="4_iifgy"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4gyqm"]
+radius = 48.0
+height = 96.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qi2p4"]
+radius = 48.0
+height = 96.0
+
+[node name="Enemy2" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 2
+collision_mask = 4
+script = ExtResource("1_4gyqm")
+explosion_scene = ExtResource("2_qi2p4")
+metadata/_edit_vertical_guides_ = [-50.0]
+
+[node name="Sprite2D" type="Sprite2D" parent="." groups=["enemies"]]
+rotation = 1.5707964
+scale = Vector2(0.16, 0.16)
+texture = ExtResource("3_qi2p4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_4gyqm")
+
+[node name="AttackArea" type="Area2D" parent="."]
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+shape = SubResource("CapsuleShape2D_qi2p4")
+
+[node name="RayCast" type="RayCast2D" parent="."]
+collision_mask = 5
+
+[node name="SpawnSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_iifgy")
+volume_db = -5.0
+autoplay = true
+bus = &"SFX"
+
+[connection signal="body_entered" from="AttackArea" to="." method="_on_attack_area_body_entered"]

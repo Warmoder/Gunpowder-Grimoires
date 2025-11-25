@@ -1,0 +1,62 @@
+[gd_scene load_steps=10 format=3 uid="uid://1g8offdq1llv"]
+
+[ext_resource type="Script" uid="uid://cl341agw33g23" path="res://enemy_shooter.gd" id="1_3vy8j"]
+[ext_resource type="PackedScene" uid="uid://ckwob8wkpdi28" path="res://explosion.tscn" id="2_2ko04"]
+[ext_resource type="PackedScene" uid="uid://cevcytdnelc48" path="res://enemy_bullet.tscn" id="2_q8g1e"]
+[ext_resource type="Texture2D" uid="uid://ty8u5y4vl6tx" path="res://enemy_shooter_sprite.png" id="4_2ko04"]
+[ext_resource type="PackedScene" uid="uid://d20raonpqngj" path="res://muzzle_flash.tscn" id="4_soons"]
+[ext_resource type="AudioStream" uid="uid://cun5q3leedpe6" path="res://shoot_sound2.wav" id="5_q8g1e"]
+[ext_resource type="AudioStream" uid="uid://cedln7fns1bbx" path="res://spawn_sound.wav" id="6_axis3"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4gyqm"]
+radius = 48.0
+height = 96.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_2ko04"]
+radius = 48.0
+height = 96.0
+
+[node name="Enemy" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 2
+collision_mask = 4
+script = ExtResource("1_3vy8j")
+bullet_scene = ExtResource("2_q8g1e")
+explosion_scene = ExtResource("2_2ko04")
+muzzle_flash_scene = ExtResource("4_soons")
+metadata/_edit_vertical_guides_ = [-50.0]
+
+[node name="Sprite2D" type="Sprite2D" parent="." groups=["enemies"]]
+rotation = -1.5707964
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("4_2ko04")
+
+[node name="Muzzle" type="Marker2D" parent="Sprite2D"]
+position = Vector2(0, 430)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_4gyqm")
+
+[node name="ShootTimer" type="Timer" parent="."]
+wait_time = 1.5
+autostart = true
+
+[node name="AttackArea" type="Area2D" parent="."]
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+shape = SubResource("CapsuleShape2D_2ko04")
+
+[node name="RayCast" type="RayCast2D" parent="."]
+collision_mask = 5
+
+[node name="ShootSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_q8g1e")
+bus = &"SFX"
+
+[node name="SpawnSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_axis3")
+volume_db = -5.0
+autoplay = true
+bus = &"SFX"
+
+[connection signal="body_entered" from="AttackArea" to="." method="_on_attack_area_body_entered"]

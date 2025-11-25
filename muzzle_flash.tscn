@@ -1,0 +1,41 @@
+[gd_scene load_steps=8 format=3 uid="uid://d20raonpqngj"]
+
+[ext_resource type="Texture2D" uid="uid://be2em58cujgvi" path="res://explosive_sprite.png" id="1_ibyan"]
+[ext_resource type="Script" uid="uid://clw6vw3tn4boh" path="res://muzzle_flash.gd" id="2_k4mlb"]
+
+[sub_resource type="Gradient" id="Gradient_k4mlb"]
+offsets = PackedFloat32Array(0, 0.7525773, 1)
+colors = PackedColorArray(1, 1, 0, 1, 1, 0, 0, 1, 1, 0.5137255, 0, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_7gvi6"]
+gradient = SubResource("Gradient_k4mlb")
+
+[sub_resource type="Curve" id="Curve_juadq"]
+_data = [Vector2(0, 1), 0.0, -1.0284818, 0, 0, Vector2(1, 0), -1.021495, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_3ll1f"]
+curve = SubResource("Curve_juadq")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_tlktv"]
+particle_flag_disable_z = true
+spread = 30.0
+initial_velocity_min = 200.0
+initial_velocity_max = 300.0
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource("CurveTexture_3ll1f")
+color_ramp = SubResource("GradientTexture1D_7gvi6")
+
+[node name="GPUParticles2D" type="GPUParticles2D"]
+z_index = 1
+rotation = -1.5707964
+scale = Vector2(3.5, 3.5)
+emitting = false
+amount = 25
+texture = ExtResource("1_ibyan")
+lifetime = 0.2
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_tlktv")
+script = ExtResource("2_k4mlb")
