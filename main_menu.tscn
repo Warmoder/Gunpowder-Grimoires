@@ -44,7 +44,7 @@ offset_top = -256.5
 offset_bottom = 256.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 15
+theme_override_constants/separation = 6
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
@@ -54,7 +54,7 @@ theme_override_fonts/font = ExtResource("3_nlkkf")
 theme_override_font_sizes/font_size = 72
 text = "Gunpowder & Grimoires"
 
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+[node name="HSeparator4" type="HSeparator" parent="VBoxContainer"]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -75,33 +75,50 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 theme = ExtResource("1_glbon")
 theme_override_fonts/font = ExtResource("3_nlkkf")
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 36
 text = "Start Game"
+
+[node name="HSeparator5" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 4
 
 [node name="AchievementsButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_fonts/font = ExtResource("3_nlkkf")
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 36
 text = "Achievements"
 
 [node name="SettingsButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_fonts/font = ExtResource("3_nlkkf")
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 36
 text = "Settings
 "
+
+[node name="CreditsButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 36
+text = "Credits"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+size_flags_horizontal = 4
 
 [node name="QuitButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_fonts/font = ExtResource("3_nlkkf")
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 36
 text = "Quit"
 
 [connection signal="pressed" from="VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/AchievementsButton" to="." method="_on_achievements_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/CreditsButton" to="." method="_on_credits_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]

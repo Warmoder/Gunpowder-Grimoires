@@ -21,7 +21,7 @@ func show_final_score(final_score):
 
 func _on_restart_button_pressed():
 	get_tree().paused = false
-	get_tree().reload_current_scene()
+	GameManager.start_new_game(GameManager.current_difficulty)
 
 func _on_main_menu_button_pressed():
 	# Важливо: спочатку знімаємо гру з паузи

@@ -67,7 +67,7 @@ func _ready():
 	
 	player.position = dungeon_generator.floor_layer.map_to_local(player_start_tile)
 	
-	# 5. СПАВН СУНДУКІВ (Нове!)
+	# 5. СПАВН СУНДУКІВ
 	for i in range(5):
 		spawn_chest()
 	
@@ -86,6 +86,10 @@ func _ready():
 	player.health_changed.connect(health_bar.update_health)
 	# Оновлюємо ХП-бар значенням з GameManager, яке ми перенесли з минулого рівня
 	health_bar.update_health(GameManager.current_health, GameManager.max_health)
+
+func _process(_delta):
+	# Виведе FPS у заголовок вікна (зручно дивитись)
+	DisplayServer.window_set_title("FPS: " + str(Engine.get_frames_per_second()))
 
 func _on_spawn_timer_timeout():
 	if valid_spawn_points.is_empty(): return

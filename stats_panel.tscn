@@ -17,8 +17,10 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -40.0
-offset_bottom = 40.0
+offset_left = -170.0
+offset_top = 20.0
+offset_right = -19.0
+offset_bottom = 112.0
 grow_horizontal = 0
 theme = ExtResource("1_ywnwj")
 
@@ -30,10 +32,12 @@ layout_mode = 2
 
 [node name="DamageLabel" type="Label" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 24
 text = "Damage: x1"
 
 [node name="SpeedLabel" type="Label" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 24
 text = "Speed: 400"
 
 [node name="HSeparator2" type="HSeparator" parent="PanelContainer/VBoxContainer"]

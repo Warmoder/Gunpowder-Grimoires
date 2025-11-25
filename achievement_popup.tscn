@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dwllbj2m1a520"]
+[gd_scene load_steps=4 format=3 uid="uid://dwllbj2m1a520"]
 
 [ext_resource type="Script" uid="uid://djvqc6ftm3rov" path="res://achievement_popup.gd" id="1_ah4h2"]
 [ext_resource type="Theme" uid="uid://8c4hyhwlbged" path="res://new_theme.tres" id="2_nbrip"]
+[ext_resource type="AudioStream" uid="uid://bje56h4g60wup" path="res://achievement_sound.wav" id="3_um1rr"]
 
 [node name="CanvasLayer" type="CanvasLayer"]
 layer = 100
@@ -28,3 +29,8 @@ size_flags_horizontal = 4
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 32
 text = "Achievement Name"
+
+[node name="AchievementSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_um1rr")
+volume_db = -17.0
+bus = &"SFX"

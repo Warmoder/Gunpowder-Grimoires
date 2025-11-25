@@ -66,21 +66,21 @@ size_flags_horizontal = 4
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 34
 text = "First Blood"
 
 [node name="Ach2" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 34
 text = "Survivor"
 
 [node name="Ach3" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 34
 text = "Boss Killer"
 
 [node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
@@ -97,13 +97,13 @@ size_flags_horizontal = 4
 modulate = Color(1, 0, 0, 1)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 32
 text = "RESET ALL PROGRESS"
 
 [node name="BackButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 36
 text = "Back"
 
 [connection signal="pressed" from="VBoxContainer/ResetButton" to="." method="_on_reset_button_pressed"]

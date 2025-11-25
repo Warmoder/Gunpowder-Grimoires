@@ -54,13 +54,13 @@ size_flags_horizontal = 4
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 36
 text = "Resume"
 
 [node name="SettingsButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 36
 text = "Settings
 "
 
@@ -68,7 +68,7 @@ text = "Settings
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 36
 text = "Back to Main Menu"
 
 [connection signal="pressed" from="VBoxContainer/ResumeButton" to="." method="_on_resume_button_pressed"]

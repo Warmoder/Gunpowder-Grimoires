@@ -29,9 +29,9 @@ color_ramp = SubResource("GradientTexture1D_7gvi6")
 [node name="GPUParticles2D" type="GPUParticles2D"]
 z_index = 1
 rotation = -1.5707964
-scale = Vector2(3, 3)
+scale = Vector2(3.5, 3.5)
 emitting = false
-amount = 15
+amount = 25
 texture = ExtResource("1_ibyan")
 lifetime = 0.2
 one_shot = true

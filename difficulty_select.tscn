@@ -35,7 +35,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 theme = ExtResource("3_v4r3i")
-theme_override_constants/separation = 25
+theme_override_constants/separation = 20
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 layout_mode = 2
@@ -62,19 +62,19 @@ size_flags_horizontal = 4
 [node name="EasyButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 36
 text = "Easy (3 HP)"
 
 [node name="HardButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 36
 text = "Hard (1 HP)"
 
 [node name="BackButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 42
+theme_override_font_sizes/font_size = 36
 text = "Back"
 
 [connection signal="pressed" from="VBoxContainer/EasyButton" to="." method="_on_easy_button_pressed"]
