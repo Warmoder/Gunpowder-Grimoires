@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3 uid="uid://cjpwc2b1sgjst"]
+
+[ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="1_1gcqp"]
+
+[node name="CanvasLayer" type="CanvasLayer"]
+
+[node name="MoveStick" parent="." instance=ExtResource("1_1gcqp")]
+use_input_actions = false
+action_left = ""
+action_right = ""
+action_up = ""
+action_down = ""
+
+[node name="ShootStick" parent="." instance=ExtResource("1_1gcqp")]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
+offset_top = -300.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 0
+use_input_actions = false
