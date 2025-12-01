@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://clsbe0wmnd3pk"]
+[gd_scene load_steps=24 format=3 uid="uid://clsbe0wmnd3pk"]
 
 [ext_resource type="PackedScene" uid="uid://bw486lcwnfc1v" path="res://player.tscn" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://widsceml1k7w" path="res://main.gd" id="1_lquwl"]
@@ -17,6 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://co54yi75oj7t7" path="res://game_bg.png" id="12_dg77c"]
 [ext_resource type="PackedScene" uid="uid://be3pq4e45iam7" path="res://stats_panel.tscn" id="12_vivmo"]
 [ext_resource type="PackedScene" uid="uid://kqiq1j8exx04" path="res://damage_overlay.tscn" id="13_2cqfq"]
+[ext_resource type="PackedScene" uid="uid://cjpwc2b1sgjst" path="res://touch_controls.tscn" id="18_074og"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_ycdy4"]
 polygon = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
@@ -381,5 +382,8 @@ autoscroll = Vector2(10, 5)
 texture = ExtResource("12_dg77c")
 region_enabled = true
 region_rect = Rect2(0, 0, 4000, 4000)
+
+[node name="TouchControls" parent="." instance=ExtResource("18_074og")]
+layer = 1000
 
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]

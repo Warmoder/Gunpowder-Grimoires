@@ -17,6 +17,8 @@ extends CharacterBody2D
 @onready var footstep_sound = $FootstepSound
 @onready var step_timer = $StepTimer
 @onready var sprite = $Sprite2D # Посилання на спрайт для блимання
+@onready var move_stick = get_tree().root.get_node("Map/TouchControls/MoveStick")
+@onready var shoot_stick = get_tree().root.get_node("Map/TouchControls/ShootStick")
 
 # Ігрові змінні
 var current_health: int
@@ -44,64 +46,68 @@ func _ready():
 	base_speed = speed
 
 func _process(delta):
-	# --- 1. ПОВОРОТ ЗА МИШКОЮ (Старий код) ---
-	var direction_to_mouse = get_global_mouse_position() - global_position
-	rotation = direction_to_mouse.angle()
-	
-	# --- 2. ОНОВЛЕННЯ ТАЙМЕРІВ БОНУСІВ (Новий код) ---
-	
-	# Speed Up
+	# --- 1. ЛОГІКА ПОВОРОТУ ---
+	if OS.get_name() == "Android":
+		# На Android повертаємось за правим джойстиком
+		if shoot_stick.is_pressed:
+			rotation = shoot_stick.output.angle()
+	else:
+		# На ПК повертаємось за мишкою
+		var direction_to_mouse = get_global_mouse_position() - global_position
+		rotation = direction_to_mouse.angle()
+
+	# --- 2. ОНОВЛЕННЯ ТАЙМЕРІВ БОНУСІВ (без змін) ---
 	if speed_boost_count > 0:
 		speed_time_left -= delta
 	else:
 		speed_time_left = 0
 		
-	# Damage Up
 	if damage_boost_count > 0:
 		damage_time_left -= delta
 	else:
 		damage_time_left = 0
 		
-	# --- 3. ВІДПРАВКА ДАНИХ В UI ---
-	
-	# Розрахунок поточного множника для відображення
-	# (База = 1.0, плюс 1.0 за кожен бонус)
+	# --- 3. ВІДПРАВКА ДАНИХ В UI (без змін) ---
 	var current_mult = 1.0 + damage_boost_count
-	
-	# Відправляємо сигнал
 	stats_updated.emit(current_mult, damage_time_left, speed, speed_time_left)
 
 func _physics_process(_delta):
-	# --- Рух ---
-	var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	# --- 1. ОТРИМАННЯ НАПРЯМКУ РУХУ ---
+	var direction = Vector2.ZERO
+	
+	if OS.get_name() == "Android":
+		# На Android беремо напрямок з лівого джойстика
+		direction = move_stick.output
+	else:
+		# На ПК беремо з клавіатури
+		direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+
+	# --- 2. РУХ (без змін) ---
 	velocity = direction * speed
 	move_and_slide()
 	
-	# --- ЗВУК КРОКІВ (ДИНАМІЧНИЙ) ---
-	
+	# --- 3. ЗВУК КРОКІВ (без змін) ---
 	if velocity.length() > 0:
 		if step_timer.is_stopped():
-			# Граємо звук з варіацією
 			footstep_sound.pitch_scale = randf_range(0.9, 1.1)
 			footstep_sound.play()
-			
-			# --- ФОРМУЛА ДИНАМІЧНОЇ ШВИДКОСТІ ---
-			# Час = Відстань / Швидкість
-			# Наприклад: 120 пікселів / 400 швидкості = 0.3 секунди
-			# На спід-апі: 120 / 600 = 0.2 секунди (частіше)
 			var step_time = pixels_per_step / velocity.length()
-			
-			# Запускаємо таймер з вирахованим часом
 			step_timer.start(step_time)
-			
 	else:
 		step_timer.stop()
 	
-	# --- Стрільба ---
-	# Стріляємо, якщо натиснута кнопка "fire" і таймер перезарядки зупинений
-	if Input.is_action_just_pressed("fire") and shoot_timer.is_stopped():
+	# --- 4. ЛОГІКА СТРІЛЬБИ ---
+	var is_shooting = false
+	
+	if OS.get_name() == "Android":
+		if shoot_stick.output.length() > 0:
+			is_shooting = true
+	else:
+		is_shooting = Input.is_action_pressed("fire")
+	
+# Стріляємо, якщо є команда і таймер готовий
+	if is_shooting and shoot_timer.is_stopped():
 		fire()
-
 
 # --- ВЛАСНІ ФУНКЦІЇ ---
 
