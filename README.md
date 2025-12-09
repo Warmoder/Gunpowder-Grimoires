@@ -1,5 +1,7 @@
 # Gunpowder & Grimoires
 
+<img width="1918" height="1078" alt="image" src="https://github.com/user-attachments/assets/d8910eb8-670f-4a49-b099-4728ccb54353" />
+
 **Gunpowder & Grimoires** is a dynamic top-down rogue-lite shooter set in a dark gunpowder fantasy world. As a lone monster hunter, you will navigate procedurally generated dungeons, fight grotesque creatures with magically enhanced firearms, and face challenging bosses to progress through ever-hardening levels.
 
 This project was developed as a team assignment for a university course, utilizing the Godot Engine.
