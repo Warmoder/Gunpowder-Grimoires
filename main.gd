@@ -19,6 +19,7 @@ var valid_spawn_points: Array[Vector2i] = []
 @onready var health_bar = $UI/HealthBar
 @onready var stats_panel = $UI/StatsPanel
 @onready var damage_overlay = $UI/DamageOverlay
+@onready var pause_button = $UI/PauseButton
 
 func _ready():
 	var transition = transition_scene.instantiate()
@@ -41,7 +42,7 @@ func _ready():
 	boss.died.connect(teleporter.activate)
 	add_child(boss)
 	
-	# 3.5. СКЕЙЛЫНГ СКЛАДНОСТЫ ВОРОГІВ
+	# 3.5. СКЕЙЛІНГ СКЛАДНОСТЫ ВОРОГІВ
 	# Зменшуємо час між спавном ворогів
 	# Рівень 1: 2.0 сек
 	# Рівень 5: 1.6 сек
@@ -66,6 +67,18 @@ func _ready():
 			player_start_tile = test_tile
 	
 	player.position = dungeon_generator.floor_layer.map_to_local(player_start_tile)
+	
+	var touch_controls = $TouchControls
+	
+	if OS.get_name() == "Android":
+		# На Android: джойстики і кнопка паузи видимі
+		touch_controls.show()
+		pause_button.show()
+		pause_button.pressed.connect(_on_pause_button_pressed)
+	else:
+		# На ПК: джойстики і кнопка паузи не потрібні
+		touch_controls.hide()
+		pause_button.hide()
 	
 	# 5. СПАВН СУНДУКІВ
 	for i in range(5):
@@ -155,3 +168,7 @@ func toggle_pause():
 	get_tree().paused = not get_tree().paused
 	# І показуємо/ховаємо меню
 	pause_menu.visible = not pause_menu.visible
+
+
+func _on_pause_button_pressed():
+	toggle_pause()

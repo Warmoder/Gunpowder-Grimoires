@@ -17,6 +17,7 @@ extends CharacterBody2D
 var player
 # Змінна для пам'яті (остання позиція, де бачили гравця)
 var last_known_position: Vector2
+var is_dead = false
 
 signal died
 
@@ -116,19 +117,23 @@ func fire():
 	shoot_sound.play()
 	shoot_timer.start()
 
-func take_damage(amount):
+func take_damage(amount, weapon_type = ""):
+	if is_dead: return
+	
 	health -= amount
 	if health <= 0:
-		# Спочатку дропаємо лут
+		is_dead = true # Одразу ставимо прапорець!
+			
+			# Спочатку дропаємо лут
 		drop_loot()
-		
+			
 		emit_signal("died")
 		if explosion_scene:
 			var explosion = explosion_scene.instantiate()
 			get_tree().root.add_child(explosion)
 			explosion.global_position = global_position
-			explosion.emitting = true # Не забудь про цей фікс для частинок!
-		
+			explosion.emitting = true
+			
 		queue_free()
 
 # Функція для удару при дотику (твоя стара логіка)

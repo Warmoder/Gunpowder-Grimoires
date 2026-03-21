@@ -8,6 +8,7 @@ extends CharacterBody2D
 var player
 # Змінна для "пам'яті" ворога
 var last_known_position: Vector2
+var is_dead = false
 
 @onready var ray_cast = $RayCast
 @onready var base_max_health = health
@@ -69,12 +70,17 @@ func _physics_process(_delta):
 
 	move_and_slide()
 
-# Цю функцію викликає куля
-func take_damage(amount):
+func take_damage(amount, weapon_type = ""):
+	if is_dead: return
+	
+	health -= amount
+	
 	health -= amount # Віднімаємо здоров'я
 
 	# Перевіряємо, чи здоров'я закінчилось
 	if health <= 0:
+		is_dead = true # Одразу ставимо прапорець смерті!
+		
 		emit_signal("died")
 		
 		if explosion_scene:

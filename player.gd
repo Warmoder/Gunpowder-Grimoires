@@ -8,6 +8,7 @@ extends CharacterBody2D
 @export var explosion_scene: PackedScene
 @export var pixels_per_step = 120.0
 @export var muzzle_flash_scene: PackedScene
+@export var shotgun_pellet_scene: PackedScene
 
 # Посилання на дочірні вузли (ініціалізуються при старті)
 @onready var shoot_timer = $ShootTimer
@@ -17,8 +18,7 @@ extends CharacterBody2D
 @onready var footstep_sound = $FootstepSound
 @onready var step_timer = $StepTimer
 @onready var sprite = $Sprite2D # Посилання на спрайт для блимання
-@onready var move_stick = get_tree().root.get_node("Map/TouchControls/MoveStick")
-@onready var shoot_stick = get_tree().root.get_node("Map/TouchControls/ShootStick")
+@onready var switch_weapon_timer = $SwitchWeaponTimer
 
 # Ігрові змінні
 var current_health: int
@@ -31,6 +31,18 @@ var is_invincible = false
 # Час, що залишився для візуалізації
 var speed_time_left: float = 0.0
 var damage_time_left: float = 0.0
+var move_stick
+var shoot_stick
+# Масив, де будуть зберігатися сцени нашої зброї
+var available_weapons = []
+# Індекс поточної зброї в масиві
+var current_weapon_index = 0
+# Сцена поточної зброї
+var current_weapon_scene
+# Замість простого масиву сцен, ми будемо використовувати масив словників.
+# Кожен словник містить сцену зброї та її унікальні налаштування.
+var weapons_data = []
+var current_weapon_data = {}
 
 signal health_changed(current_health, max_health)
 signal player_healed
@@ -40,10 +52,37 @@ signal player_damaged
 # --- ВБУДОВАНІ ФУНКЦІЇ GODOT ---
 
 func _ready():
+	# --- 1. ІНІЦІАЛІЗАЦІЯ СТАТІВ ---
 	# Встановлюємо здоров'я на старті гри, беручи БАЗОВЕ значення
 	current_health = GameManager.base_health
 	health_changed.emit(current_health, GameManager.max_health) # Повідомляємо UI про максимум
 	base_speed = speed
+
+	# --- 2. НАЛАШТУВАННЯ ЗБРОЇ (Нова система словників) ---
+	var default_shoot_sound = preload("res://shoot.wav")
+	var shotgun_shoot_sound = preload("res://shotgun_shoot.wav")
+
+	weapons_data = [
+		{
+			"scene": bullet_scene,      # Звичайний пістолет
+			"fire_rate": 0.4,           # Швидкість стрільби
+			"sound": default_shoot_sound # Звук
+		},
+		{
+			"scene": shotgun_pellet_scene, # Дробовик
+			"fire_rate": 1.2,              # Довга перезарядка
+			"sound": shotgun_shoot_sound   # Гучний звук
+		}
+	]
+	
+	# Вибираємо першу зброю як активну
+	switch_weapon(0)
+
+	# --- 3. ІНІЦІАЛІЗАЦІЯ КЕРУВАННЯ (Android) ---
+	if OS.get_name() == "Android":
+		# Шукаємо джойстики, ТІЛЬКИ якщо ми на мобільному
+		move_stick = get_tree().root.get_node("Map/TouchControls/MoveStick")
+		shoot_stick = get_tree().root.get_node("Map/TouchControls/ShootStick")
 
 func _process(delta):
 	# --- 1. ЛОГІКА ПОВОРОТУ ---
@@ -109,41 +148,68 @@ func _physics_process(_delta):
 	if is_shooting and shoot_timer.is_stopped():
 		fire()
 
-# --- ВЛАСНІ ФУНКЦІЇ ---
-
 func fire():
-	if not bullet_scene: return
+	if not current_weapon_scene: return
 	
-	var bullet_instance = bullet_scene.instantiate()
+	# --- ЛОГІКА РІЗНОЇ ЗБРОЇ ---
 	
-	# --- НОВИЙ РОЗРАХУНОК ШКОДИ (STACKING) ---
-	var current_damage_multiplier = 1.0
-	
-	current_damage_multiplier += damage_boost_count
-	
-	if "damage" in bullet_instance:
-		bullet_instance.damage = base_damage * current_damage_multiplier
-	# ------------------------------------------
+	# Якщо в руках звичайна зброя
+	if current_weapon_scene == bullet_scene:
+		# Створюємо одну кулю
+		spawn_bullet(current_weapon_scene)
+		
+	# Якщо в руках дробовик
+	elif current_weapon_scene == shotgun_pellet_scene:
+		var pellet_count = 5    # Кількість дробинок
+		var spread_angle = 25.0 # Кут розльоту в градусах
+		
+		for i in range(pellet_count):
+			var angle_offset = randf_range(-spread_angle / 2, spread_angle / 2)
+			var final_angle = rotation + deg_to_rad(angle_offset)
+			
+			spawn_pellet(current_weapon_scene, final_angle)
 
-	# 3. Додаємо на сцену
-	get_tree().root.add_child(bullet_instance)
- 
-	# 4. Встановлюємо позицію
-	bullet_instance.global_position = $Sprite2D/Muzzle.global_position
-	# 5. Встановлюємо кут повороту
-	bullet_instance.rotation = global_rotation
-	# 6. Встановлюємо напрямок руху
-	bullet_instance.direction = transform.x
-
-	# Спавн спалаху
+	# --- ЗАГАЛЬНІ ЕФЕКТИ ПОСТРІЛУ ---
+	
+	# Спалах з дула
 	if muzzle_flash_scene:
 		var flash = muzzle_flash_scene.instantiate()
-		# Додаємо як дочірній до Muzzle, щоб він рухався разом зі зброєю
 		$Sprite2D/Muzzle.add_child(flash)
 
-	# 7. Звук і таймер
+	# Звук і таймер
 	shoot_sound.play()
 	shoot_timer.start()
+
+# --- ДОПОМІЖНІ ФУНКЦІЇ ---
+
+# Ця функція створює звичайну кулю
+func spawn_bullet(scene):
+	var bullet = scene.instantiate()
+	get_tree().root.add_child(bullet)
+	
+	# Розрахунок шкоди (з урахуванням бонусів)
+	var multiplier = 1.0 + damage_boost_count
+	if "damage" in bullet:
+		bullet.damage = base_damage * multiplier
+		
+	bullet.global_position = $Sprite2D/Muzzle.global_position
+	bullet.rotation = global_rotation
+	bullet.direction = transform.x
+
+# Ця функція створює одну дробинку з заданим кутом
+func spawn_pellet(scene, angle_rad):
+	var pellet = scene.instantiate()
+	get_tree().root.add_child(pellet)
+	
+	# Розрахунок шкоди
+	var multiplier = 1.0 + damage_boost_count
+	if "damage" in pellet:
+		# Кожна дробинка має свою шкоду. Можна налаштувати.
+		pellet.damage = 1 * multiplier
+		
+	pellet.global_position = $Sprite2D/Muzzle.global_position
+	pellet.rotation = angle_rad
+	pellet.direction = Vector2.from_angle(angle_rad) # Напрямок з кута
 
 # Функція повертає true, якщо шкода була отримана (або щит прийняв удар).
 # Повертає false, якщо гравець в i-frame і проігнорував удар.
@@ -245,18 +311,52 @@ func start_invincibility(duration):
 	print("Invincibility ended")
 
 func update_speed():
-	# Якщо є хоча б один активний бонус швидкості
-	if speed_boost_count > 0:
-		speed = base_speed * 1.5 # Швидкість збільшена
-	else:
-		speed = base_speed # Швидкість звичайна
+	# Формула: Базова швидкість * (100% + (40% * кількість бонусів))
+	# 0 бонусів: 1.0 + (0 * 0.4) = x1.0
+	# 1 бонус:   1.0 + (1 * 0.4) = x1.4
+	# 2 бонуси:  1.0 + (2 * 0.4) = x1.8
+	var speed_multiplier = 1.0 + (speed_boost_count * 0.4)
 	
+	speed = base_speed * speed_multiplier
 	print("Speed updated. Current speed: ", speed)
 
 func activate_shield():
 	has_shield = true
 	shield_sprite.show() # Показуємо спрайт щита
 	print("Shield Activated!")
+
+func switch_weapon(index):
+	if index >= 0 and index < weapons_data.size():
+		current_weapon_index = index
+		current_weapon_data = weapons_data[current_weapon_index]
+		current_weapon_scene = current_weapon_data["scene"]
+		
+		# Оновлюємо таймер перезарядки для нової зброї
+		shoot_timer.wait_time = current_weapon_data["fire_rate"]
+		
+		# Оновлюємо звук
+		shoot_sound.stream = current_weapon_data["sound"]
+		
+		print("Switched to weapon index: ", current_weapon_index)
+
+func _unhandled_input(event):
+	if not switch_weapon_timer.is_stopped(): return
+
+	if event is InputEventMouseButton:
+		var switched = false
+
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			var next_index = (current_weapon_index + 1) % weapons_data.size() # ЗМІНА ТУТ
+			switch_weapon(next_index)
+			switched = true
+			
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			var next_index = (current_weapon_index - 1 + weapons_data.size()) % weapons_data.size() # ЗМІНА ТУТ
+			switch_weapon(next_index)
+			switched = true
+		
+		if switched:
+			switch_weapon_timer.start()
 
 # --- ОБРОБКА СИГНАЛІВ ---
 

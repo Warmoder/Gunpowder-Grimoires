@@ -86,10 +86,10 @@ func set_difficulty(difficulty_level):
 	current_difficulty = difficulty_level
 	if current_difficulty == Difficulty.EASY:
 		base_health = 3
-		max_health = 4
+		max_health = 5 # На легкому режимі можна мати до 5 ХП
 	else:
 		base_health = 1
-		max_health = 1
+		max_health = 3 # На складному старт з 1, але можна долікуватись до 3
 
 func go_to_next_level():
 	current_level += 1

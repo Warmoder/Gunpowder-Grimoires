@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-@export var health = 15
+@export var health = 24
 @export var speed = 70.0
 @export var stop_distance = 200.0
 
@@ -18,6 +18,7 @@ extends CharacterBody2D
 var player
 # Змінна для пам'яті
 var last_known_position: Vector2
+var is_dead = false
 
 signal died
 
@@ -90,10 +91,24 @@ func fire():
 	shoot_sound.play()
 	shoot_timer.start()
 
-func take_damage(amount):
-	health -= amount
+func take_damage(amount, weapon_type = ""):
+	if is_dead: return
+	
+	var final_damage = amount
+	
+	# --- ЛОГІКА РЕЗИСТУ ---
+	if weapon_type == "shotgun":
+		# Бос отримує лише 25% шкоди від дробовика
+		# Тобто, замість 1 шкоди від дробинки, він отримає 0.25
+		final_damage = amount * 0.25 
+		print("Boss resisted shotgun damage! Took: ", final_damage)
+	# ----------------------
+	
+	health -= final_damage
+	
 	if health <= 0:
-		# Логіка смерті боса
+		is_dead = true
+		
 		drop_loot()
 		GameManager.unlock_achievement("boss_killer", "Boss Killer!")
 		emit_signal("died")

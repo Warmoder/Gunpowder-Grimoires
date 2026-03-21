@@ -5,6 +5,10 @@
 [node name="CanvasLayer" type="CanvasLayer"]
 
 [node name="MoveStick" parent="." instance=ExtResource("1_1gcqp")]
+offset_top = -300.0
+offset_bottom = 0.0
+scale = Vector2(1.5, 1.5)
+pivot_offset = Vector2(-60, 340)
 use_input_actions = false
 action_left = ""
 action_right = ""
@@ -20,4 +24,6 @@ offset_top = -300.0
 offset_right = 0.0
 offset_bottom = 0.0
 grow_horizontal = 0
+scale = Vector2(1.5, 1.5)
+pivot_offset = Vector2(340, 340)
 use_input_actions = false

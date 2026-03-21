@@ -359,6 +359,19 @@ text = "Score: 0"
 
 [node name="DamageOverlay" parent="UI" instance=ExtResource("13_2cqfq")]
 
+[node name="PauseButton" type="Button" parent="UI"]
+process_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -80.0
+offset_top = 130.0
+offset_right = -30.0
+offset_bottom = 180.0
+grow_horizontal = 0
+theme = ExtResource("9_ycdy4")
+text = "||"
+
 [node name="PauseMenu" parent="." instance=ExtResource("7_272bh")]
 visible = false
 
@@ -367,6 +380,10 @@ color = Color(0.10091939, 0.10093353, 0.18325466, 1)
 
 [node name="DungeonGenerator" type="Node" parent="." node_paths=PackedStringArray("floor_layer", "walls_layer")]
 script = ExtResource("9_kek77")
+map_width = 190
+map_height = 140
+tunnel_count = 35
+brush_radius = 4
 floor_layer = NodePath("../Floor")
 walls_layer = NodePath("../Walls")
 wall_coords = Array[Vector2i]([Vector2i(6, 4), Vector2i(6, 5), Vector2i(7, 5), Vector2i(8, 5)])
@@ -387,3 +404,4 @@ region_rect = Rect2(0, 0, 4000, 4000)
 layer = 1000
 
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]
+[connection signal="pressed" from="UI/PauseButton" to="." method="_on_pause_button_pressed"]

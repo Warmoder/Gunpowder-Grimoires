@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bw486lcwnfc1v"]
+[gd_scene load_steps=14 format=3 uid="uid://bw486lcwnfc1v"]
 
 [ext_resource type="Script" uid="uid://bcqgtgqjheye4" path="res://player.gd" id="1_onrkg"]
 [ext_resource type="PackedScene" uid="uid://c8evd5r7rx47t" path="res://bullet.tscn" id="2_i3pqv"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://dvd7g0dw8stjx" path="res://sprite.png" id="3_hqtel"]
 [ext_resource type="PackedScene" uid="uid://d20raonpqngj" path="res://muzzle_flash.tscn" id="4_dw050"]
 [ext_resource type="AudioStream" uid="uid://wirkhll1bes8" path="res://shoot.wav" id="4_hqtel"]
+[ext_resource type="PackedScene" uid="uid://b2difggx4q656" path="res://shotgun_pellet.tscn" id="5_b26j0"]
 [ext_resource type="Texture2D" uid="uid://ccqwu041uovoq" path="res://shield_active_sprite.png" id="5_sweqy"]
 [ext_resource type="AudioStream" uid="uid://eretvg1hk1pu" path="res://footsteps.wav" id="7_1jxqw"]
 
@@ -34,6 +35,7 @@ script = ExtResource("1_onrkg")
 bullet_scene = ExtResource("2_i3pqv")
 explosion_scene = ExtResource("3_2hs0m")
 muzzle_flash_scene = ExtResource("4_dw050")
+shotgun_pellet_scene = ExtResource("5_b26j0")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 rotation = 1.5707964
@@ -84,6 +86,10 @@ bus = &"SFX"
 
 [node name="StepTimer" type="Timer" parent="."]
 wait_time = 0.3
+one_shot = true
+
+[node name="SwitchWeaponTimer" type="Timer" parent="."]
+wait_time = 0.2
 one_shot = true
 
 [connection signal="body_entered" from="Hitbox" to="." method="_on_area_2d_body_entered"]

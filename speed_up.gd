@@ -1,6 +1,6 @@
 extends Area2D
 
-@export var duration = 7.0 # Бонус діє 7 секунд
+@export var duration = 15.0 # Бонус діє 15 секунд
 
 func _on_body_entered(body):
 	if body.is_in_group("player") and body.has_method("boost_speed"): # або інша функція
