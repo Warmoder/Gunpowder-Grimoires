@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3 uid="uid://bug5vwbv311rj"]
+
+[ext_resource type="Texture2D" uid="uid://b47ob012jb8fa" path="res://lantern.png" id="1_aeluj"]
+[ext_resource type="Script" uid="uid://gi7cajhbya2s" path="res://lantern.gd" id="1_s57vn"]
+[ext_resource type="Texture2D" uid="uid://cygyv6n7vjrpp" path="res://lantern_n.png" id="2_s57vn"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_y7vr3"]
+diffuse_texture = ExtResource("1_aeluj")
+normal_texture = ExtResource("2_s57vn")
+
+[sub_resource type="Gradient" id="Gradient_nvl01"]
+offsets = PackedFloat32Array(0, 0.84782606, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.15217394, 0.15217394, 0.15217394, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_8u7me"]
+gradient = SubResource("Gradient_nvl01")
+width = 1000
+height = 1000
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.6923077)
+
+[node name="Lantern" type="Node2D"]
+scale = Vector2(0.25, 0.25)
+script = ExtResource("1_s57vn")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.25, 0.25)
+texture = SubResource("CanvasTexture_y7vr3")
+
+[node name="PointLight2D" type="PointLight2D" parent="Sprite2D"]
+z_index = 1
+scale = Vector2(4.2, 4.2)
+color = Color(0.7920856, 0.5412992, 1.92523e-07, 1)
+energy = 1.4
+shadow_enabled = true
+texture = SubResource("GradientTexture2D_8u7me")
+height = 59.0
+
+[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="Sprite2D/PointLight2D"]
+scale = Vector2(0.45, 0.45)
+rect = Rect2(-87.27272, -125.454544, 172.72726, 243.63635)
