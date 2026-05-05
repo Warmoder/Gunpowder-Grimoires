@@ -12,9 +12,15 @@ extends Node
 @export var floor_layer: TileMapLayer
 @export var walls_layer: TileMapLayer
 
-# --- НАЛАШТУВАННЯ ТАЙЛІВ (ВАРІАЦІЇ) ---
-@export var wall_source_id: int = 3
-@export var wall_coords: Array[Vector2i] = [Vector2i(0, 0)]
+# --- ДЕКОРАЦІЇ ---
+@export var lantern_scene: PackedScene
+@export var lantern_chance: float = 0.05 # 5% шанс появи на крайовій стіні
+
+# --- НАЛАШТУВАННЯ СТІН (TERRAINS) ---
+@export var wall_terrain_set: int = 0
+@export var wall_terrain: int = 0
+
+# --- НАЛАШТУВАННЯ ПІДЛОГИ ---
 @export var floor_source_id: int = 1
 @export var floor_coords: Array[Vector2i] = [Vector2i(0, 0)]
 
@@ -27,8 +33,8 @@ var current_tunnel_count: int
 var current_brush_radius: int
 
 func generate_map():
-	if wall_coords.is_empty() or floor_coords.is_empty():
-		print("ПОМИЛКА: Не додано координати тайлів в Інспекторі!")
+	if floor_coords.is_empty():
+		print("ПОМИЛКА: Не додано координати підлоги в Інспекторі!")
 		return []
 
 	print("Починаємо генерацію...")
@@ -36,36 +42,41 @@ func generate_map():
 	# --- 1. РОЗРАХУНОК ДИНАМІЧНОЇ СКЛАДНОСТІ ---
 	var level_bonus = GameManager.current_level - 1
 	
-	# З кожним рівнем карта росте
 	current_width = map_width + (level_bonus * 10)
 	current_height = map_height + (level_bonus * 10)
 	current_tunnel_count = tunnel_count + (level_bonus * 2)
 	current_brush_radius = brush_radius
 	
-	# Вплив складності
 	if GameManager.current_difficulty == GameManager.Difficulty.EASY:
-		current_brush_radius += 1 # Ширші коридори на Ізі
-		current_tunnel_count -= 5 # Менш заплутано
+		current_brush_radius += 1 
+		current_tunnel_count -= 5 
 	else:
-		current_brush_radius -= 1 # Вужчі коридори на Харді
-		current_tunnel_count += 5 # Більше розвилок
+		current_brush_radius -= 1 
+		current_tunnel_count += 5 
 		
-	# Обмеження, щоб генератор не зійшов з розуму на 50-му рівні або не зробив тунель нульовим
 	current_width = min(current_width, 300)
 	current_height = min(current_height, 250)
 	current_tunnel_count = min(current_tunnel_count, 60)
-	current_brush_radius = max(2, current_brush_radius) # Мінімум 2 тайли радіусу
+	current_brush_radius = max(2, current_brush_radius)
 	# ------------------------------------------
 
 	floor_layer.clear()
 	walls_layer.clear()
 	floor_cells.clear()
 	
-	# 2. Заливаємо стінами
-	fill_map_with_walls()
+	# Очищаємо старі ліхтарі з попереднього рівня (якщо вони є)
+	for child in get_children():
+		if child.name.begins_with("Lantern"):
+			child.queue_free()
 	
-	# 3. Копаємо тунелі
+	# 2. СПОЧАТКУ копаємо тунелі
 	dig_waypoint_tunnels()
+	
+	# 3. ПОТІМ малюємо "розумні" стіни навколо підлоги
+	build_smart_walls()
+	
+	# 4. Розставляємо ліхтарі
+	spawn_lanterns()
 	
 	print("Генерація завершена. Радіус: ", current_brush_radius, ", Тунелів: ", current_tunnel_count)
 	return floor_cells
@@ -84,7 +95,6 @@ func create_boss_room() -> Vector2i:
 	var room_radius = 8
 	var padding = room_radius + 2
 	
-	# ВИПРАВЛЕННЯ: Обмежуємо центр кімнати ДО того, як малювати її
 	farthest_tile.x = clamp(farthest_tile.x, -current_width/2 + padding, current_width/2 - padding)
 	farthest_tile.y = clamp(farthest_tile.y, -current_height/2 + padding, current_height/2 - padding)
 	
@@ -94,23 +104,25 @@ func create_boss_room() -> Vector2i:
 			
 			var pos = farthest_tile + Vector2i(x, y)
 			
-			# Прибираємо стіни
 			walls_layer.set_cell(pos, -1)
 			
-			# Вибираємо випадкову підлогу
 			var random_floor = floor_coords.pick_random()
 			floor_layer.set_cell(pos, floor_source_id, random_floor)
 			
 			if not pos in floor_cells:
 				floor_cells.append(pos)
 				
+	# Оновлюємо стіни навколо кімнати боса
+	build_smart_walls()
+			
 	print("Кімната боса створена в точці: ", farthest_tile)
 	return farthest_tile
 
 # --- ДОПОМІЖНІ ФУНКЦІЇ ---
 
-func fill_map_with_walls():
-	# Використовуємо динамічні змінні (current_width замість map_width)
+func build_smart_walls():
+	var wall_cells_to_place: Array[Vector2i] = []
+	
 	var start_x = -current_width / 2
 	var end_x = current_width / 2
 	var start_y = -current_height / 2
@@ -119,14 +131,15 @@ func fill_map_with_walls():
 	for x in range(start_x, end_x):
 		for y in range(start_y, end_y):
 			var pos = Vector2i(x, y)
-			var random_wall = wall_coords.pick_random()
-			walls_layer.set_cell(pos, wall_source_id, random_wall)
+			if not pos in floor_cells:
+				wall_cells_to_place.append(pos)
+				
+	walls_layer.set_cells_terrain_connect(wall_cells_to_place, wall_terrain_set, wall_terrain, true)
 
 func dig_waypoint_tunnels():
 	var current_pos = Vector2i(0, 0)
 	var padding = current_brush_radius + 2
 	
-	# Використовуємо динамічні змінні
 	var min_x = -current_width / 2 + padding
 	var max_x = current_width / 2 - padding
 	var min_y = -current_height / 2 + padding
@@ -149,7 +162,6 @@ func dig_waypoint_tunnels():
 			current_pos.y = clamp(current_pos.y, min_y, max_y)
 
 func carve_brush(center_pos: Vector2i):
-	# Використовуємо динамічний радіус
 	for x in range(-current_brush_radius, current_brush_radius + 1):
 		for y in range(-current_brush_radius, current_brush_radius + 1):
 			if Vector2i(x, y).length() > current_brush_radius: continue
@@ -161,3 +173,29 @@ func carve_brush(center_pos: Vector2i):
 				var random_floor = floor_coords.pick_random()
 				floor_layer.set_cell(draw_pos, floor_source_id, random_floor)
 				floor_cells.append(draw_pos)
+
+func spawn_lanterns():
+	if not lantern_scene:
+		print("Не додано сцену ліхтаря в Інспектор!")
+		return
+		
+	var lantern_counter = 0
+	
+	# Тепер йдемо по всіх клітинках ПІДЛОГИ
+	for floor_pos in floor_cells:
+		
+		# Не спавнимо ліхтар прямо під ногами гравця на старті (0, 0)
+		if floor_pos == Vector2i(0, 0):
+			continue
+			
+		# Кидаємо кубик на появу ліхтаря
+		if randf() < lantern_chance:
+			var lantern = lantern_scene.instantiate()
+			lantern.name = "Lantern_" + str(lantern_counter)
+			lantern_counter += 1
+			
+			# Використовуємо floor_layer для отримання точних координат
+			lantern.position = floor_layer.map_to_local(floor_pos)
+			
+			# Додаємо на сцену
+			add_child(lantern)

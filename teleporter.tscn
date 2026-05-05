@@ -1,20 +1,37 @@
-[gd_scene load_steps=6 format=3 uid="uid://b6if0fkv6w301"]
+[gd_scene load_steps=10 format=3 uid="uid://b6if0fkv6w301"]
 
 [ext_resource type="Script" uid="uid://cpq4fi1s5y584" path="res://teleporter.gd" id="1_tuehi"]
 [ext_resource type="Texture2D" uid="uid://b6ijkjqvu5smv" path="res://portal_sprite.png" id="2_tuehi"]
+[ext_resource type="Texture2D" uid="uid://bpsahn35q80ok" path="res://portal_sprite_n.png" id="3_cpfq8"]
 [ext_resource type="AudioStream" uid="uid://brbubhk386kfb" path="res://portal_ready_sound.wav" id="3_kk6yu"]
 [ext_resource type="AudioStream" uid="uid://b2uj44wly8uxm" path="res://portal_humming.wav" id="4_ahrse"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_5vbqk"]
+diffuse_texture = ExtResource("2_tuehi")
+normal_texture = ExtResource("3_cpfq8")
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ahrse"]
 radius = 64.0
 height = 128.0
+
+[sub_resource type="Gradient" id="Gradient_laavw"]
+offsets = PackedFloat32Array(0, 0.9130435, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.125, 0.125, 0.125, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_rlsis"]
+gradient = SubResource("Gradient_laavw")
+width = 1000
+height = 1000
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.62393165)
 
 [node name="Teleporter" type="Area2D"]
 script = ExtResource("1_tuehi")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.3, 0.3)
-texture = ExtResource("2_tuehi")
+texture = SubResource("CanvasTexture_5vbqk")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_ahrse")
@@ -30,5 +47,17 @@ stream = ExtResource("4_ahrse")
 volume_db = -8.0
 max_distance = 10000.0
 bus = &"SFX"
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+scale = Vector2(0.75, 0.75)
+color = Color(0.12391532, 0.36611727, 0.9999551, 1)
+energy = 2.0
+shadow_enabled = true
+shadow_filter = 2
+texture = SubResource("GradientTexture2D_rlsis")
+height = 24.0
+
+[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="PointLight2D"]
+rect = Rect2(-124, -118, 244, 244)
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

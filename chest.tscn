@@ -1,13 +1,30 @@
-[gd_scene load_steps=6 format=3 uid="uid://dqicymq0tqynp"]
+[gd_scene load_steps=10 format=3 uid="uid://dqicymq0tqynp"]
 
 [ext_resource type="Script" uid="uid://wkxirl085qts" path="res://chest.gd" id="1_8uwsg"]
 [ext_resource type="Texture2D" uid="uid://b2h2xogupylqo" path="res://chest_sprite.png" id="1_twpm2"]
 [ext_resource type="Texture2D" uid="uid://dqen1om5s3man" path="res://chest_open_sprite.png" id="2_bp1or"]
 [ext_resource type="AudioStream" uid="uid://dgpbx2fssya0x" path="res://chest_open.wav" id="4_trlyu"]
+[ext_resource type="Texture2D" uid="uid://byg71h11auukj" path="res://chest_sprite_n.png" id="4_x7mpe"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_bv3sb"]
+diffuse_texture = ExtResource("1_twpm2")
+normal_texture = ExtResource("4_x7mpe")
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8uwsg"]
 radius = 24.0
 height = 70.0
+
+[sub_resource type="Gradient" id="Gradient_rjb7u"]
+offsets = PackedFloat32Array(0, 0.9130435, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.108695626, 0.108695626, 0.108695626, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_day8l"]
+gradient = SubResource("Gradient_rjb7u")
+width = 1000
+height = 1000
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.6367521)
 
 [node name="Chest" type="Area2D"]
 script = ExtResource("1_8uwsg")
@@ -15,7 +32,7 @@ open_sprite_texture = ExtResource("2_bp1or")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.13, 0.13)
-texture = ExtResource("1_twpm2")
+texture = SubResource("CanvasTexture_bv3sb")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 rotation = 1.5707964
@@ -24,5 +41,17 @@ shape = SubResource("CapsuleShape2D_8uwsg")
 [node name="OpenSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("4_trlyu")
 bus = &"SFX"
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+scale = Vector2(0.4, 0.4)
+color = Color(0.79139364, 0.99999994, 0.8976053, 1)
+shadow_enabled = true
+shadow_filter = 2
+texture = SubResource("GradientTexture2D_day8l")
+height = 8.0
+
+[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="PointLight2D"]
+scale = Vector2(0.5, 0.5)
+rect = Rect2(-199.99998, -129.99998, 399.99994, 269.99997)
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

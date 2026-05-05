@@ -1,9 +1,14 @@
-[gd_scene load_steps=7 format=3 uid="uid://ccdklbr2ishf5"]
+[gd_scene load_steps=11 format=3 uid="uid://ccdklbr2ishf5"]
 
 [ext_resource type="Script" uid="uid://cbcysk0gnctfv" path="res://enemy.gd" id="1_4gyqm"]
 [ext_resource type="PackedScene" uid="uid://ckwob8wkpdi28" path="res://explosion.tscn" id="2_qi2p4"]
 [ext_resource type="Texture2D" uid="uid://dy0ofv8t8c0cj" path="res://enemy_sprite.png" id="3_qi2p4"]
+[ext_resource type="Texture2D" uid="uid://dbpeodpj14igx" path="res://enemy_sprite_n.png" id="4_epg4t"]
 [ext_resource type="AudioStream" uid="uid://cedln7fns1bbx" path="res://spawn_sound.wav" id="4_iifgy"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_3yqyl"]
+diffuse_texture = ExtResource("3_qi2p4")
+normal_texture = ExtResource("4_epg4t")
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4gyqm"]
 radius = 48.0
@@ -12,6 +17,18 @@ height = 96.0
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qi2p4"]
 radius = 48.0
 height = 96.0
+
+[sub_resource type="Gradient" id="Gradient_epg4t"]
+offsets = PackedFloat32Array(0, 0.8423913, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.1630435, 0.1630435, 0.1630435, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_3yqyl"]
+gradient = SubResource("Gradient_epg4t")
+width = 1000
+height = 1000
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.62393165)
 
 [node name="Enemy2" type="CharacterBody2D" groups=["enemies"]]
 collision_layer = 2
@@ -23,7 +40,7 @@ metadata/_edit_vertical_guides_ = [-50.0]
 [node name="Sprite2D" type="Sprite2D" parent="." groups=["enemies"]]
 rotation = 1.5707964
 scale = Vector2(0.16, 0.16)
-texture = ExtResource("3_qi2p4")
+texture = SubResource("CanvasTexture_3yqyl")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_4gyqm")
@@ -42,5 +59,16 @@ stream = ExtResource("4_iifgy")
 volume_db = -5.0
 autoplay = true
 bus = &"SFX"
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+scale = Vector2(0.6, 0.6)
+color = Color(1, 0.39760396, 0.33010378, 1)
+energy = 0.5
+shadow_enabled = true
+texture = SubResource("GradientTexture2D_3yqyl")
+height = 26.0
+
+[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="PointLight2D"]
+rect = Rect2(-135, -136.66666, 274.3333, 274.3333)
 
 [connection signal="body_entered" from="AttackArea" to="." method="_on_attack_area_body_entered"]

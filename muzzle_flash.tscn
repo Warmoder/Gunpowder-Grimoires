@@ -1,7 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://d20raonpqngj"]
+[gd_scene load_steps=12 format=3 uid="uid://d20raonpqngj"]
 
 [ext_resource type="Texture2D" uid="uid://be2em58cujgvi" path="res://explosive_sprite.png" id="1_ibyan"]
+[ext_resource type="Texture2D" uid="uid://p8d1iv1noclm" path="res://explosive_sprite_n.png" id="2_7gvi6"]
 [ext_resource type="Script" uid="uid://clw6vw3tn4boh" path="res://muzzle_flash.gd" id="2_k4mlb"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_juadq"]
+diffuse_texture = ExtResource("1_ibyan")
+normal_texture = ExtResource("2_7gvi6")
 
 [sub_resource type="Gradient" id="Gradient_k4mlb"]
 offsets = PackedFloat32Array(0, 0.7525773, 1)
@@ -26,16 +31,40 @@ gravity = Vector3(0, 0, 0)
 scale_curve = SubResource("CurveTexture_3ll1f")
 color_ramp = SubResource("GradientTexture1D_7gvi6")
 
+[sub_resource type="Gradient" id="Gradient_nvl01"]
+offsets = PackedFloat32Array(0, 0.9130435, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.11956519, 0.11956519, 0.11956519, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_3ll1f"]
+gradient = SubResource("Gradient_nvl01")
+width = 1000
+height = 1000
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.64102566)
+
 [node name="GPUParticles2D" type="GPUParticles2D"]
 z_index = 1
 rotation = -1.5707964
 scale = Vector2(3.5, 3.5)
 emitting = false
 amount = 25
-texture = ExtResource("1_ibyan")
+texture = SubResource("CanvasTexture_juadq")
 lifetime = 0.2
 one_shot = true
 explosiveness = 1.0
 local_coords = true
 process_material = SubResource("ParticleProcessMaterial_tlktv")
 script = ExtResource("2_k4mlb")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+scale = Vector2(0.6, 0.6)
+color = Color(0.8996277, 0.37018332, 0, 1)
+energy = 3.5
+shadow_enabled = true
+shadow_filter = 2
+texture = SubResource("GradientTexture2D_3ll1f")
+height = 26.0
+
+[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="PointLight2D"]
+rect = Rect2(-218.5926, -218.59259, 434.58374, 434.58374)

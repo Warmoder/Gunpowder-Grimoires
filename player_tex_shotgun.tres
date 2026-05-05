@@ -1,0 +1,10 @@
+[gd_resource type="CanvasTexture" load_steps=4 format=3 uid="uid://cgrnvcaupoo22"]
+
+[ext_resource type="Texture2D" uid="uid://d4b0xkaiyupk" path="res://sprite_shotgun.png" id="1_c36ly"]
+[ext_resource type="Texture2D" uid="uid://jrxhj28sbs4f" path="res://sprite_shotgun_n.png" id="2_561pq"]
+[ext_resource type="Texture2D" uid="uid://cei3fffmye8vc" path="res://sprite_shotgun_s.png" id="3_hv5qh"]
+
+[resource]
+diffuse_texture = ExtResource("1_c36ly")
+normal_texture = ExtResource("2_561pq")
+specular_texture = ExtResource("3_hv5qh")

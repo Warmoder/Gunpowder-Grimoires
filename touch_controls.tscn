@@ -1,8 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://cjpwc2b1sgjst"]
+[gd_scene load_steps=9 format=3 uid="uid://cjpwc2b1sgjst"]
 
 [ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="1_1gcqp"]
+[ext_resource type="Script" uid="uid://cheqhhlsiekfm" path="res://touch_controls.gd" id="1_5se0o"]
+[ext_resource type="Texture2D" uid="uid://b8ali5k2ktm6y" path="res://heal_button.png" id="2_gv3ke"]
+[ext_resource type="Texture2D" uid="uid://c0ji2axhv7p1o" path="res://heal_button_pressed.png" id="3_5se0o"]
+[ext_resource type="Texture2D" uid="uid://d04p3wm8v50qc" path="res://random_button.png" id="4_a8tu2"]
+[ext_resource type="Texture2D" uid="uid://c3jjqxtu0a6vg" path="res://random_button_pressed.png" id="5_t4nge"]
+[ext_resource type="Texture2D" uid="uid://dfo3tnxwhe3i1" path="res://swap_button.png" id="6_d6vf3"]
+[ext_resource type="Texture2D" uid="uid://dx8np5jvdhq54" path="res://swap_button_pressed.png" id="7_suwiv"]
 
 [node name="CanvasLayer" type="CanvasLayer"]
+script = ExtResource("1_5se0o")
 
 [node name="MoveStick" parent="." instance=ExtResource("1_1gcqp")]
 offset_top = -300.0
@@ -27,3 +35,37 @@ grow_horizontal = 0
 scale = Vector2(1.5, 1.5)
 pivot_offset = Vector2(340, 340)
 use_input_actions = false
+
+[node name="RightSideUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -20.0
+offset_bottom = 20.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="HealButton" type="TouchScreenButton" parent="RightSideUI"]
+position = Vector2(-180, -300)
+scale = Vector2(0.2, 0.2)
+texture_normal = ExtResource("2_gv3ke")
+texture_pressed = ExtResource("3_5se0o")
+action = "magic_heal"
+
+[node name="MagicButton" type="TouchScreenButton" parent="RightSideUI"]
+position = Vector2(-180, -70)
+scale = Vector2(0.2, 0.2)
+texture_normal = ExtResource("4_a8tu2")
+texture_pressed = ExtResource("5_t4nge")
+action = "magic_random"
+
+[node name="SwitchButton" type="TouchScreenButton" parent="RightSideUI"]
+position = Vector2(-180, 160)
+scale = Vector2(0.2, 0.2)
+texture_normal = ExtResource("6_d6vf3")
+texture_pressed = ExtResource("7_suwiv")
+action = "switch_weapon"

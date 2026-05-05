@@ -1,8 +1,13 @@
-[gd_scene load_steps=7 format=3 uid="uid://ckwob8wkpdi28"]
+[gd_scene load_steps=9 format=3 uid="uid://ckwob8wkpdi28"]
 
 [ext_resource type="Texture2D" uid="uid://be2em58cujgvi" path="res://explosive_sprite.png" id="1_vxas0"]
+[ext_resource type="Texture2D" uid="uid://p8d1iv1noclm" path="res://explosive_sprite_n.png" id="2_m5xho"]
 [ext_resource type="Script" uid="uid://ceq4l3nxopfql" path="res://explosion.gd" id="2_vxas0"]
 [ext_resource type="AudioStream" uid="uid://ca0jxf2q8chyx" path="res://death.mp3" id="3_j4sxf"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_kmxf7"]
+diffuse_texture = ExtResource("1_vxas0")
+normal_texture = ExtResource("2_m5xho")
 
 [sub_resource type="Curve" id="Curve_q7epf"]
 _limits = [0.0, 1.5, 0.0, 1.0]
@@ -26,7 +31,7 @@ scale_curve = SubResource("CurveTexture_vxas0")
 z_index = 100
 emitting = false
 amount = 60
-texture = ExtResource("1_vxas0")
+texture = SubResource("CanvasTexture_kmxf7")
 lifetime = 0.75
 one_shot = true
 explosiveness = 1.0

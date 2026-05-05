@@ -25,6 +25,9 @@ func _ready():
 	var transition = transition_scene.instantiate()
 	add_child(transition)
 	
+	# Вказуємо в'юпорту мінікарти використовувати світ основної гри
+	$UI/PanelContainer/SubViewportContainer/SubViewport.world_2d = get_viewport().world_2d
+	
 	# 1. Генерація карти
 	valid_spawn_points = dungeon_generator.generate_map()
 	
