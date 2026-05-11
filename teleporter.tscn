@@ -52,7 +52,6 @@ bus = &"SFX"
 scale = Vector2(0.75, 0.75)
 color = Color(0.12391532, 0.36611727, 0.9999551, 1)
 energy = 2.0
-shadow_enabled = true
 shadow_filter = 2
 texture = SubResource("GradientTexture2D_rlsis")
 height = 24.0

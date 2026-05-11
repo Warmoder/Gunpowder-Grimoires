@@ -55,20 +55,44 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 72
 text = "Settings"
 
-[node name="HSeparator3" type="HSeparator" parent="VBoxContainer"]
+[node name="HSeparator5" type="HSeparator" parent="VBoxContainer"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="PrevResButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "<"
+
+[node name="ResLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 32
+text = "1920x1080"
+
+[node name="NextResButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = ">"
+
+[node name="HSeparator4" type="HSeparator" parent="VBoxContainer"]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 
 [node name="FullscreenCheck" type="CheckButton" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 24
 text = "Fullscreen"
 
 [node name="VsyncCheck" type="CheckButton" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 24
 text = "V-Sync"
 
 [node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
@@ -79,7 +103,7 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 24
 text = "Master Volume"
 
 [node name="MasterSlider" type="HSlider" parent="VBoxContainer"]
@@ -92,7 +116,7 @@ value = 1.0
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 24
 text = "Music Volume"
 
 [node name="MusicSlider" type="HSlider" parent="VBoxContainer"]
@@ -105,7 +129,7 @@ value = 1.0
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 24
 text = "SFX Volume"
 
 [node name="SFXSlider" type="HSlider" parent="VBoxContainer"]
@@ -121,7 +145,7 @@ layout_mode = 2
 [node name="BackButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 28
 text = "Back"
 
 [connection signal="toggled" from="VBoxContainer/FullscreenCheck" to="." method="_on_fullscreen_check_toggled"]

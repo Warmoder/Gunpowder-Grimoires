@@ -64,6 +64,7 @@ expand_margin_bottom = 2.0
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_drp83"]
 
 [resource]
+default_font = ExtResource("1_aggjg")
 Button/fonts/font = ExtResource("1_aggjg")
 Button/styles/disabled = SubResource("StyleBoxTexture_0xefo")
 Button/styles/hover = SubResource("StyleBoxTexture_pfqjd")

@@ -45,7 +45,6 @@ bus = &"SFX"
 [node name="PointLight2D" type="PointLight2D" parent="."]
 scale = Vector2(0.4, 0.4)
 color = Color(0.79139364, 0.99999994, 0.8976053, 1)
-shadow_enabled = true
 shadow_filter = 2
 texture = SubResource("GradientTexture2D_day8l")
 height = 8.0

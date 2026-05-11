@@ -158,7 +158,7 @@ func _physics_process(_delta):
 	if is_shooting and shoot_timer.is_stopped():
 		fire()
 		
-	# --- 5. ЛОГІКА МАГІЇ (Q та E / Touch Buttons) ---
+	# --- 5. ЛОГІКА МАГІЇ ТА ЗБРОЇ (Кнопки / Touch Buttons) ---
 	if Input.is_action_just_pressed("magic_heal") and heal_cooldown <= 0:
 		heal(1)
 		heal_cooldown = 45.0
@@ -168,6 +168,11 @@ func _physics_process(_delta):
 		cast_random_magic()
 		magic_cooldown = 30.0
 		play_magic_sound(random_magic_sound_stream)
+		
+	# НОВЕ: Перевірка зміни зброї перенесена сюди для мобілок
+	if Input.is_action_just_pressed("switch_weapon") and switch_weapon_timer.is_stopped():
+		switch_weapon((current_weapon_index + 1) % weapons_data.size())
+		switch_weapon_timer.start()
 
 func fire():
 	if not current_weapon_scene: return
@@ -319,15 +324,19 @@ func switch_weapon(index):
 		current_weapon_index = index
 		current_weapon_data = weapons_data[current_weapon_index]
 		current_weapon_scene = current_weapon_data["scene"]
+		
 		shoot_timer.wait_time = current_weapon_data["fire_rate"]
 		shoot_sound.stream = current_weapon_data["sound"]
+		
 		if current_weapon_data["texture"] != null:
 			sprite.texture = current_weapon_data["texture"]
+		
 		weapon_changed.emit(current_weapon_data["name"])
 
 func _input(event):
 	if not switch_weapon_timer.is_stopped(): return
 
+	# Залишаємо тут тільки скрол мишкою для ПК
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			switch_weapon((current_weapon_index + 1) % weapons_data.size())
@@ -335,10 +344,6 @@ func _input(event):
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			switch_weapon((current_weapon_index - 1 + weapons_data.size()) % weapons_data.size())
 			switch_weapon_timer.start()
-	
-	if event.is_action_pressed("switch_weapon"):
-		switch_weapon((current_weapon_index + 1) % weapons_data.size())
-		switch_weapon_timer.start()
 
 func _on_hitbox_body_entered(body):
 	if body.is_in_group("enemies"):
