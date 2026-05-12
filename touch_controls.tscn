@@ -50,22 +50,22 @@ grow_horizontal = 0
 grow_vertical = 2
 
 [node name="HealButton" type="TouchScreenButton" parent="RightSideUI"]
-position = Vector2(-180, -300)
-scale = Vector2(0.2, 0.2)
+position = Vector2(-188, -152.00002)
+scale = Vector2(0.1, 0.1)
 texture_normal = ExtResource("2_gv3ke")
 texture_pressed = ExtResource("3_5se0o")
 action = "magic_heal"
 
 [node name="MagicButton" type="TouchScreenButton" parent="RightSideUI"]
-position = Vector2(-180, -70)
-scale = Vector2(0.2, 0.2)
+position = Vector2(-74, -79.00002)
+scale = Vector2(0.1, 0.1)
 texture_normal = ExtResource("4_a8tu2")
 texture_pressed = ExtResource("5_t4nge")
 action = "magic_random"
 
 [node name="SwitchButton" type="TouchScreenButton" parent="RightSideUI"]
-position = Vector2(-180, 160)
-scale = Vector2(0.2, 0.2)
+position = Vector2(-303, -151.00002)
+scale = Vector2(0.1, 0.1)
 texture_normal = ExtResource("6_d6vf3")
 texture_pressed = ExtResource("7_suwiv")
 action = "switch_weapon"

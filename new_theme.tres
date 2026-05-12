@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=12 format=3 uid="uid://8c4hyhwlbged"]
+[gd_resource type="Theme" format=3 uid="uid://8c4hyhwlbged"]
 
 [ext_resource type="FontFile" uid="uid://cbmej8lux8mx0" path="res://text_style.ttf" id="1_aggjg"]
 [ext_resource type="Texture2D" uid="uid://biynphrmi6tb2" path="res://menu_button_disabled.png" id="2_i66g5"]
@@ -64,6 +64,7 @@ expand_margin_bottom = 2.0
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_drp83"]
 
 [resource]
+default_font = ExtResource("1_aggjg")
 Button/fonts/font = ExtResource("1_aggjg")
 Button/styles/disabled = SubResource("StyleBoxTexture_0xefo")
 Button/styles/hover = SubResource("StyleBoxTexture_pfqjd")

@@ -107,10 +107,9 @@ func _on_attack_area_body_entered(body):
 			queue_free()
 
 func drop_loot():
-	# Танк дає більше шансів на випадіння луту
-	for i in range(2):
-		var loot_scene = GameManager.get_random_loot()
-		if loot_scene:
-			var loot = loot_scene.instantiate()
-			get_tree().root.call_deferred("add_child", loot)
-			loot.global_position = global_position + Vector2(randf_range(-10, 10), randf_range(-10, 10))
+	# Танк дропає лут як звичайний ворог (1 раз)
+	var loot_scene = GameManager.get_random_loot()
+	if loot_scene:
+		var loot = loot_scene.instantiate()
+		get_tree().root.call_deferred("add_child", loot)
+		loot.global_position = global_position

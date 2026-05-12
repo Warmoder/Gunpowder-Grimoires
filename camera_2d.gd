@@ -1,12 +1,12 @@
 extends Camera2D
 
-var player
+var shake_strength: float = 0.0
+var shake_fade: float = 5.0
 
-func _ready():
-	# Шукаємо гравця в групі
-	player = get_tree().get_first_node_in_group("player")
+func apply_shake(strength: float):
+	shake_strength = strength
 
-func _process(_delta):
-	if player:
-		# Просто копіюємо позицію гравця
-		global_position = player.global_position
+func _process(delta):
+	if shake_strength > 0:
+		shake_strength = lerpf(shake_strength, 0, shake_fade * delta)
+		offset = Vector2(randf_range(-shake_strength, shake_strength), randf_range(-shake_strength, shake_strength))

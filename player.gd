@@ -158,7 +158,7 @@ func _physics_process(_delta):
 	if is_shooting and shoot_timer.is_stopped():
 		fire()
 		
-	# --- 5. ЛОГІКА МАГІЇ (Q та E / Touch Buttons) ---
+	# --- 5. ЛОГІКА МАГІЇ ТА ЗБРОЇ (Кнопки / Touch Buttons) ---
 	if Input.is_action_just_pressed("magic_heal") and heal_cooldown <= 0:
 		heal(1)
 		heal_cooldown = 45.0
@@ -168,6 +168,11 @@ func _physics_process(_delta):
 		cast_random_magic()
 		magic_cooldown = 30.0
 		play_magic_sound(random_magic_sound_stream)
+		
+	# НОВЕ: Перевірка зміни зброї перенесена сюди для мобілок
+	if Input.is_action_just_pressed("switch_weapon") and switch_weapon_timer.is_stopped():
+		switch_weapon((current_weapon_index + 1) % weapons_data.size())
+		switch_weapon_timer.start()
 
 func fire():
 	if not current_weapon_scene: return
@@ -175,7 +180,8 @@ func fire():
 	var w_name = current_weapon_data["name"]
 	
 	if w_name == "Pistol":
-		spawn_bullet(current_weapon_scene, 1.0, 0.0)
+		spawn_bullet(current_weapon_scene, 2.0, 0.0)
+		$CollisionShape2D/Camera2D.apply_shake(3.0) # Легка віддача
 		
 	elif w_name == "Shotgun":
 		var pellet_count = 5
@@ -184,20 +190,28 @@ func fire():
 			var angle_offset = randf_range(-spread_angle / 2, spread_angle / 2)
 			var final_angle = rotation + deg_to_rad(angle_offset)
 			spawn_pellet(current_weapon_scene, final_angle)
+		$CollisionShape2D/Camera2D.apply_shake(10.0) # Жорстке трясіння
 			
 	elif w_name == "Rifle":
-		var spread_angle = 10.0
+		var spread_angle = 15.0
 		var angle_offset = randf_range(-spread_angle / 2, spread_angle / 2)
-		spawn_bullet(current_weapon_scene, 0.4, angle_offset)
+		spawn_bullet(current_weapon_scene, 0.3, angle_offset)
+		$CollisionShape2D/Camera2D.apply_shake(2.0) # Мікро-вібрація від автомата
 
 	if muzzle_flash_scene:
 		var flash = muzzle_flash_scene.instantiate()
 		$Sprite2D/Muzzle.add_child(flash)
 
+	# --- ЗВУК: ПІТЧ ТА ГУЧНІСТЬ ---
+	
+	# Робимо рандомний пітч для ВСІЄЇ зброї (від 0.9 до 1.15)
+	shoot_sound.pitch_scale = randf_range(0.9, 1.15)
+	
+	# Контроль гучності (Автомат робимо тихішим, інше - стандартно)
 	if w_name == "Rifle":
-		shoot_sound.pitch_scale = randf_range(0.9, 1.1)
+		shoot_sound.volume_db = -10.0 # Робимо тихіше на 10 децибел (якщо все ще гучно, постав -12.0 або -15.0)
 	else:
-		shoot_sound.pitch_scale = 1.0
+		shoot_sound.volume_db = 0.0   # Стандартна гучність для пістолета і дробовика
 
 	shoot_sound.play()
 	shoot_timer.start()
@@ -278,7 +292,11 @@ func play_magic_sound(stream: AudioStream):
 	var p = AudioStreamPlayer.new()
 	p.stream = stream
 	p.bus = "SFX"
-	p.volume_db = 2.0
+	
+	# РОБИМО ТИХІШЕ! 
+	# Було 2.0, ставимо від'ємне значення. Чим менше число, тим тихіше.
+	p.volume_db = -8.0 
+	
 	add_child(p)
 	p.play()
 	p.finished.connect(p.queue_free)
@@ -319,15 +337,19 @@ func switch_weapon(index):
 		current_weapon_index = index
 		current_weapon_data = weapons_data[current_weapon_index]
 		current_weapon_scene = current_weapon_data["scene"]
+		
 		shoot_timer.wait_time = current_weapon_data["fire_rate"]
 		shoot_sound.stream = current_weapon_data["sound"]
+		
 		if current_weapon_data["texture"] != null:
 			sprite.texture = current_weapon_data["texture"]
+		
 		weapon_changed.emit(current_weapon_data["name"])
 
 func _input(event):
 	if not switch_weapon_timer.is_stopped(): return
 
+	# Залишаємо тут тільки скрол мишкою для ПК
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			switch_weapon((current_weapon_index + 1) % weapons_data.size())
@@ -335,10 +357,6 @@ func _input(event):
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			switch_weapon((current_weapon_index - 1 + weapons_data.size()) % weapons_data.size())
 			switch_weapon_timer.start()
-	
-	if event.is_action_pressed("switch_weapon"):
-		switch_weapon((current_weapon_index + 1) % weapons_data.size())
-		switch_weapon_timer.start()
 
 func _on_hitbox_body_entered(body):
 	if body.is_in_group("enemies"):

@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://c7t78jgnvl2un"]
+[gd_scene format=3 uid="uid://c7t78jgnvl2un"]
 
 [ext_resource type="Script" uid="uid://dqxepoux544tm" path="res://boss.gd" id="1_6xxrv"]
 [ext_resource type="PackedScene" uid="uid://cevcytdnelc48" path="res://enemy_bullet.tscn" id="2_lnbgr"]
@@ -33,7 +33,7 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.62393165)
 
-[node name="Enemy" type="CharacterBody2D" groups=["enemies"]]
+[node name="Enemy" type="CharacterBody2D" unique_id=744173351 groups=["enemies"]]
 collision_layer = 2
 collision_mask = 4
 script = ExtResource("1_6xxrv")
@@ -42,48 +42,47 @@ explosion_scene = ExtResource("3_o1i15")
 muzzle_flash_scene = ExtResource("4_kvofc")
 metadata/_edit_vertical_guides_ = [-50.0]
 
-[node name="Sprite2D" type="Sprite2D" parent="." groups=["enemies"]]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=602269869 groups=["enemies"]]
 rotation = -1.5707964
 scale = Vector2(0.18, 0.18)
 texture = SubResource("CanvasTexture_ry61v")
 
-[node name="Muzzle" type="Marker2D" parent="Sprite2D"]
+[node name="Muzzle" type="Marker2D" parent="Sprite2D" unique_id=548146245]
 position = Vector2(0, 420)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=916248848]
 shape = SubResource("CapsuleShape2D_4gyqm")
 
-[node name="ShootTimer" type="Timer" parent="."]
+[node name="ShootTimer" type="Timer" parent="." unique_id=828068926]
 autostart = true
 
-[node name="AttackArea" type="Area2D" parent="."]
+[node name="AttackArea" type="Area2D" parent="." unique_id=116999589]
 collision_layer = 0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea" unique_id=1754067893]
 shape = SubResource("CapsuleShape2D_2ko04")
 
-[node name="RayCast" type="RayCast2D" parent="."]
+[node name="RayCast" type="RayCast2D" parent="." unique_id=540754245]
 collision_mask = 5
 
-[node name="ShootSound" type="AudioStreamPlayer2D" parent="."]
+[node name="ShootSound" type="AudioStreamPlayer2D" parent="." unique_id=1109110720]
 stream = ExtResource("5_o1i15")
 bus = &"SFX"
 
-[node name="SpawnSound" type="AudioStreamPlayer2D" parent="."]
+[node name="SpawnSound" type="AudioStreamPlayer2D" parent="." unique_id=1197147085]
 stream = ExtResource("6_we8h1")
 volume_db = -5.0
 autoplay = true
 bus = &"SFX"
 
-[node name="PointLight2D" type="PointLight2D" parent="."]
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=433317180]
 scale = Vector2(0.6, 0.6)
 color = Color(1, 0.21268043, 0.15969583, 1)
 energy = 0.65
-shadow_enabled = true
 texture = SubResource("GradientTexture2D_ef0k6")
 height = 26.0
 
-[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="PointLight2D"]
+[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="PointLight2D" unique_id=934407723]
 rect = Rect2(-135, -136.66666, 274.3333, 274.3333)
 
 [connection signal="body_entered" from="AttackArea" to="." method="_on_attack_area_body_entered"]
