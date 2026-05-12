@@ -10,7 +10,7 @@ extends CharacterBody2D
 
 # --- ДЛЯ ВІДШТОВХУВАННЯ ---
 @export var knockback_force: float = 150.0
-@export var knockback_resistance: float = 0.9 # Бос майже не відлітає (90% резист)
+@export var knockback_resistance: float = 0.9 
 var current_knockback: Vector2 = Vector2.ZERO
 
 # --- ШТУЧНИЙ ІНТЕЛЕКТ ---
@@ -25,26 +25,20 @@ var wander_target: Vector2 = Vector2.ZERO
 @onready var base_max_health = health
 @onready var base_speed = speed
 
-# Змінна для зберігання гравця
 var player
-# Змінна для пам'яті
 var last_known_position: Vector2
 var is_dead = false
+var can_see_player = false # Змінна для перевірки зору в поточному кадрі
 
 signal died
 
 func _ready():
-	# Отримуємо множник складності
 	var multiplier = GameManager.get_difficulty_multiplier()
-	
-	# Посилюємо ворога
 	health = base_max_health * multiplier
 	speed = base_speed * multiplier
 	
 	shoot_timer.timeout.connect(fire)
 	last_known_position = global_position
-	
-	# Початковий час очікування на арені
 	wander_timer = randf_range(2.0, 3.0)
 
 func _physics_process(delta):
@@ -58,7 +52,7 @@ func _physics_process(delta):
 	ray_cast.target_position = to_local(player.global_position)
 	ray_cast.force_raycast_update()
 	
-	var can_see_player = false
+	can_see_player = false
 	if ray_cast.is_colliding():
 		var collider = ray_cast.get_collider()
 		if collider.is_in_group("player"):
@@ -68,25 +62,31 @@ func _physics_process(delta):
 	if can_see_player:
 		current_state = State.CHASE
 		last_known_position = player.global_position
-	elif current_state == State.CHASE:
-		# Якщо втратили гравця - йдемо в точку де бачили, а потім блукаємо
-		if global_position.distance_to(last_known_position) <= 15:
-			current_state = State.WANDER_WAIT
-			wander_timer = randf_range(1.5, 2.5)
-			shoot_timer.stop()
 
 	match current_state:
 		State.CHASE:
-			look_at(player.global_position)
-			
-			if shoot_timer.is_stopped():
-				shoot_timer.start()
+			if can_see_player:
+				# БАЧИМО ГРАВЦЯ
+				look_at(player.global_position)
 				
-			var dist = global_position.distance_to(player.global_position)
-			if dist > stop_distance:
-				velocity = global_position.direction_to(player.global_position) * speed
+				if shoot_timer.is_stopped():
+					shoot_timer.start()
+					
+				var dist = global_position.distance_to(player.global_position)
+				if dist > stop_distance:
+					velocity = global_position.direction_to(player.global_position) * speed
+				else:
+					velocity = Vector2.ZERO
 			else:
-				velocity = Vector2.ZERO
+				# ВТРАТИЛИ ГРАВЦЯ: Йдемо до останньої відомої точки
+				shoot_timer.stop()
+				look_at(last_known_position)
+				velocity = global_position.direction_to(last_known_position) * speed
+				
+				# Якщо прийшли в точку, а гравця немає - вертаємось у патруль
+				if global_position.distance_to(last_known_position) <= 20:
+					current_state = State.WANDER_WAIT
+					wander_timer = randf_range(1.5, 2.5)
 				
 		State.WANDER_WAIT:
 			velocity = Vector2.ZERO
@@ -111,19 +111,18 @@ func _physics_process(delta):
 	
 	move_and_slide()
 	
-	# Перевірка на зіткнення зі стіною під час блукання
 	if get_slide_collision_count() > 0 and current_state == State.WANDER_MOVE:
 		current_state = State.WANDER_WAIT
 		wander_timer = randf_range(1.0, 2.0)
 
 func pick_random_wander_target():
-	# Бос блукає по більшому радіусу
 	var random_angle = randf() * TAU
 	var random_dist = randf_range(100.0, 300.0)
 	wander_target = global_position + Vector2(cos(random_angle), sin(random_angle)) * random_dist
 
 func fire():
-	if is_dead or current_state != State.CHASE: 
+	# Стріляємо тільки якщо бос живий, бачить гравця і знаходиться в стані погоні
+	if is_dead or current_state != State.CHASE or not can_see_player: 
 		shoot_timer.stop()
 		return
 	
@@ -146,15 +145,11 @@ func take_damage(amount, weapon_type = ""):
 	if is_dead: return
 	
 	var final_damage = amount
-	
-	# Логіка резисту до дробовика
 	if weapon_type == "shotgun":
 		final_damage = amount * 0.25 
-		print("Boss resisted shotgun damage!")
 	
 	health -= final_damage
 	
-	# Навіть боса трохи відхиляє (якщо резист не 1.0)
 	if health > 0 and player:
 		var knockback_dir = (global_position - player.global_position).normalized()
 		var actual_force = knockback_force * (1.0 - knockback_resistance)
@@ -176,13 +171,10 @@ func take_damage(amount, weapon_type = ""):
 
 func _on_attack_area_body_entered(body: Node2D) -> void:
 	if body.has_method("die"):
-		# Миттєве вбивство гравця
 		body.current_health = 0
 		body.die()
-		# Бос НЕ вмирає!
 
 func drop_loot():
-	# 1. Гарантований випадковий бафф (Damage, Speed або Shield)
 	var buff_scene = null
 	var roll = randi() % 3
 	if roll == 0: buff_scene = GameManager.damage_up
@@ -191,9 +183,8 @@ func drop_loot():
 		
 	var buff = buff_scene.instantiate()
 	get_tree().root.call_deferred("add_child", buff)
-	buff.global_position = global_position + Vector2(-15, -15) # Трохи зліва
+	buff.global_position = global_position + Vector2(-15, -15)
 
-	# 2. Гарантоване Зілля здоров'я
 	var potion = GameManager.health_potion.instantiate()
 	get_tree().root.call_deferred("add_child", potion)
-	potion.global_position = global_position + Vector2(15, 15) # Трохи справа
+	potion.global_position = global_position + Vector2(15, 15)

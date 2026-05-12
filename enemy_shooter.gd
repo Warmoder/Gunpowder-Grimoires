@@ -1,8 +1,8 @@
 extends CharacterBody2D
 
 @export var health = 2
-@export var speed = 80.0 # Швидкість руху
-@export var stop_distance = 250.0 # Дистанція, на якій він зупиниться
+@export var speed = 80.0 
+@export var stop_distance = 250.0 
 @export var bullet_scene: PackedScene
 @export var explosion_scene: PackedScene
 @export var muzzle_flash_scene: PackedScene
@@ -24,27 +24,18 @@ var wander_target: Vector2 = Vector2.ZERO
 @onready var base_max_health = health
 @onready var base_speed = speed
 
-# Змінна для зберігання посилання на гравця
 var player
-# Змінна для пам'яті (остання позиція, де бачили гравця)
 var last_known_position: Vector2
 var is_dead = false
 
 signal died
 
 func _ready():
-	# Отримуємо множник складності
 	var multiplier = GameManager.get_difficulty_multiplier()
-	
-	# Посилюємо ворога
 	health = base_max_health * multiplier
 	speed = base_speed * multiplier
-	
-	# Підключаємо сигнал таймера до функції пострілу
 	shoot_timer.timeout.connect(fire)
-	
 	last_known_position = global_position
-	# Початковий час очікування
 	wander_timer = randf_range(1.0, 1.5)
 
 func _physics_process(delta):
@@ -69,27 +60,31 @@ func _physics_process(delta):
 	if can_see_player:
 		current_state = State.CHASE
 		last_known_position = player.global_position
-	elif current_state == State.CHASE:
-		if global_position.distance_to(last_known_position) <= 10:
-			current_state = State.WANDER_WAIT
-			wander_timer = randf_range(1.0, 1.5)
-			shoot_timer.stop()
 
 	match current_state:
 		State.CHASE:
-			look_at(player.global_position)
-			
-			# Стрільба
-			if shoot_timer.is_stopped():
-				shoot_timer.start()
+			if can_see_player:
+				# БАЧИМО ГРАВЦЯ: Дивимось, стріляємо, тримаємо дистанцію
+				look_at(player.global_position)
 				
-			# Рух з урахуванням дистанції зупинки
-			var dist_to_player = global_position.distance_to(player.global_position)
-			if dist_to_player > stop_distance:
-				var direction = global_position.direction_to(player.global_position)
-				velocity = direction * speed
+				if shoot_timer.is_stopped():
+					shoot_timer.start()
+					
+				var dist_to_player = global_position.distance_to(player.global_position)
+				if dist_to_player > stop_distance:
+					velocity = global_position.direction_to(player.global_position) * speed
+				else:
+					velocity = Vector2.ZERO
 			else:
-				velocity = Vector2.ZERO
+				# ВТРАТИЛИ ГРАВЦЯ: Припиняємо вогонь і йдемо до останньої точки
+				shoot_timer.stop()
+				look_at(last_known_position)
+				velocity = global_position.direction_to(last_known_position) * speed
+				
+				# Якщо дійшли до точки, а гравця немає - вертаємось у патруль
+				if global_position.distance_to(last_known_position) <= 15:
+					current_state = State.WANDER_WAIT
+					wander_timer = randf_range(1.0, 2.0)
 				
 		State.WANDER_WAIT:
 			velocity = Vector2.ZERO
@@ -101,9 +96,7 @@ func _physics_process(delta):
 				
 		State.WANDER_MOVE:
 			look_at(wander_target)
-			var direction = global_position.direction_to(wander_target)
-			velocity = direction * (speed * 0.6) # Блукає повільніше
-			
+			velocity = global_position.direction_to(wander_target) * (speed * 0.6)
 			if global_position.distance_to(wander_target) <= 10:
 				current_state = State.WANDER_WAIT
 				wander_timer = randf_range(1.0, 1.5)
@@ -114,7 +107,6 @@ func _physics_process(delta):
 	
 	move_and_slide()
 	
-	# Якщо врізалися в стіну при блуканні
 	if get_slide_collision_count() > 0 and current_state == State.WANDER_MOVE:
 		current_state = State.WANDER_WAIT
 		wander_timer = randf_range(1.0, 1.5)
@@ -125,10 +117,17 @@ func pick_random_wander_target():
 	wander_target = global_position + Vector2(cos(random_angle), sin(random_angle)) * random_dist
 
 func fire():
+	# Стріляємо ТІЛЬКИ якщо ми в стані погоні І бачимо ціль (RayCast оновиться перед пострілом)
 	if is_dead or current_state != State.CHASE:
 		shoot_timer.stop()
 		return
 		
+	# Подвійна перевірка зору прямо в момент пострілу
+	ray_cast.force_raycast_update()
+	if not ray_cast.is_colliding() or not ray_cast.get_collider().is_in_group("player"):
+		shoot_timer.stop()
+		return
+
 	if not bullet_scene: return
 	
 	var bullet_instance = bullet_scene.instantiate()
@@ -143,15 +142,11 @@ func fire():
 		$Sprite2D/Muzzle.add_child(flash)
 
 	shoot_sound.play()
-	# Таймер перезапуститься автоматично через timeout.connect(fire), 
-	# але ми можемо контролювати його тут якщо треба.
 
 func take_damage(amount, weapon_type = ""):
 	if is_dead: return
-	
 	health -= amount
 	
-	# Відштовхування
 	if health > 0 and player:
 		var knockback_dir = (global_position - player.global_position).normalized()
 		var actual_force = knockback_force * (1.0 - knockback_resistance)

@@ -16,6 +16,7 @@
 [ext_resource type="Texture2D" uid="uid://7sc8rxdo4xm0" path="res://da_wall.png" id="9_getpj"]
 [ext_resource type="Script" uid="uid://y8b17ufupc5r" path="res://dungeon_generator.gd" id="9_kek77"]
 [ext_resource type="Theme" uid="uid://8c4hyhwlbged" path="res://new_theme.tres" id="9_ycdy4"]
+[ext_resource type="PackedScene" uid="uid://bolwa5ii63b3h" path="res://loading_screen.tscn" id="10_0odxb"]
 [ext_resource type="Texture2D" uid="uid://d1gfn3h8pgjrk" path="res://full_tilemap_n.png" id="10_cegan"]
 [ext_resource type="Texture2D" uid="uid://dns7b5g5hroad" path="res://da_wall_n.png" id="10_ryguw"]
 [ext_resource type="Texture2D" uid="uid://co54yi75oj7t7" path="res://game_bg.png" id="12_dg77c"]
@@ -1332,6 +1333,7 @@ boss_scene = ExtResource("5_efxa6")
 teleporter_scene = ExtResource("6_dg77c")
 chest_scene = ExtResource("7_w48qg")
 transition_scene = ExtResource("8_yaehf")
+loading_screen_scene = ExtResource("10_0odxb")
 
 [node name="Walls" type="TileMapLayer" parent="." unique_id=682646410]
 z_index = 10
