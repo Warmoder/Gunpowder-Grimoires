@@ -25,9 +25,6 @@ func _ready():
 	var transition = transition_scene.instantiate()
 	add_child(transition)
 	
-	# Вказуємо в'юпорту мінікарти використовувати світ основної гри
-	$UI/PanelContainer/SubViewportContainer/SubViewport.world_2d = get_viewport().world_2d
-	
 	# 1. Генерація карти
 	valid_spawn_points = dungeon_generator.generate_map()
 	
@@ -96,7 +93,8 @@ func _ready():
 	score = GameManager.current_score
 	score_label.text = "Score: " + str(score)
 	# Підключаємо сигнал статистики
-	player.stats_updated.connect(stats_panel.update_stats)
+	if not player.stats_updated.is_connected(stats_panel.update_stats):
+		player.stats_updated.connect(stats_panel.update_stats)
 	player.player_damaged.connect(damage_overlay.flash)
 	player.player_healed.connect(damage_overlay.flash_heal)
 	player.health_changed.connect(health_bar.update_health)

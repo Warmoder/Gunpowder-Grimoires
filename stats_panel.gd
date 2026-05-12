@@ -14,8 +14,12 @@ var player
 func _ready():
 	player = get_tree().get_first_node_in_group("player")
 	if player:
-		player.stats_updated.connect(update_stats)
-		player.weapon_changed.connect(_on_weapon_changed)
+		# Перевіряємо, чи ще не підключено, щоб уникнути подвійного підключення
+		if not player.stats_updated.is_connected(update_stats):
+			player.stats_updated.connect(update_stats)
+			
+		if not player.weapon_changed.is_connected(_on_weapon_changed):
+			player.weapon_changed.connect(_on_weapon_changed)
 
 func _process(_delta):
 	if not player: return

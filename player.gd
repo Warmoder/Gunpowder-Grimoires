@@ -180,7 +180,8 @@ func fire():
 	var w_name = current_weapon_data["name"]
 	
 	if w_name == "Pistol":
-		spawn_bullet(current_weapon_scene, 1.0, 0.0)
+		spawn_bullet(current_weapon_scene, 2.0, 0.0)
+		$CollisionShape2D/Camera2D.apply_shake(3.0) # Легка віддача
 		
 	elif w_name == "Shotgun":
 		var pellet_count = 5
@@ -189,20 +190,28 @@ func fire():
 			var angle_offset = randf_range(-spread_angle / 2, spread_angle / 2)
 			var final_angle = rotation + deg_to_rad(angle_offset)
 			spawn_pellet(current_weapon_scene, final_angle)
+		$CollisionShape2D/Camera2D.apply_shake(10.0) # Жорстке трясіння
 			
 	elif w_name == "Rifle":
-		var spread_angle = 10.0
+		var spread_angle = 15.0
 		var angle_offset = randf_range(-spread_angle / 2, spread_angle / 2)
-		spawn_bullet(current_weapon_scene, 0.4, angle_offset)
+		spawn_bullet(current_weapon_scene, 0.3, angle_offset)
+		$CollisionShape2D/Camera2D.apply_shake(2.0) # Мікро-вібрація від автомата
 
 	if muzzle_flash_scene:
 		var flash = muzzle_flash_scene.instantiate()
 		$Sprite2D/Muzzle.add_child(flash)
 
+	# --- ЗВУК: ПІТЧ ТА ГУЧНІСТЬ ---
+	
+	# Робимо рандомний пітч для ВСІЄЇ зброї (від 0.9 до 1.15)
+	shoot_sound.pitch_scale = randf_range(0.9, 1.15)
+	
+	# Контроль гучності (Автомат робимо тихішим, інше - стандартно)
 	if w_name == "Rifle":
-		shoot_sound.pitch_scale = randf_range(0.9, 1.1)
+		shoot_sound.volume_db = -10.0 # Робимо тихіше на 10 децибел (якщо все ще гучно, постав -12.0 або -15.0)
 	else:
-		shoot_sound.pitch_scale = 1.0
+		shoot_sound.volume_db = 0.0   # Стандартна гучність для пістолета і дробовика
 
 	shoot_sound.play()
 	shoot_timer.start()
@@ -283,7 +292,11 @@ func play_magic_sound(stream: AudioStream):
 	var p = AudioStreamPlayer.new()
 	p.stream = stream
 	p.bus = "SFX"
-	p.volume_db = 2.0
+	
+	# РОБИМО ТИХІШЕ! 
+	# Було 2.0, ставимо від'ємне значення. Чим менше число, тим тихіше.
+	p.volume_db = -8.0 
+	
 	add_child(p)
 	p.play()
 	p.finished.connect(p.queue_free)

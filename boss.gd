@@ -182,10 +182,18 @@ func _on_attack_area_body_entered(body: Node2D) -> void:
 		# Бос НЕ вмирає!
 
 func drop_loot():
-	# Бос може дропати більше луту (можна викликати кілька разів)
-	for i in range(3):
-		var loot_scene = GameManager.get_random_loot()
-		if loot_scene:
-			var loot = loot_scene.instantiate()
-			get_tree().root.call_deferred("add_child", loot)
-			loot.global_position = global_position + Vector2(randf_range(-20, 20), randf_range(-20, 20))
+	# 1. Гарантований випадковий бафф (Damage, Speed або Shield)
+	var buff_scene = null
+	var roll = randi() % 3
+	if roll == 0: buff_scene = GameManager.damage_up
+	elif roll == 1: buff_scene = GameManager.speed_up
+	else: buff_scene = GameManager.shield
+		
+	var buff = buff_scene.instantiate()
+	get_tree().root.call_deferred("add_child", buff)
+	buff.global_position = global_position + Vector2(-15, -15) # Трохи зліва
+
+	# 2. Гарантоване Зілля здоров'я
+	var potion = GameManager.health_potion.instantiate()
+	get_tree().root.call_deferred("add_child", potion)
+	potion.global_position = global_position + Vector2(15, 15) # Трохи справа

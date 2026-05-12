@@ -5,6 +5,8 @@ extends Control
 @onready var master_slider = $VBoxContainer/MasterSlider
 @onready var sfx_slider = $VBoxContainer/SFXSlider
 @onready var music_slider = $VBoxContainer/MusicSlider
+@onready var graphics_dropdown = $VBoxContainer/GraphicsDropdown
+@onready var alt_music_check = $AltMusicCheck
 
 # --- НОВІ ВУЗЛИ ДЛЯ РОЗДІЛЬНОЇ ЗДАТНОСТІ ---
 @onready var prev_res_button = $VBoxContainer/HBoxContainer/PrevResButton
@@ -42,6 +44,28 @@ func _ready():
 	master_slider.value = GameManager.settings_data.master_volume
 	sfx_slider.value = GameManager.settings_data.sfx_volume
 	music_slider.value = GameManager.settings_data.music_volume
+	
+	if graphics_dropdown:
+		graphics_dropdown.clear()
+		graphics_dropdown.add_item("Low (Potato)")
+		graphics_dropdown.add_item("Medium (Balanced)")
+		graphics_dropdown.add_item("Ultra (2.5D Full)")
+		
+		var saved_gfx = GameManager.settings_data.get("graphics_quality", 1)
+		graphics_dropdown.select(saved_gfx)
+		if not graphics_dropdown.item_selected.is_connected(_on_graphics_selected):
+			graphics_dropdown.item_selected.connect(_on_graphics_selected)
+	
+	# Завантажуємо стан кнопки
+	if alt_music_check:
+		alt_music_check.button_pressed = GameManager.settings_data.get("alt_music", false)
+		alt_music_check.toggled.connect(_on_alt_music_toggled)
+
+# НОВА ФУНКЦІЯ
+func _on_graphics_selected(index: int):
+	GameManager.settings_data["graphics_quality"] = index
+	GameManager.apply_graphics_quality()
+	GameManager.save_settings()
 
 # --- ЛОГІКА РОЗДІЛЬНОЇ ЗДАТНОСТІ ---
 
@@ -61,8 +85,14 @@ func apply_resolution():
 	GameManager.settings_data["resolution_index"] = current_res_index
 	update_res_label()
 	
-	if not fullscreen_check.button_pressed:
-		var target_size = resolutions[current_res_index]
+	var target_size = resolutions[current_res_index]
+	
+	# 1. ЗМІНА ВНУТРІШНЬОГО РЕНДЕРУ (Працює скрізь: Fullscreen, Android, ПК)
+	# Це як FSR: гра малюватиметься в меншій якості, але розтягнеться на весь екран.
+	get_window().content_scale_size = target_size
+	
+	# 2. ФІЗИЧНИЙ РОЗМІР ВІКНА (Тільки для ПК у віконному режимі)
+	if not fullscreen_check.button_pressed and OS.get_name() != "Android" and OS.get_name() != "iOS":
 		DisplayServer.window_set_size(target_size)
 		
 		# Центруємо вікно
@@ -117,6 +147,16 @@ func _update_bus_volume(bus_name: String, linear_value: float):
 	var bus_index = AudioServer.get_bus_index(bus_name)
 	if bus_index != -1:
 		AudioServer.set_bus_volume_db(bus_index, linear_to_db(linear_value))
+
+func _on_alt_music_toggled(button_pressed: bool):
+	GameManager.settings_data["alt_music"] = button_pressed
+	GameManager.save_settings()
+	
+	# Знаходимо MusicManager (Autoload)
+	var music_manager = get_node_or_null("/root/MusicManager")
+	if music_manager:
+		# Змінюємо трек прямо під час гри, якщо треба
+		music_manager.update_track_if_playing()
 
 func _on_back_button_pressed():
 	GameManager.save_settings()

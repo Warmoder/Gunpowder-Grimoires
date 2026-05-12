@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bw486lcwnfc1v"]
+[gd_scene format=3 uid="uid://bw486lcwnfc1v"]
 
 [ext_resource type="Script" uid="uid://bcqgtgqjheye4" path="res://player.gd" id="1_onrkg"]
 [ext_resource type="PackedScene" uid="uid://c8evd5r7rx47t" path="res://bullet.tscn" id="2_i3pqv"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://dvjpukmujob0h" path="res://rifle_bullet.tscn" id="6_ivps1"]
 [ext_resource type="AudioStream" uid="uid://eretvg1hk1pu" path="res://footsteps.wav" id="7_1jxqw"]
 [ext_resource type="Texture2D" uid="uid://dob3a8ldakhmn" path="res://sprite_n.png" id="7_nvl01"]
+[ext_resource type="Script" uid="uid://b5gkldgxbk47e" path="res://camera_2d.gd" id="9_urp6f"]
 [ext_resource type="Texture2D" uid="uid://dphf4mf046rv8" path="res://shield_active_sprite_n.png" id="10_ivps1"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_urp6f"]
@@ -41,7 +42,7 @@ fill_to = Vector2(1, 0.60683763)
 diffuse_texture = ExtResource("5_sweqy")
 normal_texture = ExtResource("10_ivps1")
 
-[node name="Player" type="CharacterBody2D" groups=["player"]]
+[node name="Player" type="CharacterBody2D" unique_id=261775955 groups=["player"]]
 collision_mask = 4
 script = ExtResource("1_onrkg")
 bullet_scene = ExtResource("2_i3pqv")
@@ -50,74 +51,72 @@ muzzle_flash_scene = ExtResource("4_dw050")
 shotgun_pellet_scene = ExtResource("5_b26j0")
 rifle_bullet_scene = ExtResource("6_ivps1")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=270372416]
 rotation = 1.5707964
 scale = Vector2(0.23, 0.23)
 texture = SubResource("CanvasTexture_urp6f")
 
-[node name="Muzzle" type="Marker2D" parent="Sprite2D"]
+[node name="Muzzle" type="Marker2D" parent="Sprite2D" unique_id=1015550000]
 position = Vector2(0, -415)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2014567334]
 visible = false
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_onrkg")
 
-[node name="Camera2D" type="Camera2D" parent="CollisionShape2D"]
+[node name="Camera2D" type="Camera2D" parent="CollisionShape2D" unique_id=243776849]
 rotation = -1.5707964
+script = ExtResource("9_urp6f")
 
-[node name="Hitbox" type="Area2D" parent="."]
+[node name="Hitbox" type="Area2D" parent="." unique_id=1522856117]
 visible = false
 collision_layer = 0
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=304275821]
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_i3pqv")
 
-[node name="ShootSound" type="AudioStreamPlayer2D" parent="."]
+[node name="ShootSound" type="AudioStreamPlayer2D" parent="." unique_id=1656534550]
 stream = ExtResource("4_hqtel")
 bus = &"SFX"
 
-[node name="ShootTimer" type="Timer" parent="."]
+[node name="ShootTimer" type="Timer" parent="." unique_id=2005723283]
 wait_time = 0.4
 one_shot = true
 
-[node name="PointLight2D" type="PointLight2D" parent="."]
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=224385151]
 energy = 1.3
 shadow_enabled = true
 shadow_filter = 1
 texture = SubResource("GradientTexture2D_sweqy")
 height = 26.0
 
-[node name="ShieldSprite" type="Sprite2D" parent="."]
+[node name="ShieldSprite" type="Sprite2D" parent="." unique_id=536300052]
 visible = false
 show_behind_parent = true
 scale = Vector2(0.3, 0.3)
 texture = SubResource("CanvasTexture_bwjto")
 
-[node name="PointLight2D" type="PointLight2D" parent="ShieldSprite"]
+[node name="PointLight2D" type="PointLight2D" parent="ShieldSprite" unique_id=5464258]
 scale = Vector2(1.7, 1.7)
 color = Color(0.4903397, 0.75446695, 1, 1)
 energy = 1.3
 texture = SubResource("GradientTexture2D_sweqy")
 height = 26.0
 
-[node name="FootstepSound" type="AudioStreamPlayer2D" parent="."]
+[node name="FootstepSound" type="AudioStreamPlayer2D" parent="." unique_id=492204300]
 stream = ExtResource("7_1jxqw")
 volume_db = -15.0
 autoplay = true
 bus = &"SFX"
 
-[node name="StepTimer" type="Timer" parent="."]
+[node name="StepTimer" type="Timer" parent="." unique_id=248944750]
 wait_time = 0.3
 one_shot = true
 
-[node name="SwitchWeaponTimer" type="Timer" parent="."]
+[node name="SwitchWeaponTimer" type="Timer" parent="." unique_id=1527838968]
 wait_time = 0.2
 one_shot = true
-
-[node name="RemoteTransform2D" type="RemoteTransform2D" parent="."]
-remote_path = NodePath("../CollisionShape2D/Camera2D")
 
 [connection signal="body_entered" from="Hitbox" to="." method="_on_area_2d_body_entered"]

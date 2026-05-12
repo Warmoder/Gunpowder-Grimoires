@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://c66q2jtb1aiho"]
+[gd_scene format=3 uid="uid://c66q2jtb1aiho"]
 
 [ext_resource type="Script" uid="uid://c0eqmh0ix0c3f" path="res://tank_enemy.gd" id="1_ro7nh"]
 [ext_resource type="PackedScene" uid="uid://ckwob8wkpdi28" path="res://explosion.tscn" id="2_f4jl6"]
@@ -30,44 +30,44 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.62393165)
 
-[node name="Enemy2" type="CharacterBody2D" groups=["enemies"]]
+[node name="Enemy2" type="CharacterBody2D" unique_id=44904830 groups=["enemies"]]
 collision_layer = 2
 collision_mask = 4
 script = ExtResource("1_ro7nh")
 explosion_scene = ExtResource("2_f4jl6")
 metadata/_edit_vertical_guides_ = [-50.0]
 
-[node name="Sprite2D" type="Sprite2D" parent="." groups=["enemies"]]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1703764753 groups=["enemies"]]
 rotation = 1.5707964
 scale = Vector2(0.16, 0.16)
 texture = SubResource("CanvasTexture_bvcpb")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1061043545]
 shape = SubResource("CapsuleShape2D_4gyqm")
 
-[node name="AttackArea" type="Area2D" parent="."]
+[node name="AttackArea" type="Area2D" parent="." unique_id=1008440233]
 collision_layer = 0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea" unique_id=745750983]
 shape = SubResource("CapsuleShape2D_qi2p4")
 
-[node name="RayCast" type="RayCast2D" parent="."]
+[node name="RayCast" type="RayCast2D" parent="." unique_id=1265021647]
 collision_mask = 5
 
-[node name="SpawnSound" type="AudioStreamPlayer2D" parent="."]
+[node name="SpawnSound" type="AudioStreamPlayer2D" parent="." unique_id=1279506496]
 stream = ExtResource("5_soj1a")
 volume_db = -5.0
 autoplay = true
 bus = &"SFX"
 
-[node name="PointLight2D" type="PointLight2D" parent="."]
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=1476327870]
 scale = Vector2(0.6, 0.6)
 color = Color(1, 0.39760396, 0.33010378, 1)
 energy = 0.5
 texture = SubResource("GradientTexture2D_3yqyl")
 height = 26.0
 
-[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="PointLight2D"]
+[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="PointLight2D" unique_id=1448349738]
 rect = Rect2(-135, -136.66666, 274.3333, 274.3333)
 
 [connection signal="body_entered" from="AttackArea" to="." method="_on_attack_area_body_entered"]
