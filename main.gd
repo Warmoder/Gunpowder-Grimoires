@@ -15,6 +15,9 @@ var valid_spawn_points: Array[Vector2i] = []
 @export var teleporter_scene: PackedScene
 @export var chest_scene: PackedScene
 @export var transition_scene: PackedScene
+@export var loading_screen_scene: PackedScene
+var current_loading_screen = null
+var current_transition = null
 @onready var player = $Player
 @onready var health_bar = $UI/HealthBar
 @onready var stats_panel = $UI/StatsPanel
@@ -22,17 +25,25 @@ var valid_spawn_points: Array[Vector2i] = []
 @onready var pause_button = $UI/PauseButton
 
 func _ready():
-	var transition = transition_scene.instantiate()
-	add_child(transition)
+	# 1. ПОКАЗУЄМО ТІЛЬКИ ЕКРАН "ГЕНЕРАЦІЇ"
+	if loading_screen_scene:
+		current_loading_screen = loading_screen_scene.instantiate()
+		add_child(current_loading_screen)
 	
-	# 1. Генерація карти
-	valid_spawn_points = dungeon_generator.generate_map()
+	# Даємо рушію 1 кадр, щоб відмалювати текст "Generating..."
+	await get_tree().process_frame
 	
-	# 2. Створення кімнати боса
+	# 2. Підключаємось до генератора і запускаємо потік
+	dungeon_generator.generation_finished.connect(_on_map_generated)
+	dungeon_generator.generate_map()
+
+# Ця функція викличеться САМА, коли фоновий потік закінчить роботу
+func _on_map_generated(floor_cells_result):
+	valid_spawn_points = floor_cells_result
+	
 	var boss_room_center = dungeon_generator.create_boss_room()
 	var boss_pos_pixel = dungeon_generator.floor_layer.map_to_local(boss_room_center)
 	
-	# 3. Спавн об'єктів боса
 	var teleporter = teleporter_scene.instantiate()
 	teleporter.position = boss_pos_pixel
 	add_child(teleporter)
@@ -42,19 +53,12 @@ func _ready():
 	boss.died.connect(teleporter.activate)
 	add_child(boss)
 	
-	# 3.5. СКЕЙЛІНГ СКЛАДНОСТЫ ВОРОГІВ
-	# Зменшуємо час між спавном ворогів
-	# Рівень 1: 2.0 сек
-	# Рівень 5: 1.6 сек
-	# Рівень 10: 1.1 сек
 	var spawn_rate = 2.0 / GameManager.get_difficulty_multiplier()
-	# Обмежуємо, щоб не було менше 0.5 сек (бо буде пекло)
 	spawn_rate = max(0.5, spawn_rate)
 	
 	spawn_timer.wait_time = spawn_rate
 	spawn_timer.start()
 	
-	# 4. СПАВН ГРАВЦЯ (Пошук найдальшої точки)
 	var player_start_tile = Vector2i(0, 0)
 	var max_dist = 0.0
 	
@@ -71,35 +75,54 @@ func _ready():
 	var touch_controls = $TouchControls
 	
 	if OS.get_name() == "Android":
-		# На Android: джойстики і кнопка паузи видимі
 		touch_controls.show()
 		pause_button.show()
-		pause_button.pressed.connect(_on_pause_button_pressed)
+		if not pause_button.pressed.is_connected(_on_pause_button_pressed):
+			pause_button.pressed.connect(_on_pause_button_pressed)
 	else:
-		# На ПК: джойстики і кнопка паузи не потрібні
 		touch_controls.hide()
 		pause_button.hide()
 	
-	# 5. СПАВН СУНДУКІВ
 	for i in range(5):
 		spawn_chest()
 	
-	# 6. Налаштування гри
 	spawn_timer.start()
 	MusicManager.play_battle_music()
 	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
 	
-	# 7. Оновлення UI (Score + HP)
 	score = GameManager.current_score
 	score_label.text = "Score: " + str(score)
-	# Підключаємо сигнал статистики
+	
 	if not player.stats_updated.is_connected(stats_panel.update_stats):
 		player.stats_updated.connect(stats_panel.update_stats)
-	player.player_damaged.connect(damage_overlay.flash)
-	player.player_healed.connect(damage_overlay.flash_heal)
-	player.health_changed.connect(health_bar.update_health)
-	# Оновлюємо ХП-бар значенням з GameManager, яке ми перенесли з минулого рівня
+		
+	if not player.player_damaged.is_connected(damage_overlay.flash):
+		player.player_damaged.connect(damage_overlay.flash)
+		
+	if not player.player_healed.is_connected(damage_overlay.flash_heal):
+		player.player_healed.connect(damage_overlay.flash_heal)
+		
+	if not player.health_changed.is_connected(health_bar.update_health):
+		player.health_changed.connect(health_bar.update_health)
+		
 	health_bar.update_health(GameManager.current_health, GameManager.max_health)
+
+	# --- ФІНАЛ: ЗМІНА ЕКРАНІВ ---
+	# Даємо рушію мікросекунду розставити об'єкти
+	await get_tree().process_frame 
+	
+	# 1. Прибираємо технічний напис "Генерація..."
+	if current_loading_screen:
+		current_loading_screen.queue_free()
+		current_loading_screen = null
+		
+	# 2. Створюємо кінематографічний напис "Level X" 
+	current_transition = transition_scene.instantiate()
+	add_child(current_transition)
+	
+	# 3. Запускаємо його розчинення
+	if current_transition.has_method("start_fade_out"):
+		current_transition.start_fade_out()
 
 func _process(_delta):
 	# Виведе FPS у заголовок вікна (зручно дивитись)
