@@ -7,12 +7,10 @@ extends CharacterBody2D
 @export var explosion_scene: PackedScene
 @export var muzzle_flash_scene: PackedScene
 
-# --- ДЛЯ ВІДШТОВХУВАННЯ ---
 @export var knockback_force: float = 250.0
 @export var knockback_resistance: float = 0.0
 var current_knockback: Vector2 = Vector2.ZERO
 
-# --- ШТУЧНИЙ ІНТЕЛЕКТ ---
 enum State { WANDER_WAIT, WANDER_MOVE, CHASE }
 var current_state = State.WANDER_WAIT
 var wander_timer: float = 0.0
@@ -27,6 +25,7 @@ var wander_target: Vector2 = Vector2.ZERO
 var player
 var last_known_position: Vector2
 var is_dead = false
+var can_see_player = false
 
 signal died
 
@@ -45,17 +44,14 @@ func _physics_process(delta):
 		player = get_tree().get_first_node_in_group("player")
 		return
 
-	# --- 1. ЗІР (RayCast) ---
 	ray_cast.target_position = to_local(player.global_position)
 	ray_cast.force_raycast_update()
 	
-	var can_see_player = false
+	can_see_player = false
 	if ray_cast.is_colliding():
 		var collider = ray_cast.get_collider()
 		if collider.is_in_group("player"):
 			can_see_player = true
-	
-	# --- 2. ЛОГІКА СТАНІВ ---
 	
 	if can_see_player:
 		current_state = State.CHASE
@@ -64,11 +60,8 @@ func _physics_process(delta):
 	match current_state:
 		State.CHASE:
 			if can_see_player:
-				# БАЧИМО ГРАВЦЯ: Дивимось, стріляємо, тримаємо дистанцію
 				look_at(player.global_position)
-				
-				if shoot_timer.is_stopped():
-					shoot_timer.start()
+				if shoot_timer.is_stopped(): shoot_timer.start()
 					
 				var dist_to_player = global_position.distance_to(player.global_position)
 				if dist_to_player > stop_distance:
@@ -76,13 +69,13 @@ func _physics_process(delta):
 				else:
 					velocity = Vector2.ZERO
 			else:
-				# ВТРАТИЛИ ГРАВЦЯ: Припиняємо вогонь і йдемо до останньої точки
+				# ВТРАТИЛИ ГРАВЦЯ
 				shoot_timer.stop()
 				look_at(last_known_position)
 				velocity = global_position.direction_to(last_known_position) * speed
 				
-				# Якщо дійшли до точки, а гравця немає - вертаємось у патруль
-				if global_position.distance_to(last_known_position) <= 15:
+				# ФІКС: Якщо дійшли до точки АБО врізалися в стіну по дорозі - здаємось!
+				if global_position.distance_to(last_known_position) <= 20 or get_slide_collision_count() > 0:
 					current_state = State.WANDER_WAIT
 					wander_timer = randf_range(1.0, 2.0)
 				
@@ -101,12 +94,11 @@ func _physics_process(delta):
 				current_state = State.WANDER_WAIT
 				wander_timer = randf_range(1.0, 1.5)
 
-	# --- 3. ФІЗИКА ТА ВІДШТОВХУВАННЯ ---
 	current_knockback = current_knockback.lerp(Vector2.ZERO, 10.0 * delta)
 	velocity += current_knockback
-	
 	move_and_slide()
 	
+	# Якщо врізалися в стіну при звичайному блуканні
 	if get_slide_collision_count() > 0 and current_state == State.WANDER_MOVE:
 		current_state = State.WANDER_WAIT
 		wander_timer = randf_range(1.0, 1.5)
@@ -117,12 +109,10 @@ func pick_random_wander_target():
 	wander_target = global_position + Vector2(cos(random_angle), sin(random_angle)) * random_dist
 
 func fire():
-	# Стріляємо ТІЛЬКИ якщо ми в стані погоні І бачимо ціль (RayCast оновиться перед пострілом)
-	if is_dead or current_state != State.CHASE:
+	if is_dead or current_state != State.CHASE or not can_see_player:
 		shoot_timer.stop()
 		return
 		
-	# Подвійна перевірка зору прямо в момент пострілу
 	ray_cast.force_raycast_update()
 	if not ray_cast.is_colliding() or not ray_cast.get_collider().is_in_group("player"):
 		shoot_timer.stop()
@@ -132,7 +122,6 @@ func fire():
 	
 	var bullet_instance = bullet_scene.instantiate()
 	get_tree().root.add_child(bullet_instance)
-	
 	bullet_instance.global_position = $Sprite2D/Muzzle.global_position
 	bullet_instance.rotation = global_rotation
 	bullet_instance.direction = transform.x
@@ -165,9 +154,7 @@ func take_damage(amount, weapon_type = ""):
 
 func _on_attack_area_body_entered(body):
 	if body.has_method("die"):
-		var damage_success = body.die()
-		if damage_success:
-			queue_free()
+		if body.die(): queue_free()
 
 func drop_loot():
 	var loot_scene = GameManager.get_random_loot()

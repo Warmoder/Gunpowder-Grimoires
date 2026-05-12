@@ -83,8 +83,8 @@ func _physics_process(delta):
 				look_at(last_known_position)
 				velocity = global_position.direction_to(last_known_position) * speed
 				
-				# Якщо прийшли в точку, а гравця немає - вертаємось у патруль
-				if global_position.distance_to(last_known_position) <= 20:
+				# ФІКС: Якщо прийшли в точку АБО врізалися в стіну — вертаємось у патруль
+				if global_position.distance_to(last_known_position) <= 20 or get_slide_collision_count() > 0:
 					current_state = State.WANDER_WAIT
 					wander_timer = randf_range(1.5, 2.5)
 				
@@ -111,6 +111,7 @@ func _physics_process(delta):
 	
 	move_and_slide()
 	
+	# Перевірка на зіткнення зі стіною під час звичайного блукання
 	if get_slide_collision_count() > 0 and current_state == State.WANDER_MOVE:
 		current_state = State.WANDER_WAIT
 		wander_timer = randf_range(1.0, 2.0)
@@ -121,7 +122,6 @@ func pick_random_wander_target():
 	wander_target = global_position + Vector2(cos(random_angle), sin(random_angle)) * random_dist
 
 func fire():
-	# Стріляємо тільки якщо бос живий, бачить гравця і знаходиться в стані погоні
 	if is_dead or current_state != State.CHASE or not can_see_player: 
 		shoot_timer.stop()
 		return

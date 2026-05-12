@@ -1,13 +1,11 @@
 extends CharacterBody2D
 
-# Налаштування Танка
 @export var health = 8
 @export var speed = 90.0
 @export var explosion_scene: PackedScene
 
-# Танк взагалі не відлітає
-@export var knockback_force: float = 0.0
-@export var knockback_resistance: float = 1.0 
+@export var knockback_force: float = 300.0
+@export var knockback_resistance: float = 1.0 # 1.0 для Танка, 0.0 для звичайного
 var current_knockback: Vector2 = Vector2.ZERO
 
 enum State { WANDER_WAIT, WANDER_MOVE, CHASE }
@@ -50,21 +48,29 @@ func _physics_process(delta):
 	if can_see_player:
 		current_state = State.CHASE
 		last_known_position = player.global_position
-	elif current_state == State.CHASE:
-		if global_position.distance_to(last_known_position) <= 10:
-			current_state = State.WANDER_WAIT
-			wander_timer = randf_range(1.0, 1.5)
 			
 	match current_state:
 		State.CHASE:
-			look_at(last_known_position)
-			velocity = global_position.direction_to(last_known_position) * speed
+			if can_see_player:
+				look_at(player.global_position)
+				velocity = global_position.direction_to(player.global_position) * speed
+			else:
+				# Втратили гравця
+				look_at(last_known_position)
+				velocity = global_position.direction_to(last_known_position) * speed
+				
+				# ФІКС: Здаємось, якщо дійшли до точки АБО врізалися в кут
+				if global_position.distance_to(last_known_position) <= 20 or get_slide_collision_count() > 0:
+					current_state = State.WANDER_WAIT
+					wander_timer = randf_range(1.0, 2.0)
+					
 		State.WANDER_WAIT:
 			velocity = Vector2.ZERO
 			wander_timer -= delta
 			if wander_timer <= 0:
 				pick_random_wander_target()
 				current_state = State.WANDER_MOVE
+				
 		State.WANDER_MOVE:
 			look_at(wander_target)
 			velocity = global_position.direction_to(wander_target) * (speed * 0.5)
@@ -72,42 +78,47 @@ func _physics_process(delta):
 				current_state = State.WANDER_WAIT
 				wander_timer = randf_range(1.0, 1.5)
 
+	current_knockback = current_knockback.lerp(Vector2.ZERO, 10.0 * delta)
+	velocity += current_knockback
 	move_and_slide()
+	
+	if get_slide_collision_count() > 0 and current_state == State.WANDER_MOVE:
+		current_state = State.WANDER_WAIT
+		wander_timer = randf_range(1.0, 1.5)
 
 func pick_random_wander_target():
 	var random_angle = randf() * TAU
-	var random_dist = randf_range(40.0, 100.0)
+	var random_dist = randf_range(40.0, 150.0)
 	wander_target = global_position + Vector2(cos(random_angle), sin(random_angle)) * random_dist
 
 func take_damage(amount, weapon_type = ""):
 	if is_dead: return
 	health -= amount
-	# Танк не має логіки кнокбеку, він просто ігнорує її
-	if health <= 0:
-		die_now()
+	
+	if health > 0 and player:
+		var knockback_dir = (global_position - player.global_position).normalized()
+		var actual_force = knockback_force * (1.0 - knockback_resistance)
+		current_knockback = knockback_dir * actual_force
 
-func die_now():
-	is_dead = true 
-	emit_signal("died")
-	if explosion_scene:
-		var explosion = explosion_scene.instantiate()
-		get_tree().root.add_child(explosion)
-		explosion.global_position = global_position
-		explosion.emitting = true
-	drop_loot()
-	queue_free()
+	if health <= 0:
+		is_dead = true 
+		emit_signal("died")
+		if explosion_scene:
+			var explosion = explosion_scene.instantiate()
+			get_tree().root.add_child(explosion)
+			explosion.global_position = global_position
+			explosion.emitting = true
+		drop_loot()
+		queue_free()
 
 func _on_attack_area_body_entered(body):
-	if body.has_method("die") and body.has_method("heal"):
-		# ТАНК МОЖЕ БИТИ БОЛЯЧЕ
-		# Наприклад, зносимо 2 ХП замість 1
-		body.current_health -= 1 # Один раз зніметься в die(), другий раз тут
+	if body.has_method("die"):
+		# Танк може бити сильніше, звичайний ворог - стандартно
 		var damage_success = body.die()
 		if damage_success:
 			queue_free()
 
 func drop_loot():
-	# Танк дропає лут як звичайний ворог (1 раз)
 	var loot_scene = GameManager.get_random_loot()
 	if loot_scene:
 		var loot = loot_scene.instantiate()
