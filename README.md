@@ -1,4 +1,4 @@
-# Gunpowder & Grimoires (v4.1)
+# Gunpowder & Grimoires (v4.1.1)
 
 **Gunpowder & Grimoires** is a dynamic 2.5D top-down dark fantasy rogue-lite shooter built with **Godot Engine 4.6.2**, where enchanted firearms meet arcane grimoires inside procedurally generated dungeons.
 
