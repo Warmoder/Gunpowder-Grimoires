@@ -170,6 +170,36 @@
       color: var(--muted); font-size: 0.88rem;
     }
 
+    /* Media gallery */
+    .video-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 24px;
+    }
+    .media-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+      transition: transform 0.18s ease, border-color 0.2s ease;
+    }
+    .media-card:hover { transform: translateY(-3px); border-color: rgba(240, 179, 84, 0.55); }
+    .media-card video, .media-card img { width: 100%; display: block; aspect-ratio: 16/9; object-fit: cover; }
+    .media-caption { padding: 12px 16px; font-size: 0.92rem; color: var(--muted); }
+    .media-caption strong { color: #fff; }
+    .shot-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;
+    }
+    .shot-grid .media-card { cursor: zoom-in; }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 100; display: none;
+      align-items: center; justify-content: center;
+      background: rgba(5, 4, 10, 0.92); backdrop-filter: blur(8px);
+      padding: 24px; cursor: zoom-out;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: 95vw; max-height: 90vh; border-radius: 10px;
+      border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    }
+
     footer {
       border-top: 1px solid var(--border);
       padding: 34px 6vw;
@@ -191,6 +221,7 @@
     <span>Gunpowder &amp; Grimoires</span>
   </a>
   <div class="nav-links">
+    <a href="#media" data-en="Gameplay" data-ua="Геймплей">Gameplay</a>
     <a href="#features" data-en="Features" data-ua="Особливості">Features</a>
     <a href="#arsenal" data-en="Arsenal" data-ua="Арсенал">Arsenal</a>
     <a href="#controls" data-en="Controls" data-ua="Керування">Controls</a>
@@ -215,6 +246,50 @@
     </div>
   </div>
 </header>
+
+<section id="media">
+  <h2 class="section-title" data-en="Gameplay &amp; Screenshots" data-ua="Геймплей та скріншоти">Gameplay &amp; Screenshots</h2>
+  <p class="section-sub" data-en="Captured directly in-game on Release 4.1 (click any screenshot to enlarge)."
+     data-ua="Записано безпосередньо в грі на версії 4.1 (натисни на будь-який скріншот, щоб збільшити).">
+    Captured directly in-game on Release 4.1 (click any screenshot to enlarge).
+  </p>
+  <div class="video-grid">
+    <div class="media-card">
+      <video src="media/clip_combat.mp4" autoplay loop muted playsinline controls poster="media/screen_combat.jpg"></video>
+      <div class="media-caption">
+        <strong data-en="Fast-Paced Dungeon Combat" data-ua="Динамічний бій у підземеллі">Fast-Paced Dungeon Combat</strong> —
+        <span data-en="Floating damage numbers, chests, buffs, and 60Hz smooth physics." data-ua="Цифри урону, скрині, бафи та плавна 60 Гц фізика.">Floating damage numbers, chests, buffs, and 60Hz smooth physics.</span>
+      </div>
+    </div>
+    <div class="media-card">
+      <video src="media/clip_boss.mp4" autoplay loop muted playsinline controls poster="media/screen_boss.jpg"></video>
+      <div class="media-caption">
+        <strong data-en="Boss Arena &amp; Arcane Shield" data-ua="Арена боса та магічний щит">Boss Arena &amp; Arcane Shield</strong> —
+        <span data-en="Boss HP bar, purple minimap tracker, and piercing shotgun blasts." data-ua="Смужка HP боса, фіолетова мітка на мінікарті та пробивний дробовик.">Boss HP bar, purple minimap tracker, and piercing shotgun blasts.</span>
+      </div>
+    </div>
+  </div>
+  <div class="shot-grid">
+    <div class="media-card" data-full="media/screen_dungeon.jpg">
+      <img src="media/screen_dungeon.jpg" alt="2.5D Dungeon Lighting" loading="lazy" />
+      <div class="media-caption" data-en="2.5D Lantern Lighting &amp; Normal Maps" data-ua="2.5D освітлення ліхтарів і Normal Maps">2.5D Lantern Lighting &amp; Normal Maps</div>
+    </div>
+    <div class="media-card" data-full="media/screen_combat.jpg">
+      <img src="media/screen_combat.jpg" alt="Dungeon Combat" loading="lazy" />
+      <div class="media-caption" data-en="Combat, Loot Chests &amp; Damage Numbers" data-ua="Бій, скрині з лутом і цифри урону">Combat, Loot Chests &amp; Damage Numbers</div>
+    </div>
+    <div class="media-card" data-full="media/screen_boss.jpg">
+      <img src="media/screen_boss.jpg" alt="Boss Fight" loading="lazy" />
+      <div class="media-caption" data-en="Boss Fight &amp; Arcane Shield" data-ua="Бій із босом і магічний щит">Boss Fight &amp; Arcane Shield</div>
+    </div>
+    <div class="media-card" data-full="media/screen_settings.jpg">
+      <img src="media/screen_settings.jpg" alt="Tabbed Settings Menu" loading="lazy" />
+      <div class="media-caption" data-en="Tabbed Settings &amp; Key Rebinding" data-ua="Налаштування з вкладками та бінди">Tabbed Settings &amp; Key Rebinding</div>
+    </div>
+  </div>
+</section>
+
+<div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt="Preview" /></div>
 
 <section id="features">
   <h2 class="section-title" data-en="Core Features" data-ua="Ключові особливості">Core Features</h2>
@@ -334,6 +409,17 @@
       el.textContent = el.getAttribute('data-' + lang);
     });
   });
+
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightboxImg');
+  document.querySelectorAll('[data-full]').forEach(card => {
+    card.addEventListener('click', () => {
+      lbImg.src = card.getAttribute('data-full');
+      lb.classList.add('open');
+    });
+  });
+  lb.addEventListener('click', () => lb.classList.remove('open'));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('open'); });
 </script>
 </body>
 </html>
