@@ -25,13 +25,14 @@ func play_battle_music():
 
 # Викликається з налаштувань для миттєвої зміни
 func update_track_if_playing():
-	# Дивимось, де ми зараз (в меню чи в грі), щоб увімкнути правильний трек, якщо галочку зняли
-	var current_scene_name = get_tree().current_scene.name
-	
-	if current_scene_name == "MainMenu":
-		play_menu_music()
-	else:
+	# Дивимось, де ми зараз (в бою "Map" чи в меню), щоб увімкнути правильний трек
+	var current_scene = get_tree().current_scene
+	if not current_scene:
+		return
+	if current_scene.name == "Map":
 		play_battle_music()
+	else:
+		play_menu_music()
 
 # Внутрішня функція, яка робить магію
 func _play_stream(music_stream):

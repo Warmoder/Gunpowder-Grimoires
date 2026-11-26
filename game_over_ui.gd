@@ -21,10 +21,18 @@ func show_final_score(final_score):
 
 func _on_restart_button_pressed():
 	get_tree().paused = false
+	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
+	var crosshair = get_node_or_null("/root/CrosshairUi")
+	if crosshair:
+		crosshair.visible = true
 	GameManager.start_new_game(GameManager.current_difficulty)
 
 func _on_main_menu_button_pressed():
 	# Важливо: спочатку знімаємо гру з паузи
 	get_tree().paused = false
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	var crosshair = get_node_or_null("/root/CrosshairUi")
+	if crosshair:
+		crosshair.visible = false
 	# А потім переходимо в головне меню
 	get_tree().change_scene_to_file("res://main_menu.tscn")

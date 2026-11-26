@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://cevcytdnelc48"]
+[gd_scene load_steps=9 format=3 uid="uid://cevcytdnelc48"]
 
 [ext_resource type="Script" uid="uid://b43cdoypddocx" path="res://enemy_bullet.gd" id="1_gl7bs"]
 [ext_resource type="Texture2D" uid="uid://6vfbrhynyi8j" path="res://bullet_sprite.png" id="2_gl7bs"]
@@ -18,11 +18,15 @@ colors = PackedColorArray(1, 1, 1, 1, 0.4130435, 0.4130435, 0.4130435, 1, 0, 0, 
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_gl7bs"]
 gradient = SubResource("Gradient_gl7bs")
-width = 1000
-height = 1000
+width = 64
+height = 64
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.67948717)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_glow"]
+blend_mode = 1
+light_mode = 1
 
 [node name="Bullet" type="Area2D"]
 z_index = 5
@@ -39,14 +43,10 @@ texture = SubResource("CanvasTexture_7smgm")
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_v8qja")
 
-[node name="PointLight2D" type="PointLight2D" parent="."]
-scale = Vector2(0.05, 0.05)
-color = Color(0.6666667, 0.23921569, 0, 1)
-shadow_filter = 2
+[node name="GlowSprite" type="Sprite2D" parent="."]
+modulate = Color(0.95, 0.35, 0.05, 0.85)
+material = SubResource("CanvasItemMaterial_glow")
+scale = Vector2(0.8, 0.8)
 texture = SubResource("GradientTexture2D_gl7bs")
-height = 18.0
-
-[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="PointLight2D"]
-rect = Rect2(-239.99997, -99.99999, 459.99994, 199.99998)
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

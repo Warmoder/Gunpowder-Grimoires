@@ -19,7 +19,11 @@ extends CharacterBody2D
 @onready var footstep_sound = $FootstepSound
 @onready var step_timer = $StepTimer
 @onready var sprite = $Sprite2D # Посилання на спрайт для блимання
+@onready var muzzle = $Sprite2D/Muzzle
+@onready var camera = $CollisionShape2D/Camera2D
 @onready var switch_weapon_timer = $SwitchWeaponTimer
+
+var is_android: bool = false
 
 # Ігрові змінні
 var current_health: int
@@ -33,6 +37,7 @@ var is_invincible = false
 # Час, що залишився для візуалізації бонусів
 var speed_time_left: float = 0.0
 var damage_time_left: float = 0.0
+var stats_ui_timer: float = 0.0
 
 var move_stick
 var shoot_stick
@@ -99,13 +104,14 @@ func _ready():
 	switch_weapon(0)
 
 	# --- 3. ІНІЦІАЛІЗАЦІЯ КЕРУВАННЯ (Android) ---
-	if OS.get_name() == "Android":
-		move_stick = get_tree().root.get_node("Map/TouchControls/MoveStick")
-		shoot_stick = get_tree().root.get_node("Map/TouchControls/ShootStick")
+	is_android = (OS.get_name() == "Android")
+	if is_android:
+		move_stick = get_tree().root.get_node_or_null("Map/TouchControls/MoveStick")
+		shoot_stick = get_tree().root.get_node_or_null("Map/TouchControls/ShootStick")
 
 func _process(delta):
 	# --- 1. ЛОГІКА ПОВОРОТУ ---
-	if OS.get_name() == "Android" and shoot_stick:
+	if is_android and shoot_stick:
 		if shoot_stick.is_pressed:
 			rotation = shoot_stick.output.angle()
 	else:
@@ -122,14 +128,17 @@ func _process(delta):
 	if heal_cooldown > 0: heal_cooldown -= delta
 	if magic_cooldown > 0: magic_cooldown -= delta
 		
-	# --- 3. ВІДПРАВКА ДАНИХ В UI ---
-	var current_mult = 1.0 + damage_boost_count
-	stats_updated.emit(current_mult, damage_time_left, speed, speed_time_left)
+	# --- 3. ВІДПРАВКА ДАНИХ В UI (Тротлінг до 10 FPS для економії CPU) ---
+	stats_ui_timer += delta
+	if stats_ui_timer >= 0.1:
+		stats_ui_timer = 0.0
+		var current_mult = 1.0 + damage_boost_count
+		stats_updated.emit(current_mult, damage_time_left, speed, speed_time_left)
 
 func _physics_process(_delta):
 	# --- 1. ОТРИМАННЯ НАПРЯМКУ РУХУ ---
 	var direction = Vector2.ZERO
-	if OS.get_name() == "Android" and move_stick:
+	if is_android and move_stick:
 		direction = move_stick.output
 	else:
 		direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
@@ -139,19 +148,20 @@ func _physics_process(_delta):
 	move_and_slide()
 	
 	# --- 3. ЗВУК КРОКІВ ---
-	if velocity.length() > 0:
+	var speed_sq = velocity.length_squared()
+	if speed_sq > 0.01:
 		if step_timer.is_stopped():
 			footstep_sound.pitch_scale = randf_range(0.9, 1.1)
 			footstep_sound.play()
-			var step_time = pixels_per_step / velocity.length()
+			var step_time = pixels_per_step / sqrt(speed_sq)
 			step_timer.start(step_time)
 	else:
 		step_timer.stop()
 	
 	# --- 4. ЛОГІКА СТРІЛЬБИ ---
 	var is_shooting = false
-	if OS.get_name() == "Android" and shoot_stick:
-		if shoot_stick.output.length() > 0: is_shooting = true
+	if is_android and shoot_stick:
+		if shoot_stick.output.length_squared() > 0.0: is_shooting = true
 	else:
 		is_shooting = Input.is_action_pressed("fire")
 	
@@ -181,7 +191,7 @@ func fire():
 	
 	if w_name == "Pistol":
 		spawn_bullet(current_weapon_scene, 2.0, 0.0)
-		$CollisionShape2D/Camera2D.apply_shake(3.0) # Легка віддача
+		camera.apply_shake(3.0) # Легка віддача
 		
 	elif w_name == "Shotgun":
 		var pellet_count = 5
@@ -190,17 +200,17 @@ func fire():
 			var angle_offset = randf_range(-spread_angle / 2, spread_angle / 2)
 			var final_angle = rotation + deg_to_rad(angle_offset)
 			spawn_pellet(current_weapon_scene, final_angle)
-		$CollisionShape2D/Camera2D.apply_shake(10.0) # Жорстке трясіння
+		camera.apply_shake(10.0) # Жорстке трясіння
 			
 	elif w_name == "Rifle":
 		var spread_angle = 15.0
 		var angle_offset = randf_range(-spread_angle / 2, spread_angle / 2)
 		spawn_bullet(current_weapon_scene, 0.3, angle_offset)
-		$CollisionShape2D/Camera2D.apply_shake(2.0) # Мікро-вібрація від автомата
+		camera.apply_shake(2.0) # Мікро-вібрація від автомата
 
 	if muzzle_flash_scene:
 		var flash = muzzle_flash_scene.instantiate()
-		$Sprite2D/Muzzle.add_child(flash)
+		muzzle.add_child(flash)
 
 	# --- ЗВУК: ПІТЧ ТА ГУЧНІСТЬ ---
 	
@@ -220,28 +230,28 @@ func fire():
 
 func spawn_bullet(scene, dmg_mult = 1.0, angle_offset_deg = 0.0):
 	var bullet = scene.instantiate()
-	get_tree().root.add_child(bullet)
-	
 	var multiplier = 1.0 + damage_boost_count
 	if "damage" in bullet:
 		bullet.damage = (base_damage * dmg_mult) * multiplier
 		
-	bullet.global_position = $Sprite2D/Muzzle.global_position
 	var final_angle = global_rotation + deg_to_rad(angle_offset_deg)
+	bullet.global_position = muzzle.global_position
 	bullet.rotation = final_angle
 	bullet.direction = Vector2.from_angle(final_angle)
+	get_tree().root.add_child(bullet)
+	bullet.reset_physics_interpolation()
 
 func spawn_pellet(scene, angle_rad):
 	var pellet = scene.instantiate()
-	get_tree().root.add_child(pellet)
-	
 	var multiplier = 1.0 + damage_boost_count
 	if "damage" in pellet:
 		pellet.damage = 1 * multiplier
 		
-	pellet.global_position = $Sprite2D/Muzzle.global_position
+	pellet.global_position = muzzle.global_position
 	pellet.rotation = angle_rad
 	pellet.direction = Vector2.from_angle(angle_rad)
+	get_tree().root.add_child(pellet)
+	pellet.reset_physics_interpolation()
 
 func die() -> bool:
 	if is_invincible: return false
@@ -263,7 +273,11 @@ func die() -> bool:
 			get_tree().root.add_child(explosion)
 			explosion.global_position = global_position
 			explosion.emitting = true
-		get_tree().root.get_node("Map").game_over()
+		var map = get_tree().current_scene
+		if map and map.has_method("game_over"):
+			map.game_over()
+		elif get_tree().root.has_node("Map"):
+			get_tree().root.get_node("Map").game_over()
 		hide()
 	else:
 		start_invincibility(2.0)
@@ -277,6 +291,7 @@ func heal(amount):
 	GameManager.current_health = current_health
 	health_changed.emit(current_health, GameManager.max_health)
 	player_healed.emit()
+	GameManager.spawn_floating_text(global_position, "+%d HP" % amount, Color(0.3, 1.0, 0.45), 1.05)
 
 func cast_random_magic():
 	var roll = randi() % 3
@@ -305,14 +320,18 @@ func boost_speed(duration):
 	speed_boost_count += 1
 	speed_time_left = duration
 	update_speed()
+	GameManager.spawn_floating_text(global_position, "SPEED UP!", Color(0.4, 0.9, 1.0), 1.05)
 	await get_tree().create_timer(duration).timeout
+	if not is_inside_tree(): return
 	speed_boost_count -= 1
 	update_speed()
 
 func boost_damage(duration):
 	damage_boost_count += 1
 	damage_time_left = duration
+	GameManager.spawn_floating_text(global_position, "DAMAGE x%d!" % (1 + damage_boost_count), Color(1.0, 0.45, 0.2), 1.1)
 	await get_tree().create_timer(duration).timeout
+	if not is_inside_tree(): return
 	damage_boost_count -= 1
 
 func start_invincibility(duration):
@@ -321,6 +340,7 @@ func start_invincibility(duration):
 	tween.tween_property(sprite, "modulate:a", 0.5, 0.1)
 	tween.tween_property(sprite, "modulate:a", 1.0, 0.1)
 	await get_tree().create_timer(duration).timeout
+	if not is_inside_tree(): return
 	is_invincible = false
 	sprite.modulate.a = 1.0
 
@@ -331,6 +351,7 @@ func update_speed():
 func activate_shield():
 	has_shield = true
 	shield_sprite.show()
+	GameManager.spawn_floating_text(global_position, "SHIELD!", Color(0.45, 0.75, 1.0), 1.05)
 
 func switch_weapon(index):
 	if index >= 0 and index < weapons_data.size():
@@ -349,7 +370,22 @@ func switch_weapon(index):
 func _input(event):
 	if not switch_weapon_timer.is_stopped(): return
 
-	# Залишаємо тут тільки скрол мишкою для ПК
+	# Швидкий вибір зброї клавішами 1, 2, 3
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_1 and current_weapon_index != 0:
+			switch_weapon(0)
+			switch_weapon_timer.start()
+			return
+		elif event.keycode == KEY_2 and current_weapon_index != 1:
+			switch_weapon(1)
+			switch_weapon_timer.start()
+			return
+		elif event.keycode == KEY_3 and current_weapon_index != 2:
+			switch_weapon(2)
+			switch_weapon_timer.start()
+			return
+
+	# Скрол мишкою для ПК
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			switch_weapon((current_weapon_index + 1) % weapons_data.size())
@@ -361,3 +397,7 @@ func _input(event):
 func _on_hitbox_body_entered(body):
 	if body.is_in_group("enemies"):
 		die()
+
+# Аліас для зворотної сумісності
+func _on_area_2d_body_entered(body):
+	_on_hitbox_body_entered(body)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://b2difggx4q656"]
+[gd_scene load_steps=9 format=3 uid="uid://b2difggx4q656"]
 
 [ext_resource type="Script" uid="uid://dfoyvqh1jn0ar" path="res://shotgun_pellet.gd" id="1_wjg3x"]
 [ext_resource type="Texture2D" uid="uid://bq55774hi672u" path="res://shotgun_shell.png" id="2_rjb7u"]
@@ -18,11 +18,15 @@ colors = PackedColorArray(1, 1, 1, 1, 0.4130435, 0.4130435, 0.4130435, 1, 0, 0, 
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_rjb7u"]
 gradient = SubResource("Gradient_4re53")
-width = 1000
-height = 1000
+width = 64
+height = 64
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.67948717)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_glow"]
+blend_mode = 1
+light_mode = 1
 
 [node name="Bullet" type="Area2D"]
 z_index = 5
@@ -39,13 +43,10 @@ texture = SubResource("CanvasTexture_60gox")
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_v8qja")
 
-[node name="PointLight2D" type="PointLight2D" parent="."]
-scale = Vector2(0.05, 0.05)
-color = Color(0.6666667, 0.23921569, 0, 1)
+[node name="GlowSprite" type="Sprite2D" parent="."]
+modulate = Color(0.95, 0.42, 0.1, 0.85)
+material = SubResource("CanvasItemMaterial_glow")
+scale = Vector2(0.28, 0.28)
 texture = SubResource("GradientTexture2D_rjb7u")
-height = 18.0
-
-[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="PointLight2D"]
-rect = Rect2(-239.99997, -99.99999, 479.99994, 199.99998)
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

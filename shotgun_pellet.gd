@@ -8,11 +8,13 @@ var damage = 1
 var weapon_type = "shotgun"
 
 func _ready():
+	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	# Створюємо таймер, який знищить дробинку через 0.3 секунди
 	var timer = get_tree().create_timer(0.3)
 	await timer.timeout
 	# Можна додати плавне зникнення перед видаленням
-	queue_free()
+	if is_inside_tree():
+		queue_free()
 
 func _process(delta):
 	position += direction * speed * delta

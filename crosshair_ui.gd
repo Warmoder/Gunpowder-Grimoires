@@ -15,8 +15,11 @@ func _process(_delta):
 		crosshair.position = get_viewport().get_mouse_position()
 
 func on_scene_changed():
-	# Отримуємо назву поточної активної сцени
-	var current_scene_name = get_tree().current_scene.name
+	# Отримуємо поточну сцену, захищаємось від null (буває при старті autoload)
+	var current_scene = get_tree().current_scene
+	if not current_scene:
+		return
+	var current_scene_name = current_scene.name
 	
 	# Перевіряємо, чи це наша ігрова сцена
 	if current_scene_name == "Map":

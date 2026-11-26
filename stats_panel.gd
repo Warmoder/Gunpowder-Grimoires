@@ -21,42 +21,55 @@ func _ready():
 		if not player.weapon_changed.is_connected(_on_weapon_changed):
 			player.weapon_changed.connect(_on_weapon_changed)
 
+var last_heal_sec: int = -999
+var last_magic_sec: int = -999
+
 func _process(_delta):
-	if not player: return
+	if not player:
+		player = get_tree().get_first_node_in_group("player")
+		if not player: return
 	
-	# Оновлення магії Q
-	if player.heal_cooldown > 0:
-		heal_label.text = "Heal: %ds" % int(player.heal_cooldown)
-		heal_label.modulate = Color(1, 0.4, 0.4)
-	else:
-		heal_label.text = "Heal: READY"
-		heal_label.modulate = Color(0.4, 1, 0.4)
+	# Оновлення магії Q (лише коли змінилась секунда або статус)
+	var h_sec = int(ceil(player.heal_cooldown)) if player.heal_cooldown > 0 else 0
+	if h_sec != last_heal_sec:
+		last_heal_sec = h_sec
+		if h_sec > 0:
+			heal_label.text = "Heal: %ds" % h_sec
+			heal_label.modulate = Color(1, 0.4, 0.4)
+		else:
+			heal_label.text = "Heal: READY"
+			heal_label.modulate = Color(0.4, 1, 0.4)
 
-	# Оновлення магії E
-	if player.magic_cooldown > 0:
-		magic_label.text = "Grimoire: %ds" % int(player.magic_cooldown)
-		magic_label.modulate = Color(1, 0.4, 0.4)
-	else:
-		magic_label.text = "Grimoire: READY"
-		magic_label.modulate = Color(0.4, 1, 0.4)
+	# Оновлення магії E (лише коли змінилась секунда або статус)
+	var m_sec = int(ceil(player.magic_cooldown)) if player.magic_cooldown > 0 else 0
+	if m_sec != last_magic_sec:
+		last_magic_sec = m_sec
+		if m_sec > 0:
+			magic_label.text = "Grimoire: %ds" % m_sec
+			magic_label.modulate = Color(1, 0.4, 0.4)
+		else:
+			magic_label.text = "Grimoire: READY"
+			magic_label.modulate = Color(0.4, 1, 0.4)
 
-# Твоя функція, трохи підправлена під сигнали
+# Оновлення статів лише при зміні тексту
 func update_stats(dmg, dmg_time, spd, spd_time):
 	var dmg_text = "Damage: x%.1f" % dmg
 	if dmg_time > 0:
 		dmg_text += " (%.1fs)" % dmg_time
-		damage_label.modulate = Color(1, 1, 0) # Жовтий бонус
+		if damage_label.modulate != Color(1, 1, 0): damage_label.modulate = Color(1, 1, 0)
 	else:
-		damage_label.modulate = Color(1, 1, 1)
-	damage_label.text = dmg_text
+		if damage_label.modulate != Color(1, 1, 1): damage_label.modulate = Color(1, 1, 1)
+	if damage_label.text != dmg_text:
+		damage_label.text = dmg_text
 	
 	var spd_text = "Speed: %d" % int(spd)
 	if spd_time > 0:
 		spd_text += " (%.1fs)" % spd_time
-		speed_label.modulate = Color(1, 1, 0)
+		if speed_label.modulate != Color(1, 1, 0): speed_label.modulate = Color(1, 1, 0)
 	else:
-		speed_label.modulate = Color(1, 1, 1)
-	speed_label.text = spd_text
+		if speed_label.modulate != Color(1, 1, 1): speed_label.modulate = Color(1, 1, 1)
+	if speed_label.text != spd_text:
+		speed_label.text = spd_text
 
 func _on_weapon_changed(weapon_name):
 	weapon_label.text = "Weapon: " + weapon_name
