@@ -35,8 +35,9 @@ func open_chest():
 		loot_scene = GameManager.health_potion
 		
 	var loot = loot_scene.instantiate()
-	get_tree().root.call_deferred("add_child", loot)
 	loot.global_position = global_position + Vector2(0, 20)
+	if get_tree().current_scene:
+		get_tree().current_scene.call_deferred("add_child", loot)
 	
 	# 3. Чекаємо 15 секунд і зникаємо
 	var timer = get_tree().create_timer(15.0)

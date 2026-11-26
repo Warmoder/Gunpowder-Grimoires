@@ -249,8 +249,9 @@ func spawn_bullet(scene, dmg_mult = 1.0, angle_offset_deg = 0.0):
 	bullet.global_position = muzzle.global_position
 	bullet.rotation = final_angle
 	bullet.direction = Vector2.from_angle(final_angle)
-	get_tree().root.add_child(bullet)
-	bullet.reset_physics_interpolation()
+	if get_tree().current_scene:
+		get_tree().current_scene.add_child(bullet)
+		bullet.reset_physics_interpolation()
 
 func spawn_pellet(scene, angle_rad):
 	var pellet = scene.instantiate()
@@ -261,8 +262,9 @@ func spawn_pellet(scene, angle_rad):
 	pellet.global_position = muzzle.global_position
 	pellet.rotation = angle_rad
 	pellet.direction = Vector2.from_angle(angle_rad)
-	get_tree().root.add_child(pellet)
-	pellet.reset_physics_interpolation()
+	if get_tree().current_scene:
+		get_tree().current_scene.add_child(pellet)
+		pellet.reset_physics_interpolation()
 
 func die() -> bool:
 	if is_invincible: return false
@@ -279,10 +281,10 @@ func die() -> bool:
 	player_damaged.emit()
 	
 	if current_health <= 0:
-		if explosion_scene:
+		if explosion_scene and get_tree().current_scene:
 			var explosion = explosion_scene.instantiate()
-			get_tree().root.add_child(explosion)
 			explosion.global_position = global_position
+			get_tree().current_scene.add_child(explosion)
 			explosion.emitting = true
 		var map = get_tree().current_scene
 		if map and map.has_method("game_over"):

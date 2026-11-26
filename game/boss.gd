@@ -233,8 +233,9 @@ func fire():
 	bullet_instance.global_position = muzzle.global_position
 	bullet_instance.rotation = global_rotation
 	bullet_instance.direction = transform.x
-	get_tree().root.add_child(bullet_instance)
-	bullet_instance.reset_physics_interpolation()
+	if get_tree().current_scene:
+		get_tree().current_scene.add_child(bullet_instance)
+		bullet_instance.reset_physics_interpolation()
 
 	if muzzle_flash_scene:
 		var flash = muzzle_flash_scene.instantiate()
@@ -275,10 +276,10 @@ func take_damage(amount, weapon_type = ""):
 		GameManager.unlock_achievement("boss_killer", "Boss Killer!")
 		emit_signal("died")
 		
-		if explosion_scene:
+		if explosion_scene and get_tree().current_scene:
 			var explosion = explosion_scene.instantiate()
-			get_tree().root.add_child(explosion)
 			explosion.global_position = global_position
+			get_tree().current_scene.add_child(explosion)
 			explosion.emitting = true
 		
 		queue_free()
@@ -299,10 +300,11 @@ func drop_loot():
 	elif roll == 1: buff_scene = GameManager.speed_up
 	else: buff_scene = GameManager.shield
 		
+	if not get_tree().current_scene: return
 	var buff = buff_scene.instantiate()
-	get_tree().root.call_deferred("add_child", buff)
 	buff.global_position = global_position + Vector2(-15, -15)
+	get_tree().current_scene.call_deferred("add_child", buff)
 
 	var potion = GameManager.health_potion.instantiate()
-	get_tree().root.call_deferred("add_child", potion)
 	potion.global_position = global_position + Vector2(15, 15)
+	get_tree().current_scene.call_deferred("add_child", potion)
