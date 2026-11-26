@@ -19,7 +19,7 @@ config/name_localized={
 "uk_UA": "Порох і гримуари"
 }
 config/description="Gunpowder & Grimoires is a dynamic 2D top-down rogue-lite shooter where magic meets gunpowder. Fight monsters in a dark fantasy world using enchanted muskets and alchemical grenades. This is a student project developed on the Godot Engine."
-config/version="Release 4.1.2"
+config/version="Release 4.2"
 run/main_scene="uid://g3umpwren1yd"
 config/features=PackedStringArray("4.6", "Forward Plus")
 run/max_fps=0
