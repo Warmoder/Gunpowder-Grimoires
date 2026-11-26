@@ -63,10 +63,13 @@ signal weapon_changed(weapon_name)
 # --- ВБУДОВАНІ ФУНКЦІЇ GODOT ---
 
 func _ready():
-	# --- 1. ІНІЦІАЛІЗАЦІЯ СТАТІВ ---
-	current_health = GameManager.base_health
+	# --- 1. ІНІЦІАЛІЗАЦІЯ ТА ВІДНОВЛЕННЯ СТАТІВ МІЖ РІВНЯМИ ---
+	current_health = GameManager.current_health if GameManager.current_health > 0 else GameManager.base_health
+	GameManager.current_health = current_health
 	health_changed.emit(current_health, GameManager.max_health)
 	base_speed = speed
+	heal_cooldown = GameManager.saved_heal_cooldown
+	magic_cooldown = GameManager.saved_magic_cooldown
 
 	# --- 2. НАЛАШТУВАННЯ ЗБРОЇ ТА ТЕКСТУР ---
 	var default_shoot_sound = preload("res://shoot.wav")
@@ -101,7 +104,15 @@ func _ready():
 		}
 	]
 	
-	switch_weapon(0)
+	switch_weapon(GameManager.saved_weapon_index)
+	
+	# Відновлюємо щит та активні бафи з попереднього рівня
+	if GameManager.saved_has_shield:
+		activate_shield(false)
+	if GameManager.saved_speed_time_left > 0.2:
+		boost_speed(GameManager.saved_speed_time_left, false)
+	if GameManager.saved_damage_time_left > 0.2:
+		boost_damage(GameManager.saved_damage_time_left, false)
 
 	# --- 3. ІНІЦІАЛІЗАЦІЯ КЕРУВАННЯ (Android) ---
 	is_android = (OS.get_name() == "Android")
@@ -316,20 +327,22 @@ func play_magic_sound(stream: AudioStream):
 	p.play()
 	p.finished.connect(p.queue_free)
 
-func boost_speed(duration):
+func boost_speed(duration, show_text: bool = true):
 	speed_boost_count += 1
 	speed_time_left = duration
 	update_speed()
-	GameManager.spawn_floating_text(global_position, "SPEED UP!", Color(0.4, 0.9, 1.0), 1.05)
+	if show_text:
+		GameManager.spawn_floating_text(global_position, "SPEED UP!", Color(0.4, 0.9, 1.0), 1.05)
 	await get_tree().create_timer(duration).timeout
 	if not is_inside_tree(): return
 	speed_boost_count -= 1
 	update_speed()
 
-func boost_damage(duration):
+func boost_damage(duration, show_text: bool = true):
 	damage_boost_count += 1
 	damage_time_left = duration
-	GameManager.spawn_floating_text(global_position, "DAMAGE x%d!" % (1 + damage_boost_count), Color(1.0, 0.45, 0.2), 1.1)
+	if show_text:
+		GameManager.spawn_floating_text(global_position, "DAMAGE x%d!" % (1 + damage_boost_count), Color(1.0, 0.45, 0.2), 1.1)
 	await get_tree().create_timer(duration).timeout
 	if not is_inside_tree(): return
 	damage_boost_count -= 1
@@ -348,10 +361,11 @@ func update_speed():
 	var speed_multiplier = 1.0 + (speed_boost_count * 0.4)
 	speed = base_speed * speed_multiplier
 
-func activate_shield():
+func activate_shield(show_text: bool = true):
 	has_shield = true
 	shield_sprite.show()
-	GameManager.spawn_floating_text(global_position, "SHIELD!", Color(0.45, 0.75, 1.0), 1.05)
+	if show_text:
+		GameManager.spawn_floating_text(global_position, "SHIELD!", Color(0.45, 0.75, 1.0), 1.05)
 
 func switch_weapon(index):
 	if index >= 0 and index < weapons_data.size():

@@ -14,6 +14,12 @@ var max_health = 1
 var current_health = 1 
 var current_score = 0
 var current_level = 1
+var saved_weapon_index: int = 0
+var saved_has_shield: bool = false
+var saved_speed_time_left: float = 0.0
+var saved_damage_time_left: float = 0.0
+var saved_heal_cooldown: float = 0.0
+var saved_magic_cooldown: float = 0.0
 
 # --- ЛУТ ---
 var health_potion = preload("res://health_potion.tscn")
@@ -386,7 +392,24 @@ func start_new_game(difficulty_level):
 	current_health = base_health
 	current_score = 0
 	current_level = 1
+	saved_weapon_index = 0
+	saved_has_shield = false
+	saved_speed_time_left = 0.0
+	saved_damage_time_left = 0.0
+	saved_heal_cooldown = 0.0
+	saved_magic_cooldown = 0.0
 	get_tree().change_scene_to_file("res://main.tscn")
+
+func save_player_state():
+	var player = get_tree().get_first_node_in_group("player")
+	if not player: return
+	current_health = player.current_health
+	saved_weapon_index = player.current_weapon_index
+	saved_has_shield = player.has_shield
+	saved_speed_time_left = maxf(0.0, player.speed_time_left)
+	saved_damage_time_left = maxf(0.0, player.damage_time_left)
+	saved_heal_cooldown = maxf(0.0, player.heal_cooldown)
+	saved_magic_cooldown = maxf(0.0, player.magic_cooldown)
 
 func set_difficulty(difficulty_level):
 	current_difficulty = difficulty_level
@@ -398,6 +421,7 @@ func set_difficulty(difficulty_level):
 		max_health = 3
 
 func go_to_next_level():
+	save_player_state()
 	current_level += 1
 	get_tree().reload_current_scene()
 
