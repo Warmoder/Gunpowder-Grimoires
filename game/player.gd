@@ -114,11 +114,44 @@ func _ready():
 	if GameManager.saved_damage_time_left > 0.2:
 		boost_damage(GameManager.saved_damage_time_left, false)
 
-	# --- 3. ІНІЦІАЛІЗАЦІЯ КЕРУВАННЯ (Android) ---
-	is_android = (OS.get_name() == "Android")
+	# --- 3. ІНІЦІАЛІЗАЦІЯ КЕРУВАННЯ (Android / iOS) ---
+	is_android = (OS.get_name() in ["Android", "iOS"])
 	if is_android:
 		move_stick = get_tree().root.get_node_or_null("Map/TouchControls/MoveStick")
 		shoot_stick = get_tree().root.get_node_or_null("Map/TouchControls/ShootStick")
+	_setup_portal_compass()
+
+var _portal_arrow: Polygon2D = null
+var _cached_portal: Node2D = null
+
+func _setup_portal_compass():
+	_portal_arrow = Polygon2D.new()
+	_portal_arrow.polygon = PackedVector2Array([Vector2(14, 0), Vector2(-6, -8), Vector2(-2, 0), Vector2(-6, 8)])
+	_portal_arrow.color = Color(0.25, 0.85, 1.0, 0.92)
+	_portal_arrow.z_index = 40
+	_portal_arrow.visible = false
+	_portal_arrow.top_level = true
+	_portal_arrow.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+	var mat = CanvasItemMaterial.new()
+	mat.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	_portal_arrow.material = mat
+	add_child(_portal_arrow)
+
+func _update_portal_compass():
+	if not _portal_arrow: return
+	if not is_instance_valid(_cached_portal):
+		_cached_portal = get_tree().get_first_node_in_group("portal")
+	if not _cached_portal or not _cached_portal.get("is_active"):
+		_portal_arrow.visible = false
+		return
+	var diff = _cached_portal.global_position - global_position
+	if diff.length_squared() < 260.0 * 260.0:
+		_portal_arrow.visible = false
+		return
+	var dir = diff.normalized()
+	_portal_arrow.visible = true
+	_portal_arrow.global_position = global_position + dir * 95.0
+	_portal_arrow.rotation = dir.angle()
 
 func _process(delta):
 	# --- 1. ЛОГІКА ПОВОРОТУ ---
@@ -140,6 +173,7 @@ func _process(delta):
 	if magic_cooldown > 0: magic_cooldown -= delta
 		
 	# --- 3. ВІДПРАВКА ДАНИХ В UI (Тротлінг до 10 FPS для економії CPU) ---
+	_update_portal_compass()
 	stats_ui_timer += delta
 	if stats_ui_timer >= 0.1:
 		stats_ui_timer = 0.0
