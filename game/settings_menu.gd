@@ -21,6 +21,8 @@ var fullscreen_check: CheckButton
 var vsync_check: CheckButton
 var res_label: Label
 var max_fps_dropdown: OptionButton
+var render_scale_dropdown: OptionButton
+var sharpen_dropdown: OptionButton
 var graphics_dropdown: OptionButton
 var brightness_label: Label
 var brightness_slider: HSlider
@@ -188,6 +190,18 @@ func _build_graphics_tab():
 	var saved_fps = int(GameManager.settings_data.get("max_fps", 60))
 	var fps_idx = 0 if saved_fps == 60 else (1 if saved_fps == 120 else 2)
 	max_fps_dropdown = _add_dropdown_row(vbox, "FPS Limit", ["60 FPS", "120 FPS", "Uncapped"], fps_idx, _on_max_fps_selected)
+	
+	var saved_rs = float(GameManager.settings_data.get("render_scale", 1.0))
+	var rs_values = [0.5, 0.67, 0.75, 0.85, 1.0]
+	var rs_idx = 4
+	for i in range(rs_values.size()):
+		if absf(saved_rs - rs_values[i]) < 0.03:
+			rs_idx = i
+			break
+	render_scale_dropdown = _add_dropdown_row(vbox, "Render Scale", ["50% (Performance)", "67% (Balanced)", "75% (Quality)", "85% (Ultra Quality)", "100% (Native)"], rs_idx, _on_render_scale_selected)
+	
+	var saved_sharp = int(GameManager.settings_data.get("upscale_sharpening", 0))
+	sharpen_dropdown = _add_dropdown_row(vbox, "Upscale Sharpening (CAS)", ["Off", "Medium", "High"], saved_sharp, _on_sharpen_selected)
 	
 	_add_section_header(vbox, "Quality & Lighting")
 	var saved_gfx = int(GameManager.settings_data.get("graphics_quality", 1))
@@ -366,6 +380,17 @@ func _on_max_fps_selected(index: int):
 	var fps = 60 if index == 0 else (120 if index == 1 else 0)
 	GameManager.settings_data["max_fps"] = fps
 	Engine.max_fps = fps
+	GameManager.save_settings()
+
+func _on_render_scale_selected(index: int):
+	var scales = [0.5, 0.67, 0.75, 0.85, 1.0]
+	GameManager.settings_data["render_scale"] = scales[clampi(index, 0, scales.size() - 1)]
+	GameManager.apply_detailed_graphics()
+	GameManager.save_settings()
+
+func _on_sharpen_selected(index: int):
+	GameManager.settings_data["upscale_sharpening"] = index
+	GameManager.apply_detailed_graphics()
 	GameManager.save_settings()
 
 func _on_graphics_selected(index: int):

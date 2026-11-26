@@ -57,6 +57,8 @@ var settings_data = {
 	"show_damage_numbers": true,
 	"damage_numbers_scale": 1.0,
 	"camera_zoom": 1.0,
+	"render_scale": 1.0,      # 0.5, 0.67, 0.75, 0.85, 1.0 (Native)
+	"upscale_sharpening": 0,  # 0 = Off, 1 = Medium (CAS), 2 = High (CAS)
 	"keybindings": {}
 }
 
@@ -74,10 +76,13 @@ const DEFAULT_KEYBINDINGS = {
 
 var _floating_font: Font = preload("res://text_style.ttf")
 
-# --- FPS ОВЕРЛЕЙ ТА СТАН ---
+# --- FPS ОВЕРЛЕЙ ТА CAS SHARPENING ---
 var fps_layer: CanvasLayer
 var fps_label: Label
 var fps_timer: float = 0.0
+var sharpen_layer: CanvasLayer
+var sharpen_rect: ColorRect
+var sharpen_mat: ShaderMaterial
 
 # --- СИГНАЛИ ---
 signal achievement_unlocked(title)
@@ -91,8 +96,48 @@ func _ready():
 		settings_data["max_fps"] = 0
 	load_settings()
 	load_progress()
+	_setup_sharpen_overlay()
 	apply_settings()
 	_setup_fps_overlay()
+
+func _setup_sharpen_overlay():
+	sharpen_layer = CanvasLayer.new()
+	sharpen_layer.layer = 998
+	sharpen_layer.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(sharpen_layer)
+	
+	sharpen_rect = ColorRect.new()
+	sharpen_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	sharpen_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+	var shader = Shader.new()
+	shader.code = """
+shader_type canvas_item;
+uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap;
+uniform float sharpness : hint_range(0.0, 1.0) = 0.5;
+
+void fragment() {
+	vec2 px = SCREEN_PIXEL_SIZE;
+	vec3 c = texture(screen_texture, SCREEN_UV).rgb;
+	vec3 n = texture(screen_texture, SCREEN_UV + vec2(0.0, -px.y)).rgb;
+	vec3 s = texture(screen_texture, SCREEN_UV + vec2(0.0,  px.y)).rgb;
+	vec3 e = texture(screen_texture, SCREEN_UV + vec2( px.x, 0.0)).rgb;
+	vec3 w = texture(screen_texture, SCREEN_UV + vec2(-px.x, 0.0)).rgb;
+	// Contrast Adaptive Sharpening (FSR 1.0 RCAS / GSR style)
+	vec3 min_rgb = min(c, min(min(n, s), min(e, w)));
+	vec3 max_rgb = max(c, max(max(n, s), max(e, w)));
+	vec3 amp = clamp(min(min_rgb, 1.0 - max_rgb) / max(max_rgb, vec3(0.0001)), 0.0, 1.0);
+	amp = sqrt(amp);
+	vec3 w_val = amp * (-0.18 * sharpness);
+	vec3 out_col = (c + (n + s + e + w) * w_val) / (1.0 + 4.0 * w_val);
+	COLOR = vec4(clamp(out_col, 0.0, 1.0), 1.0);
+}
+"""
+	sharpen_mat = ShaderMaterial.new()
+	sharpen_mat.shader = shader
+	sharpen_rect.material = sharpen_mat
+	sharpen_layer.add_child(sharpen_rect)
+	sharpen_layer.visible = false
 
 func _setup_fps_overlay():
 	fps_layer = CanvasLayer.new()
@@ -299,6 +344,27 @@ func apply_detailed_graphics():
 	# 1. Ліміт FPS
 	var max_fps = settings_data.get("max_fps", 60)
 	Engine.max_fps = max_fps
+	
+	# 1.5 Render Scale & CAS Sharpening (FSR/GSR-style для 2D)
+	var r_scale = clampf(float(settings_data.get("render_scale", 1.0)), 0.5, 1.0)
+	var win = get_window()
+	if win:
+		if r_scale >= 0.99:
+			win.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+			win.content_scale_size = Vector2i(1600, 900)
+			win.content_scale_factor = 1.0
+		else:
+			win.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
+			win.content_scale_size = Vector2i(roundi(1600.0 * r_scale), roundi(900.0 * r_scale))
+			win.content_scale_factor = r_scale
+	
+	if sharpen_layer and sharpen_mat:
+		var sharp_mode = int(settings_data.get("upscale_sharpening", 0))
+		if sharp_mode <= 0:
+			sharpen_layer.visible = false
+		else:
+			sharpen_layer.visible = true
+			sharpen_mat.set_shader_parameter("sharpness", 0.45 if sharp_mode == 1 else 0.85)
 	
 	var quality = settings_data.get("graphics_quality", 1)
 	var normal_maps = settings_data.get("normal_maps", true)
