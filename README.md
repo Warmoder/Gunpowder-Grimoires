@@ -2,8 +2,20 @@
 
 **Gunpowder & Grimoires** is a dynamic 2.5D top-down dark fantasy rogue-lite shooter built with **Godot Engine 4.6.2**, where enchanted firearms meet arcane grimoires inside procedurally generated dungeons.
 
-🌐 **Project Website:** https://warmoder.github.io/Gunpowder-Grimoires/  
+🌐 **Project Website & Gameplay Clips:** https://warmoder.github.io/Gunpowder-Grimoires/  
 ⬇️ **Downloads (Windows / Linux / Android):** [GitHub Releases](https://github.com/Warmoder/Gunpowder-Grimoires/releases)
+
+---
+
+## Screenshots
+
+| 2.5D Dungeon Lighting | Dungeon Combat & Loot |
+| :---: | :---: |
+| ![2.5D Dungeon](media/screen_dungeon.jpg) | ![Dungeon Combat](media/screen_combat.jpg) |
+| **Boss Fight & Arcane Shield** | **Tabbed Settings & Keybinds** |
+| ![Boss Fight](media/screen_boss.jpg) | ![Settings Menu](media/screen_settings.jpg) |
+
+*(Watch full looping gameplay clips directly on the [Project Website](https://warmoder.github.io/Gunpowder-Grimoires/#media) or in [`media/`](media/).)*
 
 ---
 
