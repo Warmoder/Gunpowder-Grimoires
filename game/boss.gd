@@ -68,8 +68,8 @@ func _ensure_boss_bar():
 	container.anchors_preset = Control.PRESET_TOP_WIDE
 	container.anchor_left = 0.25
 	container.anchor_right = 0.75
-	container.offset_top = 42.0
-	container.offset_bottom = 100.0
+	container.offset_top = 18.0
+	container.offset_bottom = 76.0
 	container.add_theme_constant_override("separation", 4)
 	_boss_bar_layer.add_child(container)
 	

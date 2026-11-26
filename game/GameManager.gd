@@ -99,17 +99,17 @@ func _setup_fps_overlay():
 	
 	fps_label = Label.new()
 	fps_label.name = "FpsLabel"
-	fps_label.anchors_preset = Control.PRESET_CENTER_TOP
-	fps_label.anchor_left = 0.5
-	fps_label.anchor_right = 0.5
+	fps_label.anchors_preset = Control.PRESET_TOP_RIGHT
+	fps_label.anchor_left = 1.0
+	fps_label.anchor_right = 1.0
 	fps_label.anchor_top = 0.0
 	fps_label.anchor_bottom = 0.0
-	fps_label.offset_left = -140.0
-	fps_label.offset_top = 8.0
-	fps_label.offset_right = 140.0
-	fps_label.offset_bottom = 36.0
-	fps_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	fps_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	fps_label.offset_left = -240.0
+	fps_label.offset_top = 86.0
+	fps_label.offset_right = -20.0
+	fps_label.offset_bottom = 114.0
+	fps_label.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	fps_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	fps_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	
 	var font = load("res://text_style.ttf")
