@@ -3,6 +3,14 @@ extends CanvasLayer
 @onready var final_score_label = $VBoxContainer/FinalScoreLabel
 @onready var high_scores_label = $VBoxContainer2/HighScoresLabel
 
+func _ready():
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
+func _unhandled_input(event):
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R:
+		get_viewport().set_input_as_handled()
+		_on_restart_button_pressed()
+
 func show_final_score(final_score):
 	final_score_label.text = "Score: " + str(final_score)
 

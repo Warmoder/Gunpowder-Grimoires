@@ -86,6 +86,9 @@ signal achievement_unlocked(title)
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	DisplayServer.window_set_title("Gunpowder & Grimoires")
+	if OS.get_name() in ["Android", "iOS"]:
+		# На мобільних за замовчуванням Uncapped, щоб VSync синхронізувався з 60/90/120 Гц екрана
+		settings_data["max_fps"] = 0
 	load_settings()
 	load_progress()
 	apply_settings()

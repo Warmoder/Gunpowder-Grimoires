@@ -8,8 +8,8 @@ func _enter_tree():
 func _unhandled_input(event):
 	if is_rebinding_key:
 		return
-	# --- ПРАЦЮЄМО ТІЛЬКИ НА НЕ-АНДРОЇД ПЛАТФОРМАХ ---
-	if OS.get_name() != "Android":
+	# --- ПРАЦЮЄМО ТІЛЬКИ НА НЕ-МОБІЛЬНИХ ПЛАТФОРМАХ ---
+	if not (OS.get_name() in ["Android", "iOS"]):
 		if event.is_action_pressed("ui_cancel"):
 			var main_scene = get_tree().current_scene
 			if main_scene and main_scene.has_method("toggle_pause"):

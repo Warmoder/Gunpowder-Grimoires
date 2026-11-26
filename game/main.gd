@@ -121,7 +121,7 @@ func _on_map_generated(floor_cells_result):
 	
 	var touch_controls = $TouchControls
 	
-	if OS.get_name() == "Android":
+	if OS.get_name() in ["Android", "iOS"]:
 		touch_controls.show()
 		pause_button.show()
 		if not pause_button.pressed.is_connected(_on_pause_button_pressed):
