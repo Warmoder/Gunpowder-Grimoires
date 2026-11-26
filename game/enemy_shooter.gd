@@ -161,8 +161,9 @@ func fire():
 	bullet_instance.global_position = muzzle.global_position
 	bullet_instance.rotation = global_rotation
 	bullet_instance.direction = transform.x
-	get_tree().root.add_child(bullet_instance)
-	bullet_instance.reset_physics_interpolation()
+	if get_tree().current_scene:
+		get_tree().current_scene.add_child(bullet_instance)
+		bullet_instance.reset_physics_interpolation()
 
 	if muzzle_flash_scene:
 		var flash = muzzle_flash_scene.instantiate()
@@ -193,10 +194,10 @@ func take_damage(amount, weapon_type = ""):
 		is_dead = true 
 		drop_loot()
 		emit_signal("died")
-		if explosion_scene:
+		if explosion_scene and get_tree().current_scene:
 			var explosion = explosion_scene.instantiate()
-			get_tree().root.add_child(explosion)
 			explosion.global_position = global_position
+			get_tree().current_scene.add_child(explosion)
 			explosion.emitting = true
 		queue_free()
 
@@ -206,7 +207,7 @@ func _on_attack_area_body_entered(body):
 
 func drop_loot():
 	var loot_scene = GameManager.get_random_loot()
-	if loot_scene:
+	if loot_scene and get_tree().current_scene:
 		var loot = loot_scene.instantiate()
-		get_tree().root.call_deferred("add_child", loot)
 		loot.global_position = global_position
+		get_tree().current_scene.call_deferred("add_child", loot)
