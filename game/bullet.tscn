@@ -1,0 +1,52 @@
+[gd_scene load_steps=9 format=3 uid="uid://c8evd5r7rx47t"]
+
+[ext_resource type="Script" uid="uid://byt6lods2irro" path="res://bullet.gd" id="1_v8qja"]
+[ext_resource type="Texture2D" uid="uid://6vfbrhynyi8j" path="res://bullet_sprite.png" id="2_v8qja"]
+[ext_resource type="Texture2D" uid="uid://bhkso8ycp35ei" path="res://bullet_sprite_n.png" id="3_t4vbm"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_2b2rl"]
+diffuse_texture = ExtResource("2_v8qja")
+normal_texture = ExtResource("3_t4vbm")
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_v8qja"]
+radius = 4.0
+height = 20.0
+
+[sub_resource type="Gradient" id="Gradient_t4vbm"]
+offsets = PackedFloat32Array(0, 0.82608694, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.32608694, 0.32608694, 0.32608694, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_b7duk"]
+gradient = SubResource("Gradient_t4vbm")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.6367521)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_glow"]
+blend_mode = 1
+light_mode = 1
+
+[node name="Bullet" type="Area2D"]
+z_index = 5
+collision_layer = 8
+collision_mask = 6
+script = ExtResource("1_v8qja")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+rotation = 1.5707964
+scale = Vector2(0.035, 0.035)
+texture = SubResource("CanvasTexture_2b2rl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_v8qja")
+
+[node name="GlowSprite" type="Sprite2D" parent="."]
+modulate = Color(1, 0.55, 0.1, 0.85)
+material = SubResource("CanvasItemMaterial_glow")
+scale = Vector2(0.3, 0.3)
+texture = SubResource("GradientTexture2D_b7duk")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

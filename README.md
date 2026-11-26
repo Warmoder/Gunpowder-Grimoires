@@ -1,55 +1,29 @@
-# Gunpowder & Grimoires
+# Gunpowder & Grimoires (v4.0)
 
-<img width="1918" height="1078" alt="image" src="https://github.com/user-attachments/assets/d8910eb8-670f-4a49-b099-4728ccb54353" />
+**Gunpowder & Grimoires** is a dynamic 2.5D top-down dark fantasy rogue-lite shooter built with **Godot Engine 4.6.2**, where enchanted firearms meet arcane grimoires inside procedurally generated dungeons.
 
-**Gunpowder & Grimoires** is a dynamic top-down rogue-lite shooter set in a dark gunpowder fantasy world. As a lone monster hunter, you will navigate procedurally generated dungeons, fight grotesque creatures with magically enhanced firearms, and face challenging bosses to progress through ever-hardening levels.
-
-This project was developed as a team assignment for a university course, utilizing the Godot Engine.
-
----
-
-## 🎮 Core Features
-
-- **Procedural Dungeon Generation:** Every run is a unique, sprawling labyrinth filled with danger and secrets.
-- **Dynamic Twin-Stick Combat:** Fast-paced shooting combined with a crucial dash mechanic for invincibility frames.
-- **Atmospheric Visuals:** A dark, gothic horror aesthetic brought to life with dynamic 2D lighting and shadows, creating a constant sense of tension.
-- **Deep Progression System:**
-    - **In-Run:** Collect powerful, stacking buffs like Damage Up, Speed Boost, and a protective Shield.
-    - **Meta-Progression:** Unlock achievements and compete for a spot on the high-score leaderboard, with all progress saved between sessions.
-- **Challenging AI:** Enemies that chase, flank, take cover, and remember the player's last known position.
-- **Epic Boss Fights:** Face a powerful boss at the end of each level to unlock the portal to the next.
-- **Full-Featured Experience:** Includes a main menu, settings (graphics & audio), pause/game over screens, and a credits roll.
+🌐 **Project Website:** https://warmoder.github.io/Gunpowder-Grimoires/  
+⬇️ **Downloads (Windows / Linux / Android):** [GitHub Releases](https://github.com/Warmoder/Gunpowder-Grimoires/releases)
 
 ---
 
-## 🛠️ Built With
+## Highlights (Release 4.0)
+- **2.5D Dynamic Lighting:** Normal-mapped dungeon stone, dynamic shadows, flickering wall lanterns, and customizable presets (`Low / Potato` → `Medium` → `Ultra` → `Custom`).
+- **60Hz Physics + Physics Interpolation:** Silky-smooth movement and camera look-ahead at any refresh rate (60 / 120 / 144+ Hz).
+- **Procedural Multithreaded Dungeons:** Background-threaded map generation with Monolith & Fast Perimeter wall modes, loot chests, escalating difficulty (+20% per floor), and a Boss arena.
+- **Boss Battles & HUD Polish:** Boss HP bar, distinct purple boss marker on the minimap, hit-flash feedback, floating damage numbers, pickup notifications, and portal activation banner.
+- **Tabbed Settings & Full Key Rebinding:** Separate **Graphics**, **Audio**, **Gameplay**, and **Controls** tabs with interactive key rebinding and default reset.
+- **Optimized Performance:** Lightweight additive bullet glow, throttled enemy AI raycasts, OGG Vorbis streaming soundtrack, and Exclusive Fullscreen support.
 
-*   **Engine:** [Godot Engine 4](https://godotengine.org/)
-*   **Language:** GDScript
-*   **Art:** A combination of assets from [O Lobster](https://o-lobster.itch.io/), other artists on Itch.io, and AI-generated sprites.
-*   **Audio:** Music by [AlkaKrab](https://alkakrab.itch.io/) and SFX from [Freesound.org](https://freesound.org/).
-*   **AI Support:** Code and text support from Google's Gemini.
+## Arsenal & Grimoires
+- **Weapons (`1` / `2` / `3`, `Tab`, or Mouse Wheel):** Pistol, Piercing Shotgun (5 pellets), Automatic Rifle.
+- **Magic:** Heal Spell (`Q`) & Random Grimoire (`E` — Speed Boost, Damage Multiplier, or Arcane Shield).
+- **QoL Hotkeys:** `M` (Toggle Minimap), `F11` (Toggle Fullscreen), `Esc` (Pause). All keys are rebindable in **Settings → Controls**.
 
----
-
-## 🚀 Getting Started
-
-You can download the latest builds for Windows, Linux, and Android from the **[Releases](https://github.com/Warmoder2/Gunpowder-Grimoires/releases)** page.
-
-### To Run from Source:
-1. Clone this repository.
-2. Download and install Godot Engine 4.
-3. Open the project in Godot and run (F5).
-
----
-
-## 👥 The Team
-
-*   **Anton Beglov** - Project Lead / Lead Programmer
-*   **Nazar Khomenko** - Programmer / Technical Artist
-*   **Vitaliy Kotyhorokh** - Audio Director
-*   **Yevheniy Hulyi** - QA & Game Balance
+## Platforms
+- **Windows** (`x86_64`, standalone `.exe`)
+- **Linux** (`x86_64`, standalone binary)
+- **Android** (`ARM64` `.apk` with virtual touch joysticks)
 
 ---
-
-This project is licensed under the MIT License.
+*Developed by Anton Beglov on Godot Engine 4.6.2.*

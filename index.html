@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gunpowder &amp; Grimoires — 2.5D Dark Fantasy Rogue-Lite Shooter</title>
+  <link rel="icon" type="image/png" href="game/icon.png" />
+  <style>
+    :root {
+      --bg: #0a0910;
+      --surface: #13111d;
+      --surface-2: #1b1829;
+      --border: rgba(230, 162, 60, 0.25);
+      --gold: #f0b354;
+      --cyan: #38d9ff;
+      --purple: #d946ef;
+      --text: #eceaf5;
+      --muted: #9e99b3;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* Navbar */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 6vw;
+      background: rgba(10, 9, 16, 0.78);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .brand {
+      display: flex; align-items: center; gap: 12px;
+      font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px; color: var(--gold);
+    }
+    .brand img { width: 32px; height: 32px; border-radius: 6px; }
+    .nav-links { display: flex; align-items: center; gap: 22px; font-size: 0.95rem; color: var(--muted); }
+    .nav-links a:hover { color: var(--text); }
+    .lang-btn {
+      background: var(--surface-2); color: var(--gold);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 5px 11px; cursor: pointer; font-weight: 600; font-size: 0.85rem;
+    }
+    .lang-btn:hover { background: rgba(240, 179, 84, 0.15); }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      min-height: 92vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 6vw 80px;
+      background:
+        linear-gradient(180deg, rgba(10,9,16,0.55) 0%, rgba(10,9,16,0.88) 75%, var(--bg) 100%),
+        url('game/main_menu_bg.jpg') center/cover no-repeat;
+    }
+    .hero-inner { max-width: 820px; }
+    .badge {
+      display: inline-block;
+      padding: 5px 14px; margin-bottom: 18px;
+      border-radius: 999px;
+      background: rgba(240, 179, 84, 0.14);
+      border: 1px solid rgba(240, 179, 84, 0.4);
+      color: var(--gold); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.8px;
+    }
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4.4rem);
+      font-weight: 800; line-height: 1.08; margin-bottom: 18px;
+      background: linear-gradient(135deg, #fff5dc 0%, var(--gold) 55%, #ff8c42 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-shadow: 0 10px 40px rgba(240, 179, 84, 0.2);
+    }
+    .hero p {
+      font-size: 1.15rem; color: #d5d0e6; max-width: 640px; margin: 0 auto 32px;
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 13px 26px; border-radius: 10px; font-weight: 700; font-size: 1rem;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #f0b354, #d97724);
+      color: #120d06;
+      box-shadow: 0 8px 28px rgba(240, 179, 84, 0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 34px rgba(240, 179, 84, 0.45); }
+    .btn-secondary {
+      background: rgba(19, 17, 29, 0.85);
+      border: 1px solid var(--border); color: var(--text);
+    }
+    .btn-secondary:hover { transform: translateY(-2px); border-color: var(--gold); }
+
+    /* Sections */
+    section { padding: 76px 6vw; max-width: 1180px; margin: 0 auto; }
+    .section-title {
+      font-size: clamp(1.7rem, 3.2vw, 2.3rem);
+      font-weight: 700; margin-bottom: 10px; color: var(--gold);
+    }
+    .section-sub { color: var(--muted); margin-bottom: 36px; max-width: 640px; }
+
+    /* Cards grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      transition: transform 0.18s ease, border-color 0.2s ease;
+    }
+    .card:hover { transform: translateY(-4px); border-color: rgba(240, 179, 84, 0.55); }
+    .card-icon { font-size: 1.7rem; margin-bottom: 12px; }
+    .card h3 { font-size: 1.15rem; margin-bottom: 8px; color: #fff; }
+    .card p { font-size: 0.94rem; color: var(--muted); }
+
+    /* Arsenal */
+    .split {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;
+    }
+    .panel {
+      background: linear-gradient(160deg, var(--surface) 0%, var(--surface-2) 100%);
+      border: 1px solid var(--border); border-radius: 14px; padding: 26px;
+    }
+    .panel h3 { color: var(--cyan); margin-bottom: 14px; font-size: 1.25rem; }
+    .panel.magic h3 { color: var(--purple); }
+    .item-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .item-list li {
+      padding: 10px 14px; border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid var(--gold);
+      font-size: 0.95rem;
+    }
+    .panel.magic .item-list li { border-left-color: var(--purple); }
+    .item-list strong { color: #fff; }
+
+    /* Controls table */
+    .controls-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 13px 20px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    th { color: var(--gold); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.7px; background: var(--surface-2); }
+    tr:last-child td { border-bottom: none; }
+    kbd {
+      display: inline-block; padding: 3px 9px; border-radius: 6px;
+      background: #231f34; border: 1px solid rgba(240, 179, 84, 0.35);
+      color: var(--gold); font-family: ui-monospace, monospace; font-size: 0.88rem; font-weight: 600;
+    }
+
+    /* Tech pills */
+    .pills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .pill {
+      padding: 6px 14px; border-radius: 999px;
+      background: var(--surface-2); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--muted); font-size: 0.88rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 34px 6vw;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    footer a { color: var(--gold); }
+    @media (max-width: 680px) {
+      .nav-links a { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="#">
+    <img src="game/icon.png" alt="Icon" />
+    <span>Gunpowder &amp; Grimoires</span>
+  </a>
+  <div class="nav-links">
+    <a href="#features" data-en="Features" data-ua="Особливості">Features</a>
+    <a href="#arsenal" data-en="Arsenal" data-ua="Арсенал">Arsenal</a>
+    <a href="#controls" data-en="Controls" data-ua="Керування">Controls</a>
+    <a href="https://github.com/Warmoder/Gunpowder-Grimoires" target="_blank" rel="noopener">GitHub</a>
+    <button class="lang-btn" id="langToggle" type="button">UA</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="badge" data-en="GODOT 4.6.2 • RELEASE 4.0" data-ua="GODOT 4.6.2 • РЕЛІЗ 4.0">GODOT 4.6.2 • RELEASE 4.0</div>
+    <h1>Gunpowder &amp; Grimoires</h1>
+    <p data-en="A fast-paced 2.5D top-down dark fantasy rogue-lite shooter where enchanted firearms collide with arcane grimoires inside procedurally generated dungeons."
+       data-ua="Динамічний 2.5D top-down dark-fantasy rogue-lite шутер, де вогнепальна зброя поєднується з магією гримуарів у процедурно згенерованих підземеллях.">
+      A fast-paced 2.5D top-down dark fantasy rogue-lite shooter where enchanted firearms collide with arcane grimoires inside procedurally generated dungeons.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://github.com/Warmoder/Gunpowder-Grimoires/releases" target="_blank" rel="noopener"
+         data-en="⬇ Download Latest Release" data-ua="⬇ Завантажити реліз">⬇ Download Latest Release</a>
+      <a class="btn btn-secondary" href="https://github.com/Warmoder/Gunpowder-Grimoires" target="_blank" rel="noopener"
+         data-en="Source Code on GitHub" data-ua="Вихідний код на GitHub">Source Code on GitHub</a>
+    </div>
+  </div>
+</header>
+
+<section id="features">
+  <h2 class="section-title" data-en="Core Features" data-ua="Ключові особливості">Core Features</h2>
+  <p class="section-sub" data-en="Built on Godot Engine 4.6.2 with 60Hz physics interpolation, multithreaded dungeon generation, and deep graphics customization."
+     data-ua="Створено на Godot Engine 4.6.2 з 60 Гц інтерполяцією фізики, багатопотоковою генерацією підземель і детальними налаштуваннями графіки.">
+    Built on Godot Engine 4.6.2 with 60Hz physics interpolation, multithreaded dungeon generation, and deep graphics customization.
+  </p>
+  <div class="grid">
+    <div class="card">
+      <div class="card-icon">🕯️</div>
+      <h3 data-en="2.5D Dynamic Lighting" data-ua="2.5D динамічне освітлення">2.5D Dynamic Lighting</h3>
+      <p data-en="Normal-mapped stone walls, dynamic shadows, flickering dungeon lanterns, and full graphics presets from Potato to Ultra."
+         data-ua="Кам'яні стіни з normal maps, динамічні тіні, мерехтливі ліхтарі та пресети графіки від Potato до Ultra.">
+        Normal-mapped stone walls, dynamic shadows, flickering dungeon lanterns, and full graphics presets from Potato to Ultra.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🗺️</div>
+      <h3 data-en="Procedural Dungeons" data-ua="Процедурні підземелля">Procedural Dungeons</h3>
+      <p data-en="Every floor is generated on a background CPU thread with chests, monster waves, scaling difficulty, and a dedicated Boss arena."
+         data-ua="Кожен рівень генерується у фоновому потоці CPU зі скринями, хвилями ворогів, зростаючою складністю та ареною боса.">
+        Every floor is generated on a background CPU thread with chests, monster waves, scaling difficulty, and a dedicated Boss arena.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-icon">💀</div>
+      <h3 data-en="Boss Fights &amp; Progression" data-ua="Бої з босами та прогресія">Boss Fights &amp; Progression</h3>
+      <p data-en="Track the Boss on the minimap, battle through escalating floors with a Boss HP bar, and unlock the portal to descend deeper."
+         data-ua="Відстежуй боса на мінікарті, бийся з босом зі смужкою HP та відкривай портал на наступні, складніші рівні.">
+        Track the Boss on the minimap, battle through escalating floors with a Boss HP bar, and unlock the portal to descend deeper.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚙️</div>
+      <h3 data-en="Deep Customization" data-ua="Гнучкі налаштування">Deep Customization</h3>
+      <p data-en="Tabbed settings menu with full key rebinding, customizable damage numbers, FPS overlay, V-Sync, Exclusive Fullscreen, and audio sliders."
+         data-ua="Меню налаштувань із вкладками: перепризначення клавіш, цифри урону, FPS-оверлей, V-Sync, Exclusive Fullscreen та аудіо.">
+        Tabbed settings menu with full key rebinding, customizable damage numbers, FPS overlay, V-Sync, Exclusive Fullscreen, and audio sliders.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="arsenal">
+  <h2 class="section-title" data-en="Gunpowder &amp; Magic" data-ua="Порох і магія">Gunpowder &amp; Magic</h2>
+  <p class="section-sub" data-en="Switch weapons on the fly and combine firepower with grimoire spells to survive."
+     data-ua="Перемикай зброю на льоту та комбінуй вогневу міць із закляттями гримуарів.">
+    Switch weapons on the fly and combine firepower with grimoire spells to survive.
+  </p>
+  <div class="split">
+    <div class="panel">
+      <h3 data-en="🔫 Firearms" data-ua="🔫 Вогнепальна зброя">🔫 Firearms</h3>
+      <ul class="item-list">
+        <li><strong>Pistol</strong> — <span data-en="Balanced precision sidearm with reliable damage." data-ua="Збалансований точний пістолет зі стабільною шкодою.">Balanced precision sidearm with reliable damage.</span></li>
+        <li><strong>Shotgun</strong> — <span data-en="5 piercing pellets with devastating close-range spread." data-ua="5 пробивних дробинок із потужним розкидом у ближньому бою.">5 piercing pellets with devastating close-range spread.</span></li>
+        <li><strong>Rifle</strong> — <span data-en="High fire-rate automatic weapon for crowd control." data-ua="Скорострільний автомат для стримування натовпів ворогів.">High fire-rate automatic weapon for crowd control.</span></li>
+      </ul>
+    </div>
+    <div class="panel magic">
+      <h3 data-en="📖 Arcane Grimoires &amp; Loot" data-ua="📖 Гримуари та лут">📖 Arcane Grimoires &amp; Loot</h3>
+      <ul class="item-list">
+        <li><strong>Heal Spell</strong> — <span data-en="Restores health in critical moments (45s cooldown)." data-ua="Відновлює здоров'я у критичний момент (кд 45с).">Restores health in critical moments (45s cooldown).</span></li>
+        <li><strong>Random Grimoire</strong> — <span data-en="Casts a random Speed Boost, Damage Multiplier, or Arcane Shield (30s cooldown)." data-ua="Випадковий баф швидкості, урону або магічний щит (кд 30с).">Casts a random Speed Boost, Damage Multiplier, or Arcane Shield (30s cooldown).</span></li>
+        <li><strong>Dungeon Chests</strong> — <span data-en="Guaranteed potions and buffs scattered across the labyrinth." data-ua="Гарантований лут, зілля та бафи, розкидані по підземеллю.">Guaranteed potions and buffs scattered across the labyrinth.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="controls">
+  <h2 class="section-title" data-en="Default Controls" data-ua="Стандартне керування">Default Controls</h2>
+  <p class="section-sub" data-en="All keyboard controls can be rebound in Settings → Controls. Android touch joysticks are also supported."
+     data-ua="Усі клавіші можна перепризначити в Settings → Controls. Також підтримуються віртуальні джойстики на Android.">
+    All keyboard controls can be rebound in Settings → Controls. Android touch joysticks are also supported.
+  </p>
+  <div class="controls-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th data-en="Action" data-ua="Дія">Action</th>
+          <th data-en="Key / Input" data-ua="Клавіша">Key / Input</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td data-en="Move" data-ua="Рух">Move</td><td><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></td></tr>
+        <tr><td data-en="Aim &amp; Fire" data-ua="Приціл і стрільба">Aim &amp; Fire</td><td><kbd>Mouse</kbd> + <kbd>LMB</kbd></td></tr>
+        <tr><td data-en="Switch Weapon" data-ua="Зміна зброї">Switch Weapon</td><td><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> / <kbd>Tab</kbd> / <kbd>Scroll</kbd></td></tr>
+        <tr><td data-en="Heal Spell / Random Grimoire" data-ua="Хіл / Випадкова магія">Heal Spell / Random Grimoire</td><td><kbd>Q</kbd> / <kbd>E</kbd></td></tr>
+        <tr><td data-en="Toggle Minimap / Fullscreen" data-ua="Мінікарта / Повний екран">Toggle Minimap / Fullscreen</td><td><kbd>M</kbd> / <kbd>F11</kbd></td></tr>
+        <tr><td data-en="Pause" data-ua="Пауза">Pause</td><td><kbd>Esc</kbd></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pills">
+    <span class="pill">Godot 4.6.2 (GDScript)</span>
+    <span class="pill">Vulkan Mobile Renderer</span>
+    <span class="pill">Windows x86_64</span>
+    <span class="pill">Linux x86_64</span>
+    <span class="pill">Android (ARM64)</span>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Anton Beglov — <strong>Gunpowder &amp; Grimoires</strong> •
+    <a href="https://github.com/Warmoder/Gunpowder-Grimoires" target="_blank" rel="noopener">GitHub Repository</a>
+  </p>
+</footer>
+
+<script>
+  let lang = 'en';
+  const btn = document.getElementById('langToggle');
+  btn.addEventListener('click', () => {
+    lang = lang === 'en' ? 'ua' : 'en';
+    btn.textContent = lang === 'en' ? 'UA' : 'EN';
+    document.querySelectorAll('[data-en]').forEach(el => {
+      el.textContent = el.getAttribute('data-' + lang);
+    });
+  });
+</script>
+</body>
+</html>
