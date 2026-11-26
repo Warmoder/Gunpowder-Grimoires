@@ -39,6 +39,8 @@ var show_minimap_check: CheckButton
 var show_dmg_check: CheckButton
 var dmg_scale_label: Label
 var dmg_scale_slider: HSlider
+var cam_zoom_label: Label
+var cam_zoom_slider: HSlider
 
 # Key rebinding state
 var _rebinding_action: String = ""
@@ -234,6 +236,12 @@ func _build_gameplay_tab():
 	dmg_scale_label = d_pair[0]
 	dmg_scale_slider = d_pair[1]
 	dmg_scale_slider.editable = GameManager.settings_data.get("show_damage_numbers", true)
+	
+	_add_section_header(vbox, "Camera")
+	var cam_z = float(GameManager.settings_data.get("camera_zoom", 1.0))
+	var z_pair = _add_slider_row(vbox, "Camera Zoom: %d%%" % roundi(cam_z * 100), 0.6, 1.4, 0.05, cam_z, _on_cam_zoom_changed)
+	cam_zoom_label = z_pair[0]
+	cam_zoom_slider = z_pair[1]
 
 # --- TAB 4: CONTROLS ---
 func _build_controls_tab():
@@ -338,7 +346,7 @@ func apply_resolution():
 	GameManager.settings_data["resolution_index"] = current_res_index
 	update_res_label()
 	var target_size = resolutions[current_res_index]
-	get_window().content_scale_size = target_size
+	# Із stretch/mode="canvas_items" базовий масштаб UI та камери лишається однаковим на 1080p/1440p/4K
 	if not GameManager.settings_data.get("fullscreen", false) and OS.get_name() != "Android" and OS.get_name() != "iOS":
 		DisplayServer.window_set_size(target_size)
 		var screen_size = DisplayServer.screen_get_size()
@@ -446,6 +454,12 @@ func _on_show_dmg_toggled(pressed: bool):
 func _on_dmg_scale_changed(value: float):
 	GameManager.settings_data["damage_numbers_scale"] = value
 	dmg_scale_label.text = "Damage Numbers Size: %d%%" % roundi(value * 100)
+	GameManager.save_settings()
+
+func _on_cam_zoom_changed(value: float):
+	GameManager.settings_data["camera_zoom"] = value
+	cam_zoom_label.text = "Camera Zoom: %d%%" % roundi(value * 100)
+	GameManager.apply_detailed_graphics()
 	GameManager.save_settings()
 
 func _on_back_button_pressed():

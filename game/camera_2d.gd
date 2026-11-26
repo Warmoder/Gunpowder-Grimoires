@@ -10,6 +10,8 @@ var _is_android: bool = false
 
 func _ready():
 	_is_android = (OS.get_name() == "Android")
+	var z = clampf(float(GameManager.settings_data.get("camera_zoom", 1.0)), 0.6, 1.4)
+	zoom = Vector2(z, z)
 
 func apply_shake(strength: float):
 	shake_strength = strength

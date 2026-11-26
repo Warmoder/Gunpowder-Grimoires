@@ -56,6 +56,7 @@ var settings_data = {
 	"max_fps": 60,            # 60, 120, 0 (без обмежень)
 	"show_damage_numbers": true,
 	"damage_numbers_scale": 1.0,
+	"camera_zoom": 1.0,
 	"keybindings": {}
 }
 
@@ -98,17 +99,17 @@ func _setup_fps_overlay():
 	
 	fps_label = Label.new()
 	fps_label.name = "FpsLabel"
-	fps_label.anchors_preset = Control.PRESET_TOP_RIGHT
-	fps_label.anchor_left = 1.0
-	fps_label.anchor_right = 1.0
+	fps_label.anchors_preset = Control.PRESET_CENTER_TOP
+	fps_label.anchor_left = 0.5
+	fps_label.anchor_right = 0.5
 	fps_label.anchor_top = 0.0
 	fps_label.anchor_bottom = 0.0
-	fps_label.offset_left = -240.0
-	fps_label.offset_top = 16.0
-	fps_label.offset_right = -20.0
-	fps_label.offset_bottom = 46.0
-	fps_label.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	fps_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	fps_label.offset_left = -140.0
+	fps_label.offset_top = 8.0
+	fps_label.offset_right = 140.0
+	fps_label.offset_bottom = 36.0
+	fps_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	fps_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	fps_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	
 	var font = load("res://text_style.ttf")
@@ -331,6 +332,10 @@ func apply_detailed_graphics():
 			
 	var players = get_tree().get_nodes_in_group("player")
 	if players.size() > 0:
+		var cam = players[0].get_node_or_null("CollisionShape2D/Camera2D")
+		if cam and cam is Camera2D:
+			var z = clampf(float(settings_data.get("camera_zoom", 1.0)), 0.6, 1.4)
+			cam.zoom = Vector2(z, z)
 		var shield_light = players[0].get_node_or_null("ShieldSprite/PointLight2D")
 		if shield_light:
 			shield_light.enabled = (quality != 0)
